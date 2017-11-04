@@ -1,0 +1,8 @@
+[package]
+name = "physics2d-rs"
+version = "0.1.0"
+authors = ["Arav Singhal <singhal.arav@gmail.com"]
+
+[dependencies]
+
+[workspace]

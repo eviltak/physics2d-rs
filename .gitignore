@@ -1,0 +1,7 @@
+
+/target/
+**/*.rs.bk
+Cargo.lock
+
+.idea/
+physics2d-rs.iml
