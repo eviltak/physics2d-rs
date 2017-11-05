@@ -1,4 +1,4 @@
-type real = f32;
+pub type real = f32;
 
 use std::ops::{Add, Sub, Neg, Mul, Div, AddAssign, SubAssign, MulAssign, DivAssign};
 
@@ -107,7 +107,10 @@ impl Add for Vec2 {
 
 impl AddAssign for Vec2 {
     fn add_assign(&mut self, other: Self) {
-        *self = *self + other;
+        *self = Vec2 {
+            x: self.x + other.x,
+            y: self.y + other.y,
+        };
     }
 }
 
@@ -122,7 +125,10 @@ impl Sub for Vec2 {
 
 impl SubAssign for Vec2 {
     fn sub_assign(&mut self, other: Self) {
-        *self = *self + other;
+        *self = Vec2 {
+            x: self.x - other.x,
+            y: self.y - other.y,
+        };
     }
 }
 
@@ -137,7 +143,10 @@ impl Mul<real> for Vec2 {
 
 impl MulAssign<real> for Vec2 {
     fn mul_assign(&mut self, s: real) {
-        *self = *self * s;
+        *self = Vec2 {
+            x: self.x * s,
+            y: self.y * s,
+        };
     }
 }
 
@@ -152,7 +161,7 @@ impl Div<real> for Vec2 {
 
 impl DivAssign<real> for Vec2 {
     fn div_assign(&mut self, s: real) {
-        *self = *self / s;
+        *self *= 1.0 / s;
     }
 }
 
@@ -160,6 +169,7 @@ impl DivAssign<real> for Vec2 {
 
 // Start Mat2
 
+#[derive(PartialEq, Copy, Clone)]
 pub struct Mat2 {
     pub m00: real, pub m01: real,
     pub m10: real, pub m11: real,
@@ -167,8 +177,8 @@ pub struct Mat2 {
 
 impl Mat2 {
     pub fn transpose(&self) -> Mat2 {
-        Mat2::new(m00, m10,
-                  m01, m11)
+        Mat2::new(self.m00, self.m10,
+                  self.m01, self.m11)
     }
     
     
@@ -198,18 +208,18 @@ impl Mul for Mat2 {
     }
 }
 
-impl MulAssign for Mat2 {
-    fn mul_assign(&mut self, other: Mat2) {
-        *self = *self * other;
-    }
-}
-
 impl Mul<Vec2> for Mat2 {
     type Output = Vec2;
     
     fn mul(self, other: Vec2) -> Vec2 {
         Vec2::new(self.m00 * other.x + self.m01 * other.y,
                   self.m10 * other.x + self.m11 * other.y)
+    }
+}
+
+impl MulAssign for Mat2 {
+    fn mul_assign(&mut self, other: Mat2) {
+        *self = *self * other;
     }
 }
 
