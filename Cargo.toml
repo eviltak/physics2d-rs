@@ -3,6 +3,9 @@ name = "physics2d-rs"
 version = "0.1.0"
 authors = ["Arav Singhal <singhal.arav@gmail.com"]
 
+[dev-dependencies]
+sfml = "0.14.0"
+
 [dependencies]
 
 [workspace]
