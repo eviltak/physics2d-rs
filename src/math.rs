@@ -1,4 +1,4 @@
-type Real = f32;
+type real = f32;
 
 use std::ops::{Add, Sub, Neg, Mul, Div, AddAssign, SubAssign, MulAssign, DivAssign};
 
@@ -6,23 +6,23 @@ use std::ops::{Add, Sub, Neg, Mul, Div, AddAssign, SubAssign, MulAssign, DivAssi
 
 #[derive(PartialEq, Copy, Clone)]
 pub struct Vec2 {
-    pub x: Real,
-    pub y: Real,
+    pub x: real,
+    pub y: real,
 }
 
 impl Vec2 {
     #[inline]
-    pub fn len(&self) -> Real {
+    pub fn len(&self) -> real {
         self.sqr_len().sqrt()
     }
     
     #[inline]
-    pub fn sqr_len(&self) -> Real {
+    pub fn sqr_len(&self) -> real {
         self.x * self.x + self.y * self.y
     }
     
     #[inline]
-    pub fn dot(&self, b: &Vec2) -> Real {
+    pub fn dot(&self, b: &Vec2) -> real {
         self.x * b.x + self.y * b.y
     }
     
@@ -32,7 +32,7 @@ impl Vec2 {
     }
     
     
-    pub fn new(x: Real, y: Real) -> Vec2 {
+    pub fn new(x: real, y: real) -> Vec2 {
         Vec2 { x, y }
     }
     
@@ -64,22 +64,22 @@ pub trait Cross<RHS = Self> {
 }
 
 impl Cross for Vec2 {
-    type Output = Real;
+    type Output = real;
     
-    fn cross(self, other: Vec2) -> Real {
+    fn cross(self, other: Vec2) -> real {
         self.x * other.y - self.y * other.x
     }
 }
 
-impl Cross<Real> for Vec2 {
+impl Cross<real> for Vec2 {
     type Output = Vec2;
     
-    fn cross(self, s: Real) -> Vec2 {
+    fn cross(self, s: real) -> Vec2 {
         Vec2::new(s * self.y, -s * self.x)
     }
 }
 
-impl Cross<Vec2> for Real {
+impl Cross<Vec2> for real {
     type Output = Vec2;
     
     fn cross(self, other: Vec2) -> Vec2 {
@@ -127,33 +127,90 @@ impl SubAssign for Vec2 {
 }
 
 
-impl Mul<Real> for Vec2 {
+impl Mul<real> for Vec2 {
     type Output = Self;
     
-    fn mul(self, s: Real) -> Self {
+    fn mul(self, s: real) -> Self {
         Vec2::new(self.x * s, self.y * s)
     }
 }
 
-impl MulAssign<Real> for Vec2 {
-    fn mul_assign(&mut self, s: Real) {
+impl MulAssign<real> for Vec2 {
+    fn mul_assign(&mut self, s: real) {
         *self = *self * s;
     }
 }
 
 
-impl Div<Real> for Vec2 {
+impl Div<real> for Vec2 {
     type Output = Self;
     
-    fn div(self, s: Real) -> Self {
+    fn div(self, s: real) -> Self {
         self * (1.0 / s)
     }
 }
 
-impl DivAssign<Real> for Vec2 {
-    fn div_assign(&mut self, s: Real) {
+impl DivAssign<real> for Vec2 {
+    fn div_assign(&mut self, s: real) {
         *self = *self / s;
     }
 }
 
 // End Vec2
+
+// Start Mat2
+
+pub struct Mat2 {
+    pub m00: real, pub m01: real,
+    pub m10: real, pub m11: real,
+}
+
+impl Mat2 {
+    pub fn transpose(&self) -> Mat2 {
+        Mat2::new(m00, m10,
+                  m01, m11)
+    }
+    
+    
+    pub fn new(m00: real, m01: real,
+               m10: real, m11: real) -> Mat2 {
+        Mat2 {
+            m00, m01, m10, m11
+        }
+    }
+    
+    pub fn rotation(angle: real) -> Mat2 {
+        let (sin, cos) = angle.sin_cos();
+        
+        Mat2::new(cos, -sin,
+                  sin, cos)
+    }
+}
+
+impl Mul for Mat2 {
+    type Output = Mat2;
+    
+    fn mul(self, other: Mat2) -> Mat2 {
+        Mat2::new(self.m00 * other.m00 + self.m01 * other.m10,
+                  self.m00 * other.m01 + self.m01 * other.m11,
+                  self.m10 * other.m00 + self.m11 * other.m10,
+                  self.m10 * other.m01 + self.m11 * other.m11)
+    }
+}
+
+impl MulAssign for Mat2 {
+    fn mul_assign(&mut self, other: Mat2) {
+        *self = *self * other;
+    }
+}
+
+impl Mul<Vec2> for Mat2 {
+    type Output = Vec2;
+    
+    fn mul(self, other: Vec2) -> Vec2 {
+        Vec2::new(self.m00 * other.x + self.m01 * other.y,
+                  self.m10 * other.x + self.m11 * other.y)
+    }
+}
+
+// End Mat2
