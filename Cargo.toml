@@ -1,5 +1,5 @@
 [package]
-name = "physics2d-rs"
+name = "physics2d"
 version = "0.1.0"
 authors = ["Arav Singhal <singhal.arav@gmail.com"]
 

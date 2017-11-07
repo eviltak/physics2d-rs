@@ -1,12 +1,14 @@
 
-pub mod runner;
-pub mod config;
-pub mod canvas;
+mod runner;
+mod canvas;
+mod config;
 
-use sfml;
+pub use self::runner::run;
+pub use self::canvas::Canvas;
+pub use self::config::Config;
 
 pub trait Testbed {
-    fn config(&self) -> &config::Config;
-
     fn sfml_loop(&mut self);
+    
+    fn sfml_draw(&mut self, canvas: &mut Canvas);
 }
