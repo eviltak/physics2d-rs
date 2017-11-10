@@ -18,5 +18,14 @@ pub struct Body {
 }
 
 impl Body {
-
+    pub fn update(&mut self, dt: f32) {
+        self.velocity += self.force / self.mass * dt;
+        self.position += self.velocity * dt;
+        
+        self.angular_vel += self.torque / self.inertia * dt;
+        self.rotation += self.angular_vel * dt;
+        
+        self.force = Vec2::ZERO;
+        self.torque = 0.0;
+    }
 }
