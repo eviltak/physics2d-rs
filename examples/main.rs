@@ -11,7 +11,7 @@ impl testbed::Testbed for MainTestbed {
     }
     
     fn sfml_draw(&mut self, canvas: &mut testbed::Canvas) {
-        canvas.draw_circle(physics2d::math::Vec2::up() * 25.0, 5.0);
+        canvas.draw_circle(physics2d::math::Vec2::UP() * 25.0, 5.0);
     }
 }
 

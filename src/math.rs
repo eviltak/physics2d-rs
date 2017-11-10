@@ -34,29 +34,17 @@ impl Vec2 {
         Vec2 { x, y }
     }
     
-    pub fn zero() -> Vec2 {
-        Vec2::new(0.0, 0.0)
-    }
+    pub const ZERO: Vec2 = Vec2 { x: 0.0, y: 0.0 };
     
-    pub fn up() -> Vec2 {
-        Vec2::new(0.0, 1.0)
-    }
+    pub const UP: Vec2 = Vec2 { x: 0.0, y: 0.0 };
     
-    pub fn right() -> Vec2 {
-        Vec2::new(1.0, 0.0)
-    }
+    pub const RIGHT: Vec2 = Vec2 { x: 0.0, y: 0.0 };
     
-    pub fn down() -> Vec2 {
-        -Vec2::up()
-    }
+    pub const DOWN: Vec2 = Vec2 { x: 0.0, y: 0.0 };
     
-    pub fn left() -> Vec2 {
-        -Vec2::down()
-    }
+    pub const LEFT: Vec2 = Vec2 { x: 0.0, y: 0.0 };
     
-    pub fn one() -> Vec2 {
-        Vec2::new(1.0, 1.0)
-    }
+    pub const ONE: Vec2 = Vec2 { x: 0.0, y: 0.0 };
 }
 
 
