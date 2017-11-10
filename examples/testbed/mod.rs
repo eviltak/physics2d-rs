@@ -8,7 +8,7 @@ pub use self::canvas::Canvas;
 pub use self::config::Config;
 
 pub trait Testbed {
-    fn sfml_loop(&mut self);
+    fn sfml_loop(&mut self, dt: f32);
     
-    fn sfml_draw(&mut self, canvas: &mut Canvas);
+    fn sfml_draw(&mut self, canvas: &mut Canvas, dt: f32);
 }

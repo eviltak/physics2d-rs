@@ -1,6 +1,7 @@
 
 use sfml::window::{VideoMode, Style, Event};
 use sfml::graphics::{RenderWindow, RenderTarget, Color,};
+use sfml::system::Clock;
 
 use super::Testbed;
 use super::canvas::Canvas;
@@ -12,6 +13,8 @@ pub fn run<T: Testbed>(mut testbed: T, config: super::config::Config) {
     
     let mut canvas = Canvas::new(&config);
     
+    let mut clock = Clock::start();
+    
     // The main loop - ends as soon as the window is closed
     while window.is_open() {
         // Event processing
@@ -22,15 +25,17 @@ pub fn run<T: Testbed>(mut testbed: T, config: super::config::Config) {
             }
         }
         
+        let dt = clock.restart().as_seconds();
+        
         // Activate the window for OpenGL rendering
         window.set_active(true);
         
         // TODO: Clear color from config?
         window.clear(&Color::BLACK);
         
-        testbed.sfml_loop();
+        testbed.sfml_loop(dt);
         
-        testbed.sfml_draw(&mut canvas);
+        testbed.sfml_draw(&mut canvas, dt);
         
         canvas.draw_queue_to_window(&mut window);
         
