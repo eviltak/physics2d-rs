@@ -39,5 +39,9 @@ fn main() {
     
     let mut testbed = CirclesTestbed::new();
     
+    testbed.world.add_body(world::Body::new(
+        shapes::Shape::Circle(shapes::Circle { radius: 5.0, }),
+        10.0));
+    
     testbed::run(testbed, config);
 }

@@ -13,6 +13,10 @@ impl World {
         }
     }
     
+    pub fn add_body(&mut self, body: Body) {
+        self.bodies.push(body);
+    }
+    
     pub fn update(&mut self, dt: f32) {
         for body in &mut self.bodies {
             body.update(dt);

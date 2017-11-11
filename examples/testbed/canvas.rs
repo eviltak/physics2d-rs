@@ -63,11 +63,13 @@ impl Canvas {
         self.draw_queue.push(Box::new(drawable));
     }
     
-    pub fn draw_queue_to_window(&self, window: &mut sfml::graphics::RenderWindow) {
+    pub fn draw_queue_to_window(&mut self, window: &mut sfml::graphics::RenderWindow) {
         window.set_view(&self.view);
         
         for drawable in self.draw_queue.iter() {
             window.draw((*drawable).deref());
         }
+        
+        self.draw_queue.clear();
     }
 }

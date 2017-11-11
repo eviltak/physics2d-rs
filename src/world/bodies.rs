@@ -18,8 +18,26 @@ pub struct Body {
 }
 
 impl Body {
+    pub fn new(shape: Shape, mass: f32) -> Body {
+        Body {
+            position: Vec2::ZERO,
+            rotation: 0.0,
+            velocity: Vec2::ZERO,
+            angular_vel: 0.0,
+            force: Vec2::ZERO,
+            torque: 0.0,
+            // TODO: Compute from shape
+            mass,
+            inertia: 0.0,
+            shape,
+        }
+    }
+    
     pub fn update(&mut self, dt: f32) {
-        self.velocity += self.force / self.mass * dt;
+        // TODO: Make configurable
+        const GRAVITY: Vec2 = Vec2{ x: 0.0, y: -9.8 };
+        
+        self.velocity += (GRAVITY + self.force / self.mass) * dt;
         self.position += self.velocity * dt;
         
         self.angular_vel += self.torque / self.inertia * dt;
