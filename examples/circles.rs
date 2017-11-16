@@ -38,10 +38,10 @@ fn main() {
     };
     
     let mut testbed = CirclesTestbed::new();
-    let mut body = world::Body::new(
-        shapes::Shape::Polygon(shapes::Polygon::new(vec![
-            math::Vec2::ZERO, math::Vec2::RIGHT, math::Vec2::ONE, math::Vec2::UP
-        ])),
+    
+    let mut body = world::Body::new(shapes::Polygon::new(
+        vec![math::Vec2::ZERO, math::Vec2::RIGHT, math::Vec2::ONE, math::Vec2::UP])
+                                        .into_shape(),
         10.0);
     
     testbed.world.add_body(body);
