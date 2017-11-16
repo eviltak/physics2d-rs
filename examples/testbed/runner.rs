@@ -37,7 +37,7 @@ pub fn run<T: Testbed>(mut testbed: T, config: super::config::Config) {
         
         testbed.sfml_draw(&mut canvas, dt);
         
-        canvas.draw_queue_to_window(&mut window);
+        canvas.process_draw_queue(&mut window);
         
         // End the current frame and display its contents on screen
         window.display();

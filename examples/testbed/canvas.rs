@@ -93,7 +93,7 @@ impl Canvas {
     }
 
     
-    pub fn draw_queue_to_window(&mut self, window: &mut sfml::graphics::RenderWindow) {
+    pub fn process_draw_queue(&mut self, window: &mut sfml::graphics::RenderWindow) {
         window.set_view(&self.view);
         
         for drawable in self.draw_queue.iter() {
