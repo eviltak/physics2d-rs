@@ -6,6 +6,28 @@ pub struct Polygon {
 }
 
 impl Polygon {
+    pub fn new(mut vertices: Vec<Vec2>) -> Polygon {
+        let centroid = vertices.iter().fold(Vec2::ZERO, |sum, &x| sum + x);
+    
+        for vertex in vertices.iter_mut() {
+            *vertex -= centroid;
+        }
+        
+        let mut normals: Vec<Vec2> = Vec::with_capacity(vertices.len());
+    
+        for i in 0..vertices.len() {
+            let j: usize = (i + 1) % vertices.len();
+            
+            let edge: Vec2 = vertices[j] - vertices[i];
+            
+            normals.push(edge.normalized().cross(1.0));
+        }
+        
+        Polygon {
+            vertices,
+            normals,
+        }
+    }
     
     #[inline]
     pub fn vert_count(&self) -> usize {
@@ -26,7 +48,7 @@ impl super::Matter for Polygon {
             let p2 = self.vertices[j];
             
             let tri_area = 0.5 * p1.cross(p2).abs();
-            let tri_inertia = tri_area * (p1.sqr_len() + p2.sqr_len() + p1.dot(p2)) / 6.0;
+            let tri_inertia = tri_area * (p1.sqr_len() + p2.sqr_len() + p1.dot(&p2)) / 6.0;
             
             area += tri_area;
             density_inertia += tri_inertia;
