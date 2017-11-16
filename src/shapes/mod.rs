@@ -15,7 +15,7 @@ pub trait Matter {
 
 impl Matter for Shape {
     fn mass_and_inertia(&self, density: f32) -> (f32, f32) {
-        match self {
+        match *self {
             Shape::Circle(ref circle) => circle.mass_and_inertia(density),
             Shape::Polygon(ref polygon) => polygon.mass_and_inertia(density),
         }
