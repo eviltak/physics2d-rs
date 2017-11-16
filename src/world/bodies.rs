@@ -48,4 +48,17 @@ impl Body {
         self.force = Vec2::ZERO;
         self.torque = 0.0;
     }
+    
+    pub fn add_force(&mut self, force: Vec2) {
+        self.force += force;
+    }
+    
+    pub fn add_torque(&mut self, torque: f32) {
+        self.torque += torque;
+    }
+    
+    pub fn add_force_at_pos(&mut self, force: Vec2, pos: Vec2) {
+        self.add_force(force);
+        self.add_torque(pos.cross(force));
+    }
 }
