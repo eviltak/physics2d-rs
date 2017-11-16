@@ -5,7 +5,7 @@ pub const PI: f32 = f32::consts::PI;
 
 // Start Vec2
 
-#[derive(PartialEq, Copy, Clone)]
+#[derive(PartialEq, Copy, Clone, Debug)]
 pub struct Vec2 {
     pub x: f32,
     pub y: f32,
@@ -39,15 +39,15 @@ impl Vec2 {
     
     pub const ZERO: Vec2 = Vec2 { x: 0.0, y: 0.0 };
     
-    pub const UP: Vec2 = Vec2 { x: 0.0, y: 0.0 };
+    pub const UP: Vec2 = Vec2 { x: 0.0, y: 1.0 };
     
-    pub const RIGHT: Vec2 = Vec2 { x: 0.0, y: 0.0 };
+    pub const RIGHT: Vec2 = Vec2 { x: 1.0, y: 0.0 };
     
-    pub const DOWN: Vec2 = Vec2 { x: 0.0, y: 0.0 };
+    pub const DOWN: Vec2 = Vec2 { x: 0.0, y: -1.0 };
     
-    pub const LEFT: Vec2 = Vec2 { x: 0.0, y: 0.0 };
+    pub const LEFT: Vec2 = Vec2 { x: -1.0, y: 0.0 };
     
-    pub const ONE: Vec2 = Vec2 { x: 0.0, y: 0.0 };
+    pub const ONE: Vec2 = Vec2 { x: 1.0, y: 1.0 };
 }
 
 
