@@ -58,15 +58,20 @@ impl Canvas {
     }
     
     fn get_polygon_drawable<'a>(&self, sfml_pos: sfml::system::Vector2f,
+                                body: &world::Body,
                                 polygon: &shapes::Polygon) -> Box<sfml::graphics::Drawable> {
         let mut convex_shape = sfml::graphics::ConvexShape::new(polygon.vert_count() as u32);
     
         for i in 0..polygon.vert_count() {
-            convex_shape.set_point(i as u32, self.sfml_vec2(polygon.vertices[i]));
+            convex_shape.set_point(i as u32,
+                                   self.sfml_vec2(
+                                       // TODO: Use transform instead?
+                                       math::Mat2::rotation(body.rotation) * polygon.vertices[i])
+            );
         }
         
         let bounds = convex_shape.local_bounds();
-        let drawable_pos = sfml_pos;// - 0.5 * sfml::system::Vector2f::new(bounds.width, bounds.height);
+        let drawable_pos = sfml_pos - 0.5 * sfml::system::Vector2f::new(bounds.width, bounds.height);
         
         convex_shape.set_position(drawable_pos);
         
@@ -80,7 +85,7 @@ impl Canvas {
         
         let mut drawable = match body.shape {
             shapes::Shape::Circle(ref circle) => self.get_circle_drawable(sfml_pos, circle),
-            shapes::Shape::Polygon(ref polygon) => self.get_polygon_drawable(sfml_pos, polygon),
+            shapes::Shape::Polygon(ref polygon) => self.get_polygon_drawable(sfml_pos, body, polygon),
         };
         
         drawable
