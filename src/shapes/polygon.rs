@@ -7,7 +7,7 @@ pub struct Polygon {
 
 impl Polygon {
     pub fn new(mut vertices: Vec<Vec2>) -> Polygon {
-        let centroid = vertices.iter().fold(Vec2::ZERO, |sum, &x| sum + x);
+        let centroid = vertices.iter().fold(Vec2::ZERO, |sum, &x| sum + x) / (vertices.len() as f32);
     
         for vertex in vertices.iter_mut() {
             *vertex -= centroid;
