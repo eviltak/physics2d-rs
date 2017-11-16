@@ -31,19 +31,20 @@ impl testbed::Testbed for CirclesTestbed {
 
 fn main() {
     let config = testbed::Config {
-        title: "Main".to_string(),
+        title: "Circles".to_string(),
         window_width: 800,
         window_height: 600,
         pixels_per_unit: 10.0,
     };
     
     let mut testbed = CirclesTestbed::new();
-    
-    testbed.world.add_body(world::Body::new(
+    let mut body = world::Body::new(
         shapes::Shape::Polygon(shapes::Polygon::new(vec![
             math::Vec2::ZERO, math::Vec2::RIGHT, math::Vec2::ONE, math::Vec2::UP
         ])),
-        10.0));
+        10.0);
+    
+    testbed.world.add_body(body);
     
     testbed::run(testbed, config);
 }
