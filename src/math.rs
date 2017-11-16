@@ -1,4 +1,7 @@
 use std::ops::{Add, Sub, Neg, Mul, Div, AddAssign, SubAssign, MulAssign, DivAssign};
+use std::f32;
+
+pub const PI: f32 = f32::consts::PI;
 
 // Start Vec2
 
