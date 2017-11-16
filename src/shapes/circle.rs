@@ -10,6 +10,10 @@ impl Circle {
             radius
         }
     }
+    
+    pub fn into_shape(self) -> super::Shape {
+        super::Shape::Circle(self)
+    }
 }
 
 impl super::Matter for Circle {

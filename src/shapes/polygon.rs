@@ -33,6 +33,10 @@ impl Polygon {
     pub fn vert_count(&self) -> usize {
         self.vertices.len()
     }
+    
+    pub fn into_shape(self) -> super::Shape {
+        super::Shape::Polygon(self)
+    }
 }
 
 
