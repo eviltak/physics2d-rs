@@ -1,5 +1,5 @@
 use math::*;
-use ::shapes::Shape;
+use ::shapes::{Shape, Matter};
 
 pub struct Body {
     pub position: Vec2,
@@ -18,7 +18,9 @@ pub struct Body {
 }
 
 impl Body {
-    pub fn new(shape: Shape, mass: f32) -> Body {
+    pub fn new(shape: Shape, density: f32) -> Body {
+        let (mass, inertia) = shape.mass_and_inertia(density);
+        
         Body {
             position: Vec2::ZERO,
             rotation: 0.0,
@@ -26,9 +28,9 @@ impl Body {
             angular_vel: 0.0,
             force: Vec2::ZERO,
             torque: 0.0,
-            // TODO: Compute from shape
+            
             mass,
-            inertia: 0.0,
+            inertia,
             shape,
         }
     }
