@@ -22,7 +22,7 @@ impl testbed::Testbed for CirclesTestbed {
         self.world.update(dt);
     }
     
-    fn sfml_draw(&mut self, canvas: &mut testbed::Canvas, dt: f32) {
+    fn sfml_draw(&mut self, canvas: &mut testbed::Canvas, _dt: f32) {
         for body in &self.world.bodies {
             canvas.draw_body(body);
         }
@@ -39,10 +39,7 @@ fn main() {
     
     let mut testbed = CirclesTestbed::new();
     
-    let mut body = world::Body::new(shapes::Polygon::new(
-        vec![math::Vec2::ZERO, math::Vec2::RIGHT, math::Vec2::ONE, math::Vec2::UP])
-                                        .into_shape(),
-        10.0);
+    let body = world::Body::new(shapes::Circle::new(2.5).into_shape(), 1.0);
     
     testbed.world.add_body(body);
     
