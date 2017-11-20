@@ -217,21 +217,24 @@ impl DivAssign<f32> for Vec2 {
 #[derive(PartialEq, Copy, Clone, Debug)]
 pub struct Mat2 {
     /// The element of the 1st row and 1st column.
-    pub m00: f32,
+    pub a00: f32,
     /// The element of the 1st row and 2nd column.
-    pub m01: f32,
+    pub a01: f32,
     /// The element of the 2nd row and 1st column.
-    pub m10: f32,
+    pub a10: f32,
     /// The element of the 2nd row and 2nd column.
-    pub m11: f32,
+    pub a11: f32,
 }
 
 impl Mat2 {
     /// Creates a new matrix from the given elements.
-    pub fn new(m00: f32, m01: f32,
-               m10: f32, m11: f32) -> Mat2 {
+    pub fn new(a00: f32, a01: f32,
+               a10: f32, a11: f32) -> Mat2 {
         Mat2 {
-            m00, m01, m10, m11
+            a00,
+            a01,
+            a10,
+            a11
         }
     }
     
@@ -270,13 +273,13 @@ impl Mat2 {
     /// assert_eq!(a_t, a.transpose());
     /// ```
     pub fn transpose(&self) -> Mat2 {
-        Mat2::new(self.m00, self.m10,
-                  self.m01, self.m11)
+        Mat2::new(self.a00, self.a10,
+                  self.a01, self.a11)
     }
     
     pub const I: Mat2 = Mat2 {
-        m00: 1.0, m01: 0.0,
-        m10: 0.0, m11: 1.0,
+        a00: 1.0, a01: 0.0,
+        a10: 0.0, a11: 1.0,
     };
 }
 
@@ -285,10 +288,10 @@ impl Mul for Mat2 {
     
     fn mul(self, other: Mat2) -> Mat2 {
         Mat2::new(
-            self.m00 * other.m00 + self.m01 * other.m10,
-            self.m00 * other.m01 + self.m01 * other.m11,
-            self.m10 * other.m00 + self.m11 * other.m10,
-            self.m10 * other.m01 + self.m11 * other.m11
+            self.a00 * other.a00 + self.a01 * other.a10,
+            self.a00 * other.a01 + self.a01 * other.a11,
+            self.a10 * other.a00 + self.a11 * other.a10,
+            self.a10 * other.a01 + self.a11 * other.a11
         )
     }
 }
@@ -297,8 +300,8 @@ impl Mul<Vec2> for Mat2 {
     type Output = Vec2;
     
     fn mul(self, other: Vec2) -> Vec2 {
-        Vec2::new(self.m00 * other.x + self.m01 * other.y,
-                  self.m10 * other.x + self.m11 * other.y)
+        Vec2::new(self.a00 * other.x + self.a01 * other.y,
+                  self.a10 * other.x + self.a11 * other.y)
     }
 }
 
