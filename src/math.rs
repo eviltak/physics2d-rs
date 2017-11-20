@@ -5,36 +5,85 @@ pub const PI: f32 = f32::consts::PI;
 
 // Start Vec2
 
+/// A 2-dimensional vector.
+///
+/// The `Vec2` type can be used to represent anything that has two dimensions: a size, a point, a velocity, etc.
+///
 #[derive(PartialEq, Copy, Clone, Debug)]
 pub struct Vec2 {
+    /// X coordinate of the vector.
     pub x: f32,
+    /// Y coordinate of the vector.
     pub y: f32,
 }
 
 impl Vec2 {
+    /// Creates a new vector from its coordinates.
+    pub fn new(x: f32, y: f32) -> Vec2 {
+        Vec2 { x, y }
+    }
+    
+    /// Returns the length (magnitude) of the vector.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use physics2d::math::Vec2;
+    /// let v = Vec2::new(3.0, 4.0);
+    /// assert_eq!(v.len(), 5.0);
+    /// ```
     #[inline]
     pub fn len(&self) -> f32 {
         self.sqr_len().sqrt()
     }
     
+    /// Returns the _square_ of the length (magnitude) of the vector.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use physics2d::math::Vec2;
+    /// let v = Vec2::new(3.0, 4.0);
+    /// assert_eq!(v.sqr_len(), 25.0);
+    /// assert_eq!(v.sqr_len(), v.len() * v.len());
+    /// ```
     #[inline]
     pub fn sqr_len(&self) -> f32 {
         self.x * self.x + self.y * self.y
     }
     
+    /// Returns the dot product of this vector with another vector.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use physics2d::math::Vec2;
+    /// let a = Vec2::new(3.0, 4.0);
+    /// let b = Vec2::new(4.0, 5.0);
+    ///
+    /// assert_eq!(a.dot(&b), 32.0);
+    /// ```
     #[inline]
     pub fn dot(&self, b: &Vec2) -> f32 {
         self.x * b.x + self.y * b.y
     }
     
+    /// Returns the normalized (unit) vector for the given vector.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use physics2d::math::Vec2;
+    /// let v = Vec2::new(3.0, 4.0);
+    /// let l = v.len();
+    /// let n = v.normalized();
+    ///
+    /// assert_eq!(n, v / l);
+    /// assert_eq!(n.len(), 1.0);
+    /// ```
     #[inline]
     pub fn normalized(self) -> Vec2 {
         self / self.len()
-    }
-    
-    
-    pub fn new(x: f32, y: f32) -> Vec2 {
-        Vec2 { x, y }
     }
     
     pub const ZERO: Vec2 = Vec2 { x: 0.0, y: 0.0 };
@@ -50,9 +99,12 @@ impl Vec2 {
     pub const ONE: Vec2 = Vec2 { x: 1.0, y: 1.0 };
 }
 
-
+/// The vector cross product.
 pub trait Cross<RHS = Self> {
+    /// The type of the result of the cross product.
     type Output;
+    
+    /// Performs the cross product.
     fn cross(self, other: RHS) -> Self::Output;
 }
 
@@ -194,10 +246,12 @@ impl Mul for Mat2 {
     type Output = Mat2;
     
     fn mul(self, other: Mat2) -> Mat2 {
-        Mat2::new(self.m00 * other.m00 + self.m01 * other.m10,
-                  self.m00 * other.m01 + self.m01 * other.m11,
-                  self.m10 * other.m00 + self.m11 * other.m10,
-                  self.m10 * other.m01 + self.m11 * other.m11)
+        Mat2::new(
+            self.m00 * other.m00 + self.m01 * other.m10,
+            self.m00 * other.m01 + self.m01 * other.m11,
+            self.m10 * other.m00 + self.m11 * other.m10,
+            self.m10 * other.m01 + self.m11 * other.m11
+        )
     }
 }
 
