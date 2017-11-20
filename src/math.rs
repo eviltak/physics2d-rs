@@ -273,6 +273,11 @@ impl Mat2 {
         Mat2::new(self.m00, self.m10,
                   self.m01, self.m11)
     }
+    
+    pub const I: Mat2 = Mat2 {
+        m00: 1.0, m01: 0.0,
+        m10: 0.0, m11: 1.0,
+    };
 }
 
 impl Mul for Mat2 {
