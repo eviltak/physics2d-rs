@@ -83,7 +83,7 @@ impl Canvas {
     fn get_body_drawable(&self, body: &world::Body) -> Box<sfml::graphics::Drawable> {
         let sfml_pos = self.sfml_vec2(body.position);
         
-        let mut drawable = match body.shape {
+        let drawable = match body.shape {
             shapes::Shape::Circle(ref circle) => self.get_circle_drawable(sfml_pos, circle),
             shapes::Shape::Polygon(ref polygon) => self.get_polygon_drawable(sfml_pos, body, polygon),
         };
