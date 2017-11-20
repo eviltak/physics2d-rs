@@ -3,8 +3,6 @@ use std::f32;
 
 pub const PI: f32 = f32::consts::PI;
 
-// Start Vec2
-
 /// A 2-dimensional vector.
 ///
 /// The `Vec2` type can be used to represent anything that has two dimensions: a size, a point, a velocity, etc.
@@ -210,23 +208,26 @@ impl DivAssign<f32> for Vec2 {
     }
 }
 
-// End Vec2
 
-// Start Mat2
-
-#[derive(PartialEq, Copy, Clone)]
+/// A square matrix of order 2.
+///
+/// It is primarily used to represent 2D rotation matrices, but can be used otherwise too.
+///
+/// The elements are named based on their zero-based row-column positions.
+#[derive(PartialEq, Copy, Clone, Debug)]
 pub struct Mat2 {
-    pub m00: f32, pub m01: f32,
-    pub m10: f32, pub m11: f32,
+    /// The element of the 1st row and 1st column.
+    pub m00: f32,
+    /// The element of the 1st row and 2nd column.
+    pub m01: f32,
+    /// The element of the 2nd row and 1st column.
+    pub m10: f32,
+    /// The element of the 2nd row and 2nd column.
+    pub m11: f32,
 }
 
 impl Mat2 {
-    pub fn transpose(&self) -> Mat2 {
-        Mat2::new(self.m00, self.m10,
-                  self.m01, self.m11)
-    }
-    
-    
+    /// Creates a new matrix from the given elements.
     pub fn new(m00: f32, m01: f32,
                m10: f32, m11: f32) -> Mat2 {
         Mat2 {
@@ -234,11 +235,43 @@ impl Mat2 {
         }
     }
     
+    /// Creates a new rotation matrix for a rotation angle in radians.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use physics2d::math::Mat2;
+    ///
+    /// let a = Mat2::rotation(0.0);
+    /// let b = Mat2::new(1.0, 0.0,
+    ///                   0.0, 1.0);
+    ///
+    /// assert_eq!(a, b);
+    /// ```
     pub fn rotation(angle: f32) -> Mat2 {
         let (sin, cos) = angle.sin_cos();
         
         Mat2::new(cos, -sin,
                   sin, cos)
+    }
+    
+    /// Returns the transpose of the matrix.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use physics2d::math::Mat2;
+    ///
+    /// let a = Mat2::new(3.0, 1.0,
+    ///                   8.0, 1.0);
+    /// let a_t = Mat2::new(3.0, 8.0,
+    ///                     1.0, 1.0);
+    ///
+    /// assert_eq!(a_t, a.transpose());
+    /// ```
+    pub fn transpose(&self) -> Mat2 {
+        Mat2::new(self.m00, self.m10,
+                  self.m01, self.m11)
     }
 }
 
@@ -269,5 +302,3 @@ impl MulAssign for Mat2 {
         *self = *self * other;
     }
 }
-
-// End Mat2
