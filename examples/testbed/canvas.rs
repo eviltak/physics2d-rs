@@ -96,7 +96,14 @@ impl Canvas {
     
         self.draw_queue.push(drawable);
     }
-
+    
+    pub fn draw_point(&mut self, point: math::Vec2) {
+        let sfml_pos = self.sfml_vec2(point);
+        
+        let drawable = self.get_circle_drawable(sfml_pos, &shapes::Circle::new(0.2));
+        
+        self.draw_queue.push(drawable);
+    }
     
     pub fn process_draw_queue(&mut self, window: &mut sfml::graphics::RenderWindow) {
         window.set_view(&self.view);
