@@ -9,16 +9,14 @@ pub enum Shape {
     Polygon(Polygon),
 }
 
+generate_match_fn_macro_for_enum!(Shape::{Circle, Polygon}; match_fn_to_shape);
+
 pub trait Matter {
     fn mass_and_inertia(&self, density: f32) -> (f32, f32);
 }
 
 impl Matter for Shape {
     fn mass_and_inertia(&self, density: f32) -> (f32, f32) {
-        match_fn_to_variants!(Shape::{Circle, Polygon}; *self, mass_and_inertia(density))
-        /*match *self {
-            Shape::Circle(ref circle) => circle.mass_and_inertia(density),
-            Shape::Polygon(ref polygon) => polygon.mass_and_inertia(density),
-        }*/
+        match_fn_to_shape!(*self, mass_and_inertia(density))
     }
 }
