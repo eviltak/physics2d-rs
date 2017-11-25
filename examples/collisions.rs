@@ -6,7 +6,7 @@ mod testbed;
 use physics2d::*;
 use physics2d::math::*;
 
-//use physics2d::debug;
+use physics2d::debug::DebugCollision;
 
 struct CollisionsTestbed {
     world: world::World,
@@ -21,7 +21,7 @@ impl CollisionsTestbed {
         let mut a = world::Body::new(circle_a.into_shape(), 10.0);
         let mut b = world::Body::new(circle_b.into_shape(), 10.0);
         
-        a.position = Vec2::UP * 6.0;
+        a.position = Vec2::UP * 25.0;
         
         let mut world = world::World::new();
         
