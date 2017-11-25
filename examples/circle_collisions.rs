@@ -8,13 +8,13 @@ use physics2d::math::*;
 
 use physics2d::debug::DebugCollision;
 
-struct CollisionsTestbed {
+struct CircleCollisionsTestbed {
     world: world::World,
     should_stop: bool,
 }
 
-impl CollisionsTestbed {
-    pub fn new() -> CollisionsTestbed {
+impl CircleCollisionsTestbed {
+    pub fn new() -> CircleCollisionsTestbed {
         let circle_a = shapes::Circle::new(5.0);
         let circle_b = shapes::Circle::new(3.0);
         
@@ -28,14 +28,14 @@ impl CollisionsTestbed {
         world.add_body(a);
         world.add_body(b);
         
-        CollisionsTestbed {
+        CircleCollisionsTestbed {
             world,
             should_stop: false,
         }
     }
 }
 
-impl testbed::Testbed for CollisionsTestbed {
+impl testbed::Testbed for CircleCollisionsTestbed {
     fn sfml_loop(&mut self, dt: f32) {
         if self.should_stop {
             return;
@@ -60,7 +60,6 @@ impl testbed::Testbed for CollisionsTestbed {
     
         for contact in self.world.contact_points().iter() {
             canvas.draw_point(*contact);
-            //println!("{:?}", *contact);
         }
     }
 }
@@ -68,13 +67,13 @@ impl testbed::Testbed for CollisionsTestbed {
 
 fn main() {
     let config = testbed::Config {
-        title: "Collisions".to_string(),
+        title: "Circle Collisions".to_string(),
         window_width: 800,
         window_height: 600,
         pixels_per_unit: 10.0,
     };
     
-    let mut testbed = CollisionsTestbed::new();
+    let mut testbed = CircleCollisionsTestbed::new();
     
     testbed::run(testbed, config);
 }
