@@ -1,9 +1,9 @@
 use math::{Vec2, Mat2, Cross};
 use ::shapes::{Shape, Matter};
+use ::world::Transform;
 
 pub struct Body {
-    pub position: Vec2,
-    pub rotation: f32,
+    pub transform: Transform,
     
     pub velocity: Vec2,
     pub angular_vel: f32,
@@ -22,8 +22,7 @@ impl Body {
         let (mass, inertia) = shape.mass_and_inertia(density);
         
         Body {
-            position: Vec2::ZERO,
-            rotation: 0.0,
+            transform: Transform::new(Vec2::ZERO, 0.0),
             velocity: Vec2::ZERO,
             angular_vel: 0.0,
             force: Vec2::ZERO,
@@ -40,10 +39,12 @@ impl Body {
         const GRAVITY: Vec2 = Vec2{ x: 0.0, y: -9.8 };
         
         self.velocity += (GRAVITY + self.force / self.mass) * dt;
-        self.position += self.velocity * dt;
+        self.transform.position += self.velocity * dt;
         
         self.angular_vel += self.torque / self.inertia * dt;
-        self.rotation += self.angular_vel * dt;
+        
+        let new_rotation = self.transform.rotation() + self.angular_vel * dt;
+        self.transform.set_rotation(new_rotation);
         
         self.force = Vec2::ZERO;
         self.torque = 0.0;

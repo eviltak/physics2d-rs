@@ -1,4 +1,5 @@
 
+use ::math::{Vec2};
 use ::shapes::{Shape, Circle, Polygon};
 use ::world::Body;
 use super::{Manifold, Contact};
@@ -10,7 +11,7 @@ pub trait Collide<T=Self> {
 impl Collide for Circle {
     fn collide(&self, self_body: &Body, other: &Circle, other_body: &Body) -> Option<Manifold> {
         let r = self.radius + other.radius;
-        let normal = other_body.position - self_body.position;
+        let normal = other_body.transform.position - self_body.transform.position;
         
         let mut m = Manifold::new();
         
@@ -23,7 +24,7 @@ impl Collide for Circle {
         m.normal = normal / distance;
         
         let contact = Contact {
-            point: m.normal * self.radius + self_body.position,
+            point: m.normal * self.radius + self_body.transform.position,
             penetration: r - distance,
         };
         
@@ -32,13 +33,13 @@ impl Collide for Circle {
     }
 }
 
-impl Collide<Polygon> for Circle {
+impl Collide for Polygon {
     fn collide(&self, self_body: &Body, other: &Polygon, other_body: &Body) -> Option<Manifold> {
         unimplemented!()
     }
 }
 
-impl Collide for Polygon {
+impl Collide<Polygon> for Circle {
     fn collide(&self, self_body: &Body, other: &Polygon, other_body: &Body) -> Option<Manifold> {
         unimplemented!()
     }

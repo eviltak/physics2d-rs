@@ -64,9 +64,7 @@ impl Canvas {
     
         for i in 0..polygon.vert_count() {
             convex_shape.set_point(i as u32,
-                                   self.sfml_vec2(
-                                       // TODO: Use transform instead?
-                                       Mat2::rotation(body.rotation) * polygon.vertices[i])
+                                   self.sfml_vec2(body.transform.world_pos(&polygon.vertices[i]))
             );
         }
         
@@ -81,7 +79,7 @@ impl Canvas {
     }
     
     fn get_body_drawable(&self, body: &Body) -> Box<sfml::graphics::Drawable> {
-        let sfml_pos = self.sfml_vec2(body.position);
+        let sfml_pos = self.sfml_vec2(body.transform.position);
         
         let drawable = match body.shape {
             shapes::Shape::Circle(ref circle) => self.get_circle_drawable(sfml_pos, circle),

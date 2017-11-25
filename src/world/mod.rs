@@ -1,6 +1,8 @@
 mod body;
+mod transform;
 
 pub use self::body::Body;
+pub use self::transform::Transform;
 
 use ::collision;
 use ::collision::{Manifold};
