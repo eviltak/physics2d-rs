@@ -4,7 +4,7 @@ mod util;
 #[macro_use]
 pub mod shapes;
 
-mod math;
+pub mod math;
 pub mod world;
 pub mod debug;
 
