@@ -114,6 +114,30 @@ impl Cross for Vec2 {
     }
 }
 
+impl<'a> Cross<Vec2> for &'a Vec2 {
+    type Output = f32;
+    
+    fn cross(self, other: Vec2) -> f32 {
+        self.x * other.y - self.y * other.x
+    }
+}
+
+impl<'b> Cross<&'b Vec2> for Vec2 {
+    type Output = f32;
+    
+    fn cross(self, other: &'b Vec2) -> f32 {
+        self.x * other.y - self.y * other.x
+    }
+}
+
+impl<'a, 'b> Cross<&'b Vec2> for &'a Vec2 {
+    type Output = f32;
+    
+    fn cross(self, other: &'b Vec2) -> f32 {
+        self.x * other.y - self.y * other.x
+    }
+}
+
 impl Cross<f32> for Vec2 {
     type Output = Vec2;
     
@@ -122,10 +146,58 @@ impl Cross<f32> for Vec2 {
     }
 }
 
+impl<'a> Cross<f32> for &'a Vec2 {
+    type Output = Vec2;
+    
+    fn cross(self, s: f32) -> Vec2 {
+        Vec2::new(s * self.y, -s * self.x)
+    }
+}
+
+impl<'b> Cross<&'b f32> for Vec2 {
+    type Output = Vec2;
+    
+    fn cross(self, s: &'b f32) -> Vec2 {
+        Vec2::new(s * self.y, -s * self.x)
+    }
+}
+
+impl<'a, 'b> Cross<&'b f32> for &'a Vec2 {
+    type Output = Vec2;
+    
+    fn cross(self, s: &'b f32) -> Vec2 {
+        Vec2::new(s * self.y, -s * self.x)
+    }
+}
+
 impl Cross<Vec2> for f32 {
     type Output = Vec2;
     
     fn cross(self, other: Vec2) -> Vec2 {
+        -other.cross(self)
+    }
+}
+
+impl<'a> Cross<Vec2> for &'a f32 {
+    type Output = Vec2;
+    
+    fn cross(self, other: Vec2) -> Vec2 {
+        -other.cross(self)
+    }
+}
+
+impl<'b> Cross<&'b Vec2> for f32 {
+    type Output = Vec2;
+    
+    fn cross(self, other: &'b Vec2) -> Vec2 {
+        -other.cross(self)
+    }
+}
+
+impl<'a, 'b> Cross<&'b Vec2> for &'a f32 {
+    type Output = Vec2;
+    
+    fn cross(self, other: &'b Vec2) -> Vec2 {
         -other.cross(self)
     }
 }
@@ -139,17 +211,58 @@ impl Neg for Vec2 {
     }
 }
 
+impl<'a> Neg for &'a Vec2 {
+    type Output = Vec2;
+    
+    fn neg(self) -> Vec2 {
+        Vec2::new(-self.x, -self.y)
+    }
+}
+
 
 impl Add for Vec2 {
-    type Output = Self;
+    type Output = Vec2;
     
-    fn add(self, other: Self) -> Self {
+    fn add(self, other: Vec2) -> Vec2 {
+        Vec2::new(self.x + other.x, self.y + other.y)
+    }
+}
+
+impl<'a> Add<Vec2> for &'a Vec2 {
+    type Output = Vec2;
+    
+    fn add(self, other: Vec2) -> Vec2 {
+        Vec2::new(self.x + other.x, self.y + other.y)
+    }
+}
+
+impl<'b> Add<&'b Vec2> for Vec2 {
+    type Output = Vec2;
+    
+    fn add(self, other: &'b Vec2) -> Vec2 {
+        Vec2::new(self.x + other.x, self.y + other.y)
+    }
+}
+
+impl<'a, 'b> Add<&'b Vec2> for &'a Vec2 {
+    type Output = Vec2;
+    
+    fn add(self, other: &'b Vec2) -> Vec2 {
         Vec2::new(self.x + other.x, self.y + other.y)
     }
 }
 
 impl AddAssign for Vec2 {
-    fn add_assign(&mut self, other: Self) {
+    fn add_assign(&mut self, other: Vec2) {
+        *self = Vec2 {
+            x: self.x + other.x,
+            y: self.y + other.y,
+        };
+    }
+}
+
+impl<'b> AddAssign<&'b Vec2> for Vec2 {
+    fn add_assign(&mut self, other: &'b Vec2) {
         *self = Vec2 {
             x: self.x + other.x,
             y: self.y + other.y,
@@ -159,15 +272,48 @@ impl AddAssign for Vec2 {
 
 
 impl Sub for Vec2 {
-    type Output = Self;
+    type Output = Vec2;
     
-    fn sub(self, other: Self) -> Self {
-        Vec2::new(self.x - other.x, self.y - other.y)
+    fn sub(self, other: Vec2) -> Vec2 {
+        Vec2::new(self.x + other.x, self.y + other.y)
+    }
+}
+
+impl<'a> Sub<Vec2> for &'a Vec2 {
+    type Output = Vec2;
+    
+    fn sub(self, other: Vec2) -> Vec2 {
+        Vec2::new(self.x + other.x, self.y + other.y)
+    }
+}
+
+impl<'b> Sub<&'b Vec2> for Vec2 {
+    type Output = Vec2;
+    
+    fn sub(self, other: &'b Vec2) -> Vec2 {
+        Vec2::new(self.x + other.x, self.y + other.y)
+    }
+}
+
+impl<'a, 'b> Sub<&'b Vec2> for &'a Vec2 {
+    type Output = Vec2;
+    
+    fn sub(self, other: &'b Vec2) -> Vec2 {
+        Vec2::new(self.x + other.x, self.y + other.y)
     }
 }
 
 impl SubAssign for Vec2 {
-    fn sub_assign(&mut self, other: Self) {
+    fn sub_assign(&mut self, other: Vec2) {
+        *self = Vec2 {
+            x: self.x - other.x,
+            y: self.y - other.y,
+        };
+    }
+}
+
+impl<'b> SubAssign<&'b Vec2> for Vec2 {
+    fn sub_assign(&mut self, other: &'b Vec2) {
         *self = Vec2 {
             x: self.x - other.x,
             y: self.y - other.y,
@@ -177,9 +323,33 @@ impl SubAssign for Vec2 {
 
 
 impl Mul<f32> for Vec2 {
-    type Output = Self;
+    type Output = Vec2;
     
-    fn mul(self, s: f32) -> Self {
+    fn mul(self, s: f32) -> Vec2 {
+        Vec2::new(self.x * s, self.y * s)
+    }
+}
+
+impl<'a> Mul<f32> for &'a Vec2 {
+    type Output = Vec2;
+    
+    fn mul(self, s: f32) -> Vec2 {
+        Vec2::new(self.x * s, self.y * s)
+    }
+}
+
+impl<'b> Mul<&'b f32> for Vec2 {
+    type Output = Vec2;
+    
+    fn mul(self, s: &'b f32) -> Vec2 {
+        Vec2::new(self.x * s, self.y * s)
+    }
+}
+
+impl<'a, 'b> Mul<&'b f32> for &'a Vec2 {
+    type Output = Vec2;
+    
+    fn mul(self, s: &'b f32) -> Vec2 {
         Vec2::new(self.x * s, self.y * s)
     }
 }
@@ -193,11 +363,44 @@ impl MulAssign<f32> for Vec2 {
     }
 }
 
+impl<'b> MulAssign<&'b f32> for Vec2 {
+    fn mul_assign(&mut self, s: &'b f32) {
+        *self = Vec2 {
+            x: self.x * s,
+            y: self.y * s,
+        };
+    }
+}
+
 
 impl Div<f32> for Vec2 {
-    type Output = Self;
+    type Output = Vec2;
     
-    fn div(self, s: f32) -> Self {
+    fn div(self, s: f32) -> Vec2 {
+        self * (1.0 / s)
+    }
+}
+
+impl<'a> Div<f32> for &'a Vec2 {
+    type Output = Vec2;
+    
+    fn div(self, s: f32) -> Vec2 {
+        self * (1.0 / s)
+    }
+}
+
+impl<'b> Div<&'b f32> for Vec2 {
+    type Output = Vec2;
+    
+    fn div(self, s: &'b f32) -> Vec2 {
+        self * (1.0 / s)
+    }
+}
+
+impl<'a, 'b> Div<&'b f32> for &'a Vec2 {
+    type Output = Vec2;
+    
+    fn div(self, s: &'b f32) -> Vec2 {
         self * (1.0 / s)
     }
 }
@@ -207,6 +410,13 @@ impl DivAssign<f32> for Vec2 {
         *self *= 1.0 / s;
     }
 }
+
+impl<'b> DivAssign<&'b f32> for Vec2 {
+    fn div_assign(&mut self, s: &'b f32) {
+        *self *= 1.0 / s;
+    }
+}
+
 
 
 /// A square matrix of order 2.
@@ -287,6 +497,30 @@ impl Mul for Mat2 {
     type Output = Mat2;
     
     fn mul(self, other: Mat2) -> Mat2 {
+        &self * &other
+    }
+}
+
+impl<'a> Mul<Mat2> for &'a Mat2 {
+    type Output = Mat2;
+    
+    fn mul(self, other: Mat2) -> Mat2 {
+        self * &other
+    }
+}
+
+impl<'b> Mul<&'b Mat2> for Mat2 {
+    type Output = Mat2;
+    
+    fn mul(self, other: &'b Mat2) -> Mat2 {
+        &self * other
+    }
+}
+
+impl<'a, 'b> Mul<&'b Mat2> for &'a Mat2 {
+    type Output = Mat2;
+    
+    fn mul(self, other: &'b Mat2) -> Mat2 {
         Mat2::new(
             self.a00 * other.a00 + self.a01 * other.a10,
             self.a00 * other.a01 + self.a01 * other.a11,
@@ -296,17 +530,49 @@ impl Mul for Mat2 {
     }
 }
 
+
 impl Mul<Vec2> for Mat2 {
     type Output = Vec2;
     
     fn mul(self, other: Vec2) -> Vec2 {
+        &self * &other
+    }
+}
+
+impl<'a> Mul<Vec2> for &'a Mat2 {
+    type Output = Vec2;
+    
+    fn mul(self, other: Vec2) -> Vec2 {
+        self * &other
+    }
+}
+
+impl<'b> Mul<&'b Vec2> for Mat2 {
+    type Output = Vec2;
+    
+    fn mul(self, other: &'b Vec2) -> Vec2 {
+        &self * other
+    }
+}
+
+impl<'a, 'b> Mul<&'b Vec2> for &'a Mat2 {
+    type Output = Vec2;
+    
+    fn mul(self, other: &'b Vec2) -> Vec2 {
         Vec2::new(self.a00 * other.x + self.a01 * other.y,
                   self.a10 * other.x + self.a11 * other.y)
     }
 }
 
+
 impl MulAssign for Mat2 {
     fn mul_assign(&mut self, other: Mat2) {
+        *self = *self * other;
+    }
+}
+
+impl<'b> MulAssign<&'b Mat2> for Mat2 {
+    fn mul_assign(&mut self, other: &'b Mat2) {
         *self = *self * other;
     }
 }
