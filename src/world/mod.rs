@@ -1,6 +1,6 @@
-mod bodies;
+mod body;
 
-pub use self::bodies::Body;
+pub use self::body::Body;
 
 use ::collision;
 use ::collision::{Manifold};
