@@ -26,7 +26,7 @@ impl Vec2 {
     /// # Examples
     ///
     /// ```
-    /// # use physics2d::math::Vec2;
+    /// # use physics2d::Vec2;
     /// let v = Vec2::new(3.0, 4.0);
     /// assert_eq!(v.len(), 5.0);
     /// ```
@@ -40,7 +40,7 @@ impl Vec2 {
     /// # Examples
     ///
     /// ```
-    /// # use physics2d::math::Vec2;
+    /// # use physics2d::Vec2;
     /// let v = Vec2::new(3.0, 4.0);
     /// assert_eq!(v.sqr_len(), 25.0);
     /// assert_eq!(v.sqr_len(), v.len() * v.len());
@@ -55,7 +55,7 @@ impl Vec2 {
     /// # Examples
     ///
     /// ```
-    /// # use physics2d::math::Vec2;
+    /// # use physics2d::Vec2;
     /// let a = Vec2::new(3.0, 4.0);
     /// let b = Vec2::new(4.0, 5.0);
     ///
@@ -71,7 +71,7 @@ impl Vec2 {
     /// # Examples
     ///
     /// ```
-    /// # use physics2d::math::Vec2;
+    /// # use physics2d::Vec2;
     /// let v = Vec2::new(3.0, 4.0);
     /// let l = v.len();
     /// let n = v.normalized();
@@ -243,7 +243,7 @@ impl Mat2 {
     /// # Examples
     ///
     /// ```
-    /// # use physics2d::math::Mat2;
+    /// # use physics2d::Mat2;
     ///
     /// let a = Mat2::rotation(0.0);
     /// let b = Mat2::new(1.0, 0.0,
@@ -263,7 +263,7 @@ impl Mat2 {
     /// # Examples
     ///
     /// ```
-    /// # use physics2d::math::Mat2;
+    /// # use physics2d::Mat2;
     ///
     /// let a = Mat2::new(3.0, 1.0,
     ///                   8.0, 1.0);
