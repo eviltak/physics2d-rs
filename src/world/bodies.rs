@@ -1,4 +1,4 @@
-use math::*;
+use math::{Vec2, Mat2, Cross};
 use ::shapes::{Shape, Matter};
 
 pub struct Body {

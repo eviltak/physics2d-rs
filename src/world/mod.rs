@@ -2,7 +2,8 @@ mod bodies;
 
 pub use self::bodies::Body;
 
-use ::collision::*;
+use ::collision;
+use ::collision::{Manifold};
 
 pub struct World {
     pub bodies: Vec<Body>,
@@ -25,7 +26,7 @@ impl World {
     pub fn update(&mut self, dt: f32) {
         for i in 0..self.bodies.len() - 1 {
             for j in i+1..self.bodies.len() {
-                if let Some(m) = collide(&self.bodies[i], &self.bodies[j]) {
+                if let Some(m) = collision::collide(&self.bodies[i], &self.bodies[j]) {
                     self.manifolds.push(m);
                 }
             }

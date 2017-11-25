@@ -1,5 +1,5 @@
-use ::world::*;
-use ::math::*;
+use ::world::{World};
+use ::math::{Vec2};
 
 pub trait DebugCollision {
     fn contact_points(&self) -> Vec<Vec2>;
