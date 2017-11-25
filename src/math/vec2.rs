@@ -272,7 +272,7 @@ impl Sub for Vec2 {
     type Output = Vec2;
     
     fn sub(self, other: Vec2) -> Vec2 {
-        Vec2::new(self.x + other.x, self.y + other.y)
+        Vec2::new(self.x - other.x, self.y - other.y)
     }
 }
 
@@ -280,7 +280,7 @@ impl<'a> Sub<Vec2> for &'a Vec2 {
     type Output = Vec2;
     
     fn sub(self, other: Vec2) -> Vec2 {
-        Vec2::new(self.x + other.x, self.y + other.y)
+        Vec2::new(self.x - other.x, self.y - other.y)
     }
 }
 
@@ -288,7 +288,7 @@ impl<'b> Sub<&'b Vec2> for Vec2 {
     type Output = Vec2;
     
     fn sub(self, other: &'b Vec2) -> Vec2 {
-        Vec2::new(self.x + other.x, self.y + other.y)
+        Vec2::new(self.x - other.x, self.y - other.y)
     }
 }
 
@@ -296,7 +296,7 @@ impl<'a, 'b> Sub<&'b Vec2> for &'a Vec2 {
     type Output = Vec2;
     
     fn sub(self, other: &'b Vec2) -> Vec2 {
-        Vec2::new(self.x + other.x, self.y + other.y)
+        Vec2::new(self.x - other.x, self.y - other.y)
     }
 }
 
