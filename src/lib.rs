@@ -5,9 +5,10 @@ mod util;
 pub mod shapes;
 
 pub mod math;
-pub mod world;
 pub mod debug;
 
 mod collision;
+mod world;
 
 pub use math::{Vec2, Mat2, Cross};
+pub use world::{World, Body};

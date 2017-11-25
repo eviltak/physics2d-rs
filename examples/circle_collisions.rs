@@ -8,7 +8,7 @@ use physics2d::*;
 use physics2d::debug::DebugCollision;
 
 struct CircleCollisionsTestbed {
-    world: world::World,
+    world: World,
     should_stop: bool,
 }
 
@@ -17,12 +17,12 @@ impl CircleCollisionsTestbed {
         let circle_a = shapes::Circle::new(5.0);
         let circle_b = shapes::Circle::new(3.0);
         
-        let mut a = world::Body::new(circle_a.into_shape(), 10.0);
-        let mut b = world::Body::new(circle_b.into_shape(), 10.0);
+        let mut a = Body::new(circle_a.into_shape(), 10.0);
+        let mut b = Body::new(circle_b.into_shape(), 10.0);
         
         a.position = Vec2::UP * 25.0;
         
-        let mut world = world::World::new();
+        let mut world = World::new();
         
         world.add_body(a);
         world.add_body(b);

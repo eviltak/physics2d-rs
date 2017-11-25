@@ -7,13 +7,13 @@ mod testbed;
 use physics2d::*;
 
 struct PolygonsTestbed {
-    pub world: world::World,
+    pub world: World,
 }
 
 impl PolygonsTestbed {
     pub fn new() -> PolygonsTestbed {
         PolygonsTestbed {
-            world: world::World::new(),
+            world: World::new(),
         }
     }
 }
@@ -42,7 +42,7 @@ fn main() {
     
     let (w, h) = (5.0f32 * 2.0, 5.0f32 / 2.0);
     
-    let mut body = world::Body::new(shapes::Polygon::new(
+    let mut body = Body::new(shapes::Polygon::new(
         vec![Vec2::ZERO, Vec2::RIGHT * w, Vec2::new(w, h), Vec2::UP * h])
                                         .into_shape(),
                                     1.0);

@@ -6,13 +6,13 @@ mod testbed;
 use physics2d::*;
 
 struct CirclesTestbed {
-    pub world: world::World,
+    pub world: World,
 }
 
 impl CirclesTestbed {
     pub fn new() -> CirclesTestbed {
         CirclesTestbed {
-            world: world::World::new(),
+            world: World::new(),
         }
     }
 }
@@ -39,7 +39,7 @@ fn main() {
     
     let mut testbed = CirclesTestbed::new();
     
-    let body = world::Body::new(shapes::Circle::new(2.5).into_shape(), 1.0);
+    let body = Body::new(shapes::Circle::new(2.5).into_shape(), 1.0);
     
     testbed.world.add_body(body);
     

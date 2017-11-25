@@ -58,7 +58,7 @@ impl Canvas {
     }
     
     fn get_polygon_drawable<'a>(&self, sfml_pos: sfml::system::Vector2f,
-                                body: &world::Body,
+                                body: &Body,
                                 polygon: &shapes::Polygon) -> Box<sfml::graphics::Drawable> {
         let mut convex_shape = sfml::graphics::ConvexShape::new(polygon.vert_count() as u32);
     
@@ -80,7 +80,7 @@ impl Canvas {
         Box::new(convex_shape)
     }
     
-    fn get_body_drawable(&self, body: &world::Body) -> Box<sfml::graphics::Drawable> {
+    fn get_body_drawable(&self, body: &Body) -> Box<sfml::graphics::Drawable> {
         let sfml_pos = self.sfml_vec2(body.position);
         
         let drawable = match body.shape {
@@ -91,7 +91,7 @@ impl Canvas {
         drawable
     }
     
-    pub fn draw_body(&mut self, body: &world::Body) {
+    pub fn draw_body(&mut self, body: &Body) {
         let drawable = self.get_body_drawable(body);
     
         self.draw_queue.push(drawable);
