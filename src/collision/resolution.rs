@@ -1,4 +1,4 @@
-use ::math::*;
+use ::math::{Vec2};
 
 pub struct Contact {
     pub point: Vec2,

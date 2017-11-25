@@ -43,7 +43,7 @@ fn main() {
     let (w, h) = (5.0f32 * 2.0, 5.0f32 / 2.0);
     
     let mut body = world::Body::new(shapes::Polygon::new(
-        vec![math::Vec2::ZERO, math::Vec2::RIGHT * w, math::Vec2::new(w, h), math::Vec2::UP * h])
+        vec![Vec2::ZERO, Vec2::RIGHT * w, Vec2::new(w, h), Vec2::UP * h])
                                         .into_shape(),
                                     1.0);
     

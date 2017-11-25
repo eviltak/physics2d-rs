@@ -1,4 +1,4 @@
-use math::*;
+use math::{Vec2, Cross};
 
 pub struct Polygon {
     pub vertices: Vec<Vec2>,

@@ -24,7 +24,7 @@ impl Canvas {
         }
     }
     
-    fn sfml_vec2(&self, mut v: math::Vec2) -> sfml::system::Vector2f {
+    fn sfml_vec2(&self, mut v: Vec2) -> sfml::system::Vector2f {
         v *= self.pixels_per_unit;
         v.y = -v.y;
         sfml::system::Vector2f::new(v.x, v.y)
@@ -66,7 +66,7 @@ impl Canvas {
             convex_shape.set_point(i as u32,
                                    self.sfml_vec2(
                                        // TODO: Use transform instead?
-                                       math::Mat2::rotation(body.rotation) * polygon.vertices[i])
+                                       Mat2::rotation(body.rotation) * polygon.vertices[i])
             );
         }
         
@@ -97,7 +97,7 @@ impl Canvas {
         self.draw_queue.push(drawable);
     }
     
-    pub fn draw_point(&mut self, point: math::Vec2) {
+    pub fn draw_point(&mut self, point: Vec2) {
         let sfml_pos = self.sfml_vec2(point);
         
         let drawable = self.get_circle_drawable(sfml_pos, &shapes::Circle::new(0.2));

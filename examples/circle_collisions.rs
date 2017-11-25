@@ -4,7 +4,6 @@ extern crate physics2d;
 mod testbed;
 
 use physics2d::*;
-use physics2d::math::*;
 
 use physics2d::debug::DebugCollision;
 

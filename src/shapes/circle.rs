@@ -1,4 +1,4 @@
-use math::*;
+use math::{PI};
 
 pub struct Circle {
     pub radius: f32,
