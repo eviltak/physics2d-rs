@@ -45,11 +45,13 @@ impl Canvas {
         const POINT_COUNT: u32 = 60;
     
         let radius = circle.radius * self.pixels_per_unit;
-        let drawable_pos = sfml_pos - sfml::system::Vector2f::new(1.0, 1.0) * radius;
+        let origin = sfml::system::Vector2f::new(1.0, 1.0) * radius;
+        let drawable_pos = sfml_pos;
     
         let mut circle_shape = sfml::graphics::CircleShape::new(radius,
                                                                 POINT_COUNT);
-        
+    
+        circle_shape.set_origin(origin);
         circle_shape.set_position(drawable_pos);
         
         self.config_shape(&mut circle_shape);
@@ -64,14 +66,11 @@ impl Canvas {
     
         for i in 0..polygon.vert_count() {
             convex_shape.set_point(i as u32,
-                                   self.sfml_vec2(body.transform.world_pos(&polygon.vertices[i]))
+                                   self.sfml_vec2(body.transform.world_dir(&polygon.vertices[i]))
             );
         }
         
-        let bounds = convex_shape.local_bounds();
-        let drawable_pos = sfml_pos - 0.5 * sfml::system::Vector2f::new(bounds.width, bounds.height);
-        
-        convex_shape.set_position(drawable_pos);
+        convex_shape.set_position(sfml_pos);
         
         self.config_shape(&mut convex_shape);
         
