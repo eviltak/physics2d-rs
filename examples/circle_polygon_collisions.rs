@@ -23,11 +23,11 @@ impl CirclePolygonCollisionsTestbed {
         
         let circle = shapes::Circle::new(5.0);
         
-        let mut a = Body::new(circle.into_shape(), 10.0);
-        let mut b = Body::new(poly.into_shape(), 10.0);
+        let mut a = Body::new(poly.into_shape(), 10.0);
+        let mut b = Body::new(circle.into_shape(), 10.0);
         
-        b.transform.position = Vec2::UP * 18.0 + Vec2::RIGHT * 1.0;
-        b.transform.set_rotation(math::PI / 5.0);
+        a.transform.position = Vec2::UP * 18.0 + Vec2::RIGHT * 1.0;
+        a.transform.set_rotation(math::PI / 5.0);
         
         let mut world = World::new();
         
@@ -47,8 +47,8 @@ impl testbed::Testbed for CirclePolygonCollisionsTestbed {
             return;
         }
         
-        let f = Vec2::UP * 7.0 * self.world.bodies[0].mass;
-        self.world.bodies[0].add_force(f);
+        let f = Vec2::UP * 7.0 * self.world.bodies[1].mass;
+        self.world.bodies[1].add_force(f);
         
         self.world.update(dt * 1.0);
         

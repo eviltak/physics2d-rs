@@ -87,6 +87,15 @@ impl Collide<Polygon> for Circle {
 
 impl Collide<Circle> for Polygon {
     fn collide(&self, self_body: &Body, other: &Circle, other_body: &Body) -> Option<Manifold> {
-        unimplemented!()
+        let manifold = other.collide(other_body, self, self_body);
+        
+        if manifold.is_none() {
+            manifold
+        } else {
+            // Normal must always point from self to other
+            let mut manifold = manifold.unwrap();
+            manifold.normal = -manifold.normal;
+            Some(manifold)
+        }
     }
 }
