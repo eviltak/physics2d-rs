@@ -120,9 +120,9 @@ impl Collide for Polygon {
             return None;
         }
         
-        let (mut ref_poly, mut ref_body, mut ref_face_idx): (&Polygon, &Body, usize);
+        let (ref_poly, ref_body, ref_face_idx): (&Polygon, &Body, usize);
         
-        let (mut inc_poly, mut inc_body): (&Polygon, &Body);
+        let (inc_poly, inc_body): (&Polygon, &Body);
     
         // TODO: Weighted check to ensure uniform direction when penetrations equal, i.e. normal incidence
         let self_is_ref_poly = self_pen < other_pen;
