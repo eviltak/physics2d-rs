@@ -7,7 +7,8 @@ pub trait DebugCollision {
 
 impl DebugCollision for World {
     fn contact_points(&self) -> Vec<Vec2> {
-        self.manifolds.iter()
+        self.collision_pairs
+            .values()
             .flat_map(
                 |ref m|
                     m.contacts.iter()
