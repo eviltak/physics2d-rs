@@ -1,4 +1,4 @@
-use math::{Vec2, Mat2, Cross};
+use math::{Vec2, Cross};
 use ::shapes::{Shape, Matter};
 use ::world::Transform;
 

@@ -1,7 +1,6 @@
 use super::Collide;
-use ::math::{Vec2};
 use ::shapes::{Circle};
-use ::world::{Body, Transform};
+use ::world::{Body};
 use ::collision::{Contact, Manifold};
 
 impl Collide for Circle {

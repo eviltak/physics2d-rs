@@ -3,9 +3,9 @@ mod polygon_polygon;
 mod circle_polygon;
 
 use ::math::{Vec2};
-use ::shapes::{Shape, Circle, Polygon};
+use ::shapes::{Shape, Polygon};
 use ::world::{Body, Transform};
-use super::{Manifold, Contact};
+use super::{Manifold};
 
 pub trait Collide<T=Self> {
     fn collide(&self, self_body: &Body, other: &T, other_body: &Body) -> Option<Manifold>;
