@@ -26,6 +26,10 @@ impl World {
     }
     
     pub fn update(&mut self, dt: f32) {
+        for body in &mut self.bodies {
+            body.update(dt);
+        }
+        
         for i in 0..self.bodies.len() - 1 {
             for j in i+1..self.bodies.len() {
                 if let Some(m) = collision::collide(&self.bodies[i], &self.bodies[j]) {
@@ -33,12 +37,13 @@ impl World {
                 }
             }
         }
-        
-        
-        //self.manifolds.clear();
-        
+    
         for body in &mut self.bodies {
-            body.update(dt);
+            body.integrate_force(dt);
+        }
+    
+        for body in &mut self.bodies {
+            body.integrate_velocity(dt);
         }
     }
 }

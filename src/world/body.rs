@@ -34,20 +34,26 @@ impl Body {
         }
     }
     
-    pub fn update(&mut self, dt: f32) {
+    pub(crate) fn integrate_force(&mut self, dt: f32) {
         // TODO: Make configurable
-        const GRAVITY: Vec2 = Vec2{ x: 0.0, y: -9.8 };
-        
+        const GRAVITY: Vec2 = Vec2 { x: 0.0, y: -9.8 };
+    
         self.velocity += (GRAVITY + self.force / self.mass) * dt;
-        self.transform.position += self.velocity * dt;
-        
         self.angular_vel += self.torque / self.inertia * dt;
-        
-        let new_rotation = self.transform.rotation() + self.angular_vel * dt;
-        self.transform.set_rotation(new_rotation);
-        
+    
         self.force = Vec2::ZERO;
         self.torque = 0.0;
+    }
+    
+    pub(crate) fn integrate_velocity(&mut self, dt: f32) {
+        self.transform.position += self.velocity * dt;
+    
+        let new_rotation = self.transform.rotation() + self.angular_vel * dt;
+        
+        self.transform.set_rotation(new_rotation);
+    }
+    
+    pub(crate) fn update(&mut self, dt: f32) {
     }
     
     pub fn add_force(&mut self, force: Vec2) {
