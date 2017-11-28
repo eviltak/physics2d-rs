@@ -9,22 +9,18 @@ impl Collide for Circle {
         let r = self.radius + other.radius;
         let normal = other_body.transform.position - self_body.transform.position;
         
-        let mut m = Manifold::new();
-        
         if normal.sqr_len() > r * r {
             return None;
         }
         
         let distance = normal.len();
-        
-        m.normal = normal / distance;
+        let normal = normal / distance;
         
         let contact = Contact {
-            point: m.normal * self.radius + self_body.transform.position,
+            point: normal * self.radius + self_body.transform.position,
             penetration: r - distance,
         };
         
-        m.contacts.push(contact);
-        Some(m)
+        Some(Manifold::new(normal, vec![contact]))
     }
 }

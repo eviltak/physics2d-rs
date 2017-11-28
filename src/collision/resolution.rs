@@ -6,15 +6,15 @@ pub struct Contact {
 }
 
 pub struct Manifold {
-    pub contacts: Vec<Contact>,
     pub normal: Vec2,
+    pub contacts: Vec<Contact>,
 }
 
 impl Manifold {
-    pub fn new() -> Manifold {
+    pub fn new(normal: Vec2, contacts: Vec<Contact>) -> Manifold {
         Manifold {
-            contacts: Vec::new(),
-            normal: Vec2::ZERO
+            normal,
+            contacts,
         }
     }
 }

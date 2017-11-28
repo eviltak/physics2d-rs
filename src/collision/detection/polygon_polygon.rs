@@ -123,9 +123,11 @@ impl Collide for Polygon {
         let (mut ref_poly, mut ref_body, mut ref_face_idx): (&Polygon, &Body, usize);
         
         let (mut inc_poly, mut inc_body): (&Polygon, &Body);
-        
+    
         // TODO: Weighted check to ensure uniform direction when penetrations equal, i.e. normal incidence
-        if self_pen < other_pen {
+        let self_is_ref_poly = self_pen < other_pen;
+        
+        if self_is_ref_poly {
             ref_poly = self;
             ref_body = self_body;
             ref_face_idx = self_face_idx;
@@ -173,24 +175,21 @@ impl Collide for Polygon {
             inc_points = clipped;
         }
         
-        let mut m = Manifold::new();
-        
-        for p in inc_points.iter() {
-            let d = ref_face.distance(p);
-            
-            // Only keep points behind the reference face
-            if d > 0.0 {
-                continue;
-            }
-            
-            let contact = Contact {
-                point: *p,
-                penetration: -d,
-            };
-            
-            m.contacts.push(contact)
-        }
-        
-        Some(m)
+        Some(Manifold::new(
+            if self_is_ref_poly { ref_face.normal } else { -ref_face.normal },
+            // For each incident point, create a contact
+            inc_points.iter().filter_map(|inc_point| {
+                let d = ref_face.distance(inc_point);
+                // Only keep points behind the reference face
+                if d > 0.0 {
+                    None
+                } else {
+                    Some(Contact{
+                        point: *inc_point,
+                        penetration: -d,
+                    })
+                }
+            }).collect()
+        ))
     }
 }

@@ -74,18 +74,14 @@ impl Collide<Polygon> for Circle {
             penetration,
         };
         
-        let mut manifold = Manifold::new();
-        
-        manifold.normal =
+        Some(Manifold::new(
             if corner_contact {
                 (contact_point - self_transform.position).normalized()
             } else {
                 other_transform.world_dir(&face.normal)
-            };
-        
-        manifold.contacts.push(contact);
-        
-        Some(manifold)
+            },
+            vec![contact]
+        ))
     }
 }
 
