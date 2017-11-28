@@ -68,4 +68,9 @@ impl Body {
         self.add_force(force);
         self.add_torque(pos.cross(force));
     }
+    
+    pub fn add_impulse_at_pos(&mut self, impulse: Vec2, pos: Vec2) {
+        self.velocity += impulse / self.mass;
+        self.angular_vel += pos.cross(impulse) / self.inertia;
+    }
 }
