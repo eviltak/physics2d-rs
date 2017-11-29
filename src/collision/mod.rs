@@ -10,12 +10,17 @@ use ::world::Body;
 
 #[derive(Hash, PartialEq, Eq)]
 pub struct CollisionPair {
+    // TODO: Use proper BodyId type to index and ID bodies
     pub body_id_pair: (usize, usize),
 }
 
-
 impl CollisionPair {
     pub fn new(id_a: usize, id_b: usize) -> CollisionPair {
+        assert_ne!(id_a, id_b);
+        
+        // Smallest id is always first in pair
+        let (id_a, id_b) = (id_a.min(id_b), id_a.max(id_b));
+        
         CollisionPair {
             body_id_pair: (id_a, id_b),
         }
