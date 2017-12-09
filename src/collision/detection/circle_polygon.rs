@@ -78,7 +78,7 @@ impl Collide<Polygon> for Circle {
             if corner_contact {
                 (contact_point - self_transform.position).normalized()
             } else {
-                other_transform.world_dir(&face.normal)
+                -other_transform.world_dir(&face.normal)
             },
             vec![contact]
         ))
@@ -95,6 +95,8 @@ impl Collide<Circle> for Polygon {
             // Normal must always point from self to other
             let mut manifold = manifold.unwrap();
             manifold.normal = -manifold.normal;
+    
+            println!("Poly-Circle");
             Some(manifold)
         }
     }
