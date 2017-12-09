@@ -65,6 +65,15 @@ impl Body {
     pub(crate) fn update(&mut self, dt: f32) {
     }
     
+    pub fn set_static(&mut self) {
+        self.inv_inertia = self.inertia = 0.0;
+        self.mass = self.inv_mass = 0.0;
+    }
+    
+    pub fn is_static(&self) -> bool {
+        self.inv_mass == 0.0 && self.inv_inertia == 0.0
+    }
+    
     pub fn add_force(&mut self, force: Vec2) {
         self.force += force;
     }
