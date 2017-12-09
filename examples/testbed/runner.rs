@@ -13,6 +13,7 @@ pub fn run<T: Testbed>(mut testbed: T, config: super::config::Config) {
                                        config.title.as_ref(), Style::DEFAULT, &Default::default());
     
     let mut canvas = Canvas::new(&config);
+    let mut input = Input::new();
     
     let mut clock = Clock::start();
     
@@ -34,9 +35,9 @@ pub fn run<T: Testbed>(mut testbed: T, config: super::config::Config) {
         // TODO: Clear color from config?
         window.clear(&Color::BLACK);
         
-        let input = Input::collect(&window, config.pixels_per_unit);
+        input.collect(&window, config.pixels_per_unit);
         
-        testbed.sfml_loop(input, dt);
+        testbed.sfml_loop(&input, dt);
         
         testbed.sfml_draw(&mut canvas, dt);
         
