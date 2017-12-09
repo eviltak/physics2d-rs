@@ -46,6 +46,10 @@ impl Body {
     pub(crate) fn integrate_force(&mut self, dt: f32) {
         // TODO: Make configurable
         const GRAVITY: Vec2 = Vec2 { x: 0.0, y: -9.8 };
+        
+        if self.is_static() {
+            return;
+        }
     
         self.velocity += (GRAVITY + self.force * self.inv_mass) * dt;
         self.angular_vel += self.torque * self.inv_inertia * dt;
@@ -55,6 +59,10 @@ impl Body {
     }
     
     pub(crate) fn integrate_velocity(&mut self, dt: f32) {
+        if self.is_static() {
+            return;
+        }
+        
         self.transform.position += self.velocity * dt;
     
         let new_rotation = self.transform.rotation() + self.angular_vel * dt;
