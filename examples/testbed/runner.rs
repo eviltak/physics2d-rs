@@ -5,6 +5,7 @@ use sfml::system::Clock;
 
 use super::Testbed;
 use super::canvas::Canvas;
+use super::input::Input;
 
 pub fn run<T: Testbed>(mut testbed: T, config: super::config::Config) {
     let mut window = RenderWindow::new(
@@ -33,7 +34,9 @@ pub fn run<T: Testbed>(mut testbed: T, config: super::config::Config) {
         // TODO: Clear color from config?
         window.clear(&Color::BLACK);
         
-        testbed.sfml_loop(dt);
+        let input = Input::collect(&window, config.pixels_per_unit);
+        
+        testbed.sfml_loop(input, dt);
         
         testbed.sfml_draw(&mut canvas, dt);
         

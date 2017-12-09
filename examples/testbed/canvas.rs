@@ -3,6 +3,7 @@ use sfml::graphics::{Shape, RenderTarget, Transformable};
 
 use physics2d::*;
 use testbed::config::Config;
+use testbed::sfml_vec2;
 
 use std::ops::Deref;
 
@@ -22,12 +23,6 @@ impl Canvas {
                                                                         config.window_height as f32)),
             pixels_per_unit: config.pixels_per_unit,
         }
-    }
-    
-    fn sfml_vec2(&self, mut v: Vec2) -> sfml::system::Vector2f {
-        v *= self.pixels_per_unit;
-        v.y = -v.y;
-        sfml::system::Vector2f::new(v.x, v.y)
     }
     
     fn config_shape<'a, T: sfml::graphics::Shape<'a>>(&self, shape: &mut T) {
@@ -66,7 +61,7 @@ impl Canvas {
     
         for i in 0..polygon.vert_count() {
             convex_shape.set_point(i as u32,
-                                   self.sfml_vec2(body.transform.world_dir(&polygon.vertices[i]))
+                                   sfml_vec2(body.transform.world_dir(&polygon.vertices[i]), self.pixels_per_unit)
             );
         }
         
@@ -78,7 +73,7 @@ impl Canvas {
     }
     
     fn get_body_drawable(&self, body: &Body) -> Box<sfml::graphics::Drawable> {
-        let sfml_pos = self.sfml_vec2(body.transform.position);
+        let sfml_pos = sfml_vec2(body.transform.position, self.pixels_per_unit);
         
         let drawable = match body.shape {
             shapes::Shape::Circle(ref circle) => self.get_circle_drawable(sfml_pos, circle),
@@ -95,7 +90,7 @@ impl Canvas {
     }
     
     pub fn draw_point(&mut self, point: Vec2) {
-        let sfml_pos = self.sfml_vec2(point);
+        let sfml_pos = sfml_vec2(point, self.pixels_per_unit);
         
         let drawable = self.get_circle_drawable(sfml_pos, &shapes::Circle::new(0.2));
         
