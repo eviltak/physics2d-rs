@@ -66,8 +66,10 @@ impl Body {
     }
     
     pub fn set_static(&mut self) {
-        self.inv_inertia = self.inertia = 0.0;
-        self.mass = self.inv_mass = 0.0;
+        self.inv_inertia = 0.0;
+        self.inertia = 0.0;
+        self.mass = 0.0;
+        self.inv_mass = 0.0;
     }
     
     pub fn is_static(&self) -> bool {
