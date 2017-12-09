@@ -44,7 +44,7 @@ impl Collide<Polygon> for Circle {
         let self_transform = &self_body.transform;
         let other_transform = &other_body.transform;
         
-        let (face_idx, penetration, support) =
+        let (face_idx, mut penetration, support) =
             self.least_penetration_support_point(self_transform, other, other_transform);
         
         if penetration < 0.0 {
@@ -65,8 +65,15 @@ impl Collide<Polygon> for Circle {
         let contact_point = face.a + face_vec * t;
         let contact_point = other_transform.world_pos(&contact_point);
         
-        if (contact_point - self_transform.position).sqr_len() > self.radius * self.radius {
+        let rel_contact_point = (contact_point - self_transform.position);
+        let contact_dist_sqr = rel_contact_point.sqr_len();
+    
+        if contact_dist_sqr > self.radius * self.radius {
             return None;
+        }
+        
+        if corner_contact {
+            penetration = self.radius - contact_dist_sqr.sqrt()
         }
         
         let contact = Contact {
@@ -76,7 +83,7 @@ impl Collide<Polygon> for Circle {
         
         Some(Manifold::new(
             if corner_contact {
-                (contact_point - self_transform.position).normalized()
+                rel_contact_point / (self.radius - penetration)
             } else {
                 -other_transform.world_dir(&face.normal)
             },
