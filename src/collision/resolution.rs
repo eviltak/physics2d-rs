@@ -35,9 +35,9 @@ impl Manifold {
             let r_b_normal = r_b.dot(&self.normal);
             let r_b_perp_sqr = r_b.sqr_len() - r_b_normal * r_b_normal;
             
-            let inv_mass_sum = 1.0 / a.mass + 1.0 / b.mass;
+            let inv_mass_sum = a.inv_mass + b.inv_mass;
     
-            let inv_normal_impulse_factor = inv_mass_sum + r_a_perp_sqr / a.inertia + r_b_perp_sqr / b.inertia;
+            let inv_normal_impulse_factor = inv_mass_sum + r_a_perp_sqr * a.inv_inertia + r_b_perp_sqr * b.inv_inertia;
             // Impulse
             // TODO: Change
             let e = 0.5;

@@ -14,12 +14,18 @@ pub struct Body {
     pub mass: f32,
     pub inertia: f32,
     
+    pub inv_mass: f32,
+    pub inv_inertia: f32,
+    
     pub shape: Shape,
 }
 
 impl Body {
     pub fn new(shape: Shape, density: f32) -> Body {
         let (mass, inertia) = shape.mass_and_inertia(density);
+        
+        let inv_mass = if mass != 0.0 { 1.0 / mass } else { 0.0f32 };
+        let inv_inertia = if inertia != 0.0 { 1.0 / inertia } else { 0.0f32 };
         
         Body {
             transform: Transform::new(Vec2::ZERO, 0.0),
@@ -30,6 +36,9 @@ impl Body {
             
             mass,
             inertia,
+            inv_mass,
+            inv_inertia,
+            
             shape,
         }
     }
@@ -38,8 +47,8 @@ impl Body {
         // TODO: Make configurable
         const GRAVITY: Vec2 = Vec2 { x: 0.0, y: -9.8 };
     
-        self.velocity += (GRAVITY + self.force / self.mass) * dt;
-        self.angular_vel += self.torque / self.inertia * dt;
+        self.velocity += (GRAVITY + self.force * self.inv_mass) * dt;
+        self.angular_vel += self.torque * self.inv_inertia * dt;
     
         self.force = Vec2::ZERO;
         self.torque = 0.0;
@@ -70,7 +79,7 @@ impl Body {
     }
     
     pub fn add_impulse_at_pos(&mut self, impulse: Vec2, pos: Vec2) {
-        self.velocity += impulse / self.mass;
-        self.angular_vel += pos.cross(impulse) / self.inertia;
+        self.velocity += impulse * self.inv_mass;
+        self.angular_vel += pos.cross(impulse) * self.inv_inertia;
     }
 }
