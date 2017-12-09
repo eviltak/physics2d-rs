@@ -43,7 +43,7 @@ impl PolygonCollisionsTestbed {
 }
 
 impl testbed::Testbed for PolygonCollisionsTestbed {
-    fn sfml_loop(&mut self, dt: f32) {
+    fn sfml_loop(&mut self, input: &testbed::Input, dt: f32) {
         if !self.should_stop {
             let f = Vec2::UP * 7.0 * self.world.bodies[1].mass;
             self.world.bodies[1].add_force(f);

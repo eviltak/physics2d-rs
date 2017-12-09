@@ -19,7 +19,7 @@ impl PolygonsTestbed {
 }
 
 impl testbed::Testbed for PolygonsTestbed {
-    fn sfml_loop(&mut self, dt: f32) {
+    fn sfml_loop(&mut self, input: &testbed::Input, dt: f32) {
         self.world.update(dt);
     }
     
