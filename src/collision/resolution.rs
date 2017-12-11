@@ -19,7 +19,7 @@ impl Manifold {
         }
     }
     
-    pub fn resolve(&self, a: &mut Body, b: &mut Body) {
+    pub fn resolve(&self, a: &mut Body, b: &mut Body, dt: f32) {
         // TODO: Provisions for 0 mass
         for contact in self.contacts.iter() {
             let r_a = contact.point - a.transform.position;
@@ -38,10 +38,12 @@ impl Manifold {
             let inv_mass_sum = a.inv_mass + b.inv_mass;
     
             let inv_normal_impulse_factor = inv_mass_sum + r_a_perp_sqr * a.inv_inertia + r_b_perp_sqr * b.inv_inertia;
+            
+            let bias = -contact.penetration * 0.2 / dt;
             // Impulse
             // TODO: Change
             let e = 0.5;
-            let j = -(1.0 + e) * rel_vel_normal / inv_normal_impulse_factor;
+            let j = -(rel_vel_normal + bias) / inv_normal_impulse_factor;
             
             a.add_impulse_at_pos(-self.normal * j, r_a);
             b.add_impulse_at_pos(self.normal * j, r_b);

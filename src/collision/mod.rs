@@ -30,8 +30,8 @@ impl CollisionPair {
         collide(&bodies[self.body_id_pair.0], &bodies[self.body_id_pair.1])
     }
     
-    pub fn resolve_collision(&self, bodies: &mut [Body], manifold: &Manifold) {
+    pub fn resolve_collision(&self, bodies: &mut [Body], manifold: &Manifold, dt: f32) {
         let (slice_a, slice_b) = bodies.split_at_mut(self.body_id_pair.0 + 1);
-        manifold.resolve(&mut slice_a[self.body_id_pair.0], &mut slice_b[self.body_id_pair.1 - self.body_id_pair.0 - 1]);
+        manifold.resolve(&mut slice_a[self.body_id_pair.0], &mut slice_b[self.body_id_pair.1 - self.body_id_pair.0 - 1], dt);
     }
 }

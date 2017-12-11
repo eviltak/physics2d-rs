@@ -51,7 +51,7 @@ impl World {
         }
     
         for (collision_pair, manifold) in self.collision_pairs.iter() {
-            collision_pair.resolve_collision(&mut self.bodies, manifold);
+            collision_pair.resolve_collision(&mut self.bodies, manifold, dt);
         }
     
         for body in &mut self.bodies {
