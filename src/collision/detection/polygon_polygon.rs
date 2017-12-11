@@ -4,6 +4,8 @@ use ::shapes::{Polygon};
 use ::world::{Body, Transform};
 use ::collision::{Contact, Manifold};
 
+use std::{thread, time};
+
 impl Face {
     fn clip_points_below(&self, points: &[Vec2; 2]) -> ([Vec2; 2], usize) {
         let d1 = self.distance(&points[0]);
@@ -32,6 +34,11 @@ impl Face {
             let t = d1 / (d1 - d2);
             clipped[clip_count] = points[0] + (points[1] - points[0]) * t;
             clip_count += 1;
+        }
+        
+        if clip_count < 2 {
+            println!("Less, {:?} {:?} {:?} {:?}", points[0], points[1], self.a, self.normal);
+            thread::sleep_ms(10000000);
         }
         
         (clipped, clip_count)
@@ -124,8 +131,7 @@ impl Collide for Polygon {
         
         let (inc_poly, inc_body): (&Polygon, &Body);
     
-        // TODO: Weighted check to ensure uniform direction when penetrations equal, i.e. normal incidence
-        let self_is_ref_poly = self_pen < other_pen;
+        let self_is_ref_poly = other_pen >= 0.95 * self_pen + 0.01 * other_pen;
         
         if self_is_ref_poly {
             ref_poly = self;
@@ -148,11 +154,7 @@ impl Collide for Polygon {
         let ref_face = ref_poly.face(ref_face_idx).into_world_face(ref_transform);
         
         let inc_face = inc_poly
-            .incident_face(
-                &inc_transform.local_dir(
-                    &ref_transform.world_dir(&ref_face.normal)
-                )
-            )
+            .incident_face(&inc_transform.local_dir(&ref_face.normal))
             .into_world_face(inc_transform);
         
         let mut inc_points = [inc_face.a, inc_face.b];
