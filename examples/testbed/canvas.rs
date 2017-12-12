@@ -131,12 +131,12 @@ impl Canvas {
             window.draw((*drawable).deref());
         }
         
-        const padding: f32 = 8.0;
+        const PADDING: f32 = 8.0;
     
         let width = self.view.size().x;
         let height = self.view.size().y;
         
-        let mut text_position = sfml::system::Vector2f::new(-width / 2.0 + padding, -height / 2.0 + padding);
+        let mut text_position = sfml::system::Vector2f::new(-width / 2.0 + PADDING, -height / 2.0 + PADDING);
     
         for text_item in self.text_queue.iter() {
             let (ref text, size) = *text_item;
@@ -144,7 +144,7 @@ impl Canvas {
             text_drawable.set_position(text_position);
             window.draw(&text_drawable);
             
-            text_position.y += size as f32 + padding;
+            text_position.y += size as f32 + PADDING;
         }
         
         self.draw_queue.clear();
