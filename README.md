@@ -1,6 +1,7 @@
 # physics2d-rs
 
-[![Build Status](https://travis-ci.org/eviltak/physics2d-rs.svg?branch=master)](https://travis-ci.org/eviltak/physics2d-rs)
+[![Crates.io](https://img.shields.io/crates/v/physics2d.svg?style=flat-square)](https://crates.io/crates/physics2d)
+[![Build Status](https://img.shields.io/travis/eviltak/physics2d-rs.svg?style=flat-square)](https://travis-ci.org/eviltak/physics2d-rs)
 
 Yet another 2D physics engine, but with Iron power.
 
