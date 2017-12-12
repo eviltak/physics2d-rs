@@ -1,7 +1,7 @@
 
 use sfml::window::{VideoMode, Style, Event};
-use sfml::graphics::{RenderWindow, Color, Font, Text, RenderTarget, Transformable};
-use sfml::system::{Clock, Vector2f};
+use sfml::graphics::{RenderWindow, Color, RenderTarget};
+use sfml::system::{Clock};
 
 use super::Testbed;
 use super::canvas::Canvas;

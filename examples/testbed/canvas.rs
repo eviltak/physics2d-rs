@@ -1,5 +1,5 @@
 use sfml;
-use sfml::graphics::{Shape, RenderTarget, Transformable};
+use sfml::graphics::{RenderTarget, Transformable};
 
 use std::{env, path};
 
