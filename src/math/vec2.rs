@@ -78,7 +78,12 @@ impl Vec2 {
     /// ```
     #[inline]
     pub fn normalized(self) -> Vec2 {
-        self / self.len()
+        let len = self.len();
+        if len == 0.0 {
+            Vec2::ZERO
+        } else {
+            self / len
+        }
     }
     
     pub const ZERO: Vec2 = Vec2 { x: 0.0, y: 0.0 };
