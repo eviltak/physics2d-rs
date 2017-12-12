@@ -15,6 +15,12 @@ before_install:
 - sudo apt-get update -q
 - sudo apt-get install libsfml-dev libcsfml-dev -y
 
+deploy:
+- provider: script
+  script: scripts/deploy.sh
+  on:
+    tags: true
+
 env:
   global:
     secure: J7GYoJOAgYg4By3PaqBOsySPeYVA4RtdD5xC6Pw8kRfP5gGL8Shit4k0gEM11sXVATivydlwEJdX2rGUx6c2g5cDkireQA1yP6ZmQ4W1EL8QbMO9ZsHplJZNI+xAW16Dxs2MpDG09D5CM3elsMjWU8S3BPJr7Kc70mUcjx/sftEhPY0tJDSyWpi0i+Zq/SzqmDRCs70VjVwY0sSEziBwSpkb1LUraHSNVeWL65xhNNPYs57ui3M3DxrFxbTK81OH+327qPAxWCw97R+rJg0LJdyr9GCONDFQi0goFlCPdR1Cz1I+gvG2QkDTpPaQfG2LmYmzoispUV8p3CePHaio8SqR+OWYh+q/37vsT1+POz3BZ5QnIpxqWN6sA1H3Oks+YYcgRg5inuNECNK5DECPo73sTuBcrFiWlpMSUel+CxRjTkDxHLFyoGnpdfXIhKxrDgfCEAua4PdeCeUhWqWxyasLAARqV3Z7w4g68rnovvt22c7YLI5g9alVvtNL+W8l/zTj4I9uYqror8hpH0VqaRhsmKGmxD2GQYBGvpigipAp3Je9guZaeHYtscBDOo1CegT5lKg1mwUYIegzD9C2oHz5ATNoaGxMNlcgA+lz+500vHdVs46xUN563uR3MN90kgVBH5z5r+y5dPNudDj0MwzJBAmb4xWteu/jQHNLIZY=
