@@ -20,6 +20,7 @@ deploy:
   script: scripts/deploy.sh
   on:
     tags: true
+    rust: stable
 
 env:
   global:
