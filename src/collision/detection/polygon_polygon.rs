@@ -4,8 +4,6 @@ use ::shapes::{Polygon};
 use ::world::{Body, Transform};
 use ::collision::{Contact, Manifold};
 
-use std::{thread, time};
-
 impl Face {
     fn clip_points_below(&self, points: &[Vec2; 2]) -> ([Vec2; 2], usize) {
         let d1 = self.distance(&points[0]);
@@ -34,11 +32,6 @@ impl Face {
             let t = d1 / (d1 - d2);
             clipped[clip_count] = points[0] + (points[1] - points[0]) * t;
             clip_count += 1;
-        }
-        
-        if clip_count < 2 {
-            println!("Less, {:?} {:?} {:?} {:?}", points[0], points[1], self.a, self.normal);
-            thread::sleep_ms(10000000);
         }
         
         (clipped, clip_count)
