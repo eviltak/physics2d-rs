@@ -30,14 +30,16 @@ impl Manifold {
             
             // Tangent is perpendicular to normal
             let r_a_normal = r_a.dot(&self.normal);
-            let r_a_perp_sqr = r_a.sqr_len() - r_a_normal * r_a_normal;
+            let r_a_normal_sqr = r_a_normal * r_a_normal;
+            let r_a_tangent_sqr = r_a.sqr_len() - r_a_normal_sqr;
     
             let r_b_normal = r_b.dot(&self.normal);
-            let r_b_perp_sqr = r_b.sqr_len() - r_b_normal * r_b_normal;
+            let r_b_normal_sqr = r_b_normal * r_b_normal;
+            let r_b_tangent_sqr = r_b.sqr_len() - r_b_normal_sqr;
             
             let inv_mass_sum = a.inv_mass + b.inv_mass;
     
-            let inv_normal_impulse_factor = inv_mass_sum + r_a_perp_sqr * a.inv_inertia + r_b_perp_sqr * b.inv_inertia;
+            let inv_normal_impulse_factor = inv_mass_sum + r_a_tangent_sqr * a.inv_inertia + r_b_tangent_sqr * b.inv_inertia;
             
             let bias = -contact.penetration * 0.2 / dt;
             // Impulse
@@ -47,6 +49,30 @@ impl Manifold {
             
             a.add_impulse_at_pos(-self.normal * j, r_a);
             b.add_impulse_at_pos(self.normal * j, r_b);
+            
+            // Component of relative velocity perpendicular to normal
+            let tangent: Vec2 = (rel_vel - self.normal * rel_vel_normal).normalized();
+            let rel_vel_tangent = tangent.dot(&rel_vel);
+            
+            let inv_tangent_impulse_factor = inv_mass_sum + r_a_normal_sqr * a.inv_inertia + r_b_normal_sqr * b.inv_inertia;
+            
+            let friction = rel_vel_tangent / inv_tangent_impulse_factor;
+            
+            // TODO: Change
+            let static_friction = 0.3;
+            let dynamic_friction = 0.2;
+            
+            // j > 0; j == normal contact impulse
+            let friction = if friction.abs() > static_friction * j {
+                dynamic_friction * j
+            } else {
+                friction
+            };
+            // Friction always acts against relative velocity
+            let friction = -friction;
+    
+            a.add_impulse_at_pos(-tangent * friction, r_a);
+            b.add_impulse_at_pos(tangent * friction, r_b);
         }
     }
 }
