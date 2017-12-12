@@ -1,15 +1,36 @@
 use sfml;
 use sfml::graphics::{Shape, RenderTarget, Transformable};
 
+use std::{env, path};
+
 use physics2d::*;
 use testbed::config::Config;
 use testbed::sfml_vec2;
 
 use std::ops::Deref;
 
+fn get_font_dir() -> path::PathBuf {
+    let mut font_dir = env::current_exe().unwrap();
+    
+    font_dir.pop();     // project/target/debug/examples
+    font_dir.pop();     // project/target/debug
+    font_dir.pop();     // project/target
+    font_dir.pop();     // project/
+    
+    font_dir.push("examples");
+    font_dir.push("assets");
+    font_dir.push("fonts");
+    font_dir.push("RobotoMono.ttf");
+    
+    font_dir
+}
+
 pub struct Canvas {
     draw_queue: Vec<Box<sfml::graphics::Drawable>>,
+    text_queue: Vec<(String, u32)>,
+    
     view: sfml::graphics::View,
+    font: sfml::graphics::Font,
     
     pixels_per_unit: f32,
 }
@@ -17,10 +38,12 @@ pub struct Canvas {
 impl Canvas {
     pub fn new(config: &Config) -> Canvas {
         Canvas {
-            draw_queue: vec![],
+            draw_queue: Vec::new(),
+            text_queue: Vec::new(),
             view: sfml::graphics::View::new(sfml::system::Vector2f::new(0.0, 0.0),
                                             sfml::system::Vector2f::new(config.window_width as f32,
                                                                         config.window_height as f32)),
+            font: sfml::graphics::Font::from_file(get_font_dir().to_str().unwrap()).unwrap(),
             pixels_per_unit: config.pixels_per_unit,
         }
     }
@@ -97,6 +120,10 @@ impl Canvas {
         self.draw_queue.push(drawable);
     }
     
+    pub fn draw_text(&mut self, text: String, size: u32) {
+        self.text_queue.push((text, size));
+    }
+    
     pub fn process_draw_queue(&mut self, window: &mut sfml::graphics::RenderWindow) {
         window.set_view(&self.view);
         
@@ -104,6 +131,23 @@ impl Canvas {
             window.draw((*drawable).deref());
         }
         
+        const padding: f32 = 8.0;
+    
+        let width = self.view.size().x;
+        let height = self.view.size().y;
+        
+        let mut text_position = sfml::system::Vector2f::new(-width / 2.0 + padding, -height / 2.0 + padding);
+    
+        for text_item in self.text_queue.iter() {
+            let (ref text, size) = *text_item;
+            let mut text_drawable = sfml::graphics::Text::new(&text, &self.font, size);
+            text_drawable.set_position(text_position);
+            window.draw(&text_drawable);
+            
+            text_position.y += size as f32 + padding;
+        }
+        
         self.draw_queue.clear();
+        self.text_queue.clear();
     }
 }
