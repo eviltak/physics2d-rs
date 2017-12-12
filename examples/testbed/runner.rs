@@ -1,7 +1,7 @@
 
 use sfml::window::{VideoMode, Style, Event};
-use sfml::graphics::{RenderWindow, RenderTarget, Color,};
-use sfml::system::Clock;
+use sfml::graphics::{RenderWindow, Color, Font, Text, RenderTarget, Transformable};
+use sfml::system::{Clock, Vector2f};
 
 use super::Testbed;
 use super::canvas::Canvas;
@@ -11,6 +11,8 @@ pub fn run<T: Testbed>(mut testbed: T, config: super::config::Config) {
     let mut window = RenderWindow::new(
         VideoMode::new(config.window_width, config.window_height, 32),
                                        config.title.as_ref(), Style::DEFAULT, &Default::default());
+    
+    window.set_framerate_limit(60);
     
     let mut canvas = Canvas::new(&config);
     let mut input = Input::new();
