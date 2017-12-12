@@ -1,7 +1,7 @@
 [package]
 name = "physics2d"
 version = "0.1.0"
-authors = ["Arav Singhal <singhal.arav@gmail.com"]
+authors = ["Arav Singhal <singhal.arav@gmail.com>"]
 description = "Yet another 2D physics engine, but with Iron power."
 repository = "https://github.com/eviltak/physics2d-rs"
 readme = "README.md"
