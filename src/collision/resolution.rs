@@ -32,19 +32,24 @@ impl Manifold {
             let r_a_normal = r_a.dot(&self.normal);
             let r_a_normal_sqr = r_a_normal * r_a_normal;
             let r_a_tangent_sqr = r_a.sqr_len() - r_a_normal_sqr;
-    
+            
             let r_b_normal = r_b.dot(&self.normal);
             let r_b_normal_sqr = r_b_normal * r_b_normal;
             let r_b_tangent_sqr = r_b.sqr_len() - r_b_normal_sqr;
             
             let inv_mass_sum = a.inv_mass + b.inv_mass;
-    
+            
             let inv_normal_impulse_factor = inv_mass_sum + r_a_tangent_sqr * a.inv_inertia + r_b_tangent_sqr * b.inv_inertia;
             
-            let bias = -contact.penetration * 0.2 / dt;
+            // TODO: Probably replace with proper positional correction
+            let pos_bias = -contact.penetration * 0.12 / dt;
+            
             // Impulse
             // TODO: Change
-            let e = 0.5;
+            let e = 0.5f32;
+            let res_bias = e * rel_vel_normal;
+            
+            let bias = pos_bias + res_bias;
             let j = -(rel_vel_normal + bias) / inv_normal_impulse_factor;
             
             a.add_impulse_at_pos(-self.normal * j, r_a);
@@ -70,7 +75,7 @@ impl Manifold {
             };
             // Friction always acts against relative velocity
             let friction = -friction;
-    
+            
             a.add_impulse_at_pos(-tangent * friction, r_a);
             b.add_impulse_at_pos(tangent * friction, r_b);
         }
