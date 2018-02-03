@@ -8,14 +8,15 @@ pub use self::resolution::{Manifold, Contact};
 use self::detection::collide;
 use ::world::Body;
 
+pub type BodyId = usize;
+
 #[derive(Hash, PartialEq, Eq)]
 pub struct CollisionPair {
-    // TODO: Use proper BodyId type to index and ID bodies
-    pub body_id_pair: (usize, usize),
+    pub body_id_pair: (BodyId, BodyId),
 }
 
 impl CollisionPair {
-    pub fn new(id_a: usize, id_b: usize) -> CollisionPair {
+    pub fn new(id_a: BodyId, id_b: BodyId) -> CollisionPair {
         assert_ne!(id_a, id_b);
         
         // Smallest id is always first in pair
