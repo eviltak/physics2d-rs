@@ -120,6 +120,22 @@ impl Canvas {
         self.draw_queue.push(drawable);
     }
     
+    pub fn draw_line(&mut self, a: Vec2, b: Vec2) {
+        let sfml_a = sfml_vec2(a, self.pixels_per_unit);
+        let sfml_b = sfml_vec2(b, self.pixels_per_unit);
+        
+        let mut line_array = sfml::graphics::VertexArray::new(sfml::graphics::PrimitiveType::Lines, 2);
+    
+        // TODO: Color parameter?
+        let color = sfml::graphics::Color::RED;
+        line_array.append(&sfml::graphics::Vertex::new(sfml_a, color,
+                                                       sfml::system::Vector2f::new(0.0, 0.0)));
+        line_array.append(&sfml::graphics::Vertex::new(sfml_b, color,
+                                                       sfml::system::Vector2f::new(10.0, 10.0)));
+        
+        self.draw_queue.push(Box::new(line_array));
+    }
+    
     pub fn draw_text(&mut self, text: String, size: u32) {
         self.text_queue.push((text, size));
     }
