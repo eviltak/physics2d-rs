@@ -7,7 +7,27 @@ pub struct Polygon {
 
 impl Polygon {
     pub fn new(mut vertices: Vec<Vec2>) -> Polygon {
-        let centroid = vertices.iter().fold(Vec2::ZERO, |sum, &x| sum + x) / (vertices.len() as f32);
+        let mut area = 0f32;
+    
+        for i in 0..vertices.len() {
+            let j: usize = (i + 1) % vertices.len();
+    
+            let p1 = vertices[i];
+            let p2 = vertices[j];
+    
+            area += 0.5 * p1.cross(p2);
+        }
+        
+        let mut centroid = Vec2::ZERO;
+    
+        for i in 0..vertices.len() {
+            let j: usize = (i + 1) % vertices.len();
+        
+            let p1 = vertices[i];
+            let p2 = vertices[j];
+            
+            centroid += (p1 + p2) * p1.cross(p2) / (6.0 * area);
+        }
     
         for vertex in vertices.iter_mut() {
             *vertex -= centroid;
