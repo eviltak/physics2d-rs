@@ -47,15 +47,12 @@ impl Manifold {
             
             let inv_normal_impulse_factor = inv_mass_sum + r_a_tangent_sqr * a.inv_inertia + r_b_tangent_sqr * b.inv_inertia;
             
-            // TODO: Probably replace with proper positional correction
-            let pos_bias = -f32::max(0.0, contact.penetration - PENETRATION_SLOP) * 0.12 / dt;
-            
             // Impulse
             // TODO: Change
             let e = 0.5f32;
             let res_bias = e * f32::max(0.0, rel_vel_normal - RESTITUTION_VELOCITY_SLOP);
             
-            let bias = pos_bias + res_bias;
+            let bias = res_bias;
             let j = -(rel_vel_normal + bias) / inv_normal_impulse_factor;
             
             a.add_impulse_at_pos(-self.normal * j, r_a);
@@ -84,6 +81,19 @@ impl Manifold {
             
             a.add_impulse_at_pos(-tangent * friction, r_a);
             b.add_impulse_at_pos(tangent * friction, r_b);
+            
+            // Positional correction
+            const BAUMGARTE: f32 = 0.1;
+            let correction = f32::max(0.0, BAUMGARTE * (contact.penetration - PENETRATION_SLOP));
+            let pos_impulse = self.normal * correction / inv_normal_impulse_factor;
+            
+            a.transform.position -= pos_impulse * a.inv_mass;
+            let rotation = a.transform.rotation() - r_a.cross(pos_impulse) * a.inv_mass;
+            a.transform.set_rotation(rotation);
+                
+            b.transform.position += pos_impulse * b.inv_mass;
+            let rotation = b.transform.rotation() + r_b.cross(pos_impulse) * b.inv_mass;
+            b.transform.set_rotation(rotation);
         }
     }
 }
