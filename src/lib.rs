@@ -1,3 +1,5 @@
+extern crate fnv;
+
 #[macro_use]
 mod util;
 

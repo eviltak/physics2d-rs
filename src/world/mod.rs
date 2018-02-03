@@ -6,14 +6,13 @@ pub use self::transform::Transform;
 
 use ::collision::{Manifold, CollisionPair};
 
-use std::collections::HashMap;
+use fnv::FnvHashMap;
 
 pub struct World {
     pub bodies: Vec<Body>,
     
-    // TODO: Use FnvHashmap
     // TODO: Extract to broadphaser
-    pub(crate) collision_pairs: HashMap<CollisionPair, Manifold>,
+    pub(crate) collision_pairs: FnvHashMap<CollisionPair, Manifold>,
     
 }
 
@@ -21,7 +20,7 @@ impl World {
     pub fn new() -> World {
         World {
             bodies: Vec::new(),
-            collision_pairs: HashMap::new(),
+            collision_pairs: FnvHashMap::default(),
         }
     }
     
