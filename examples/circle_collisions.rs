@@ -10,6 +10,7 @@ use physics2d::debug::DebugCollision;
 struct CircleCollisionsTestbed {
     world: World,
     should_stop: bool,
+    body_b: BodyId,
 }
 
 impl CircleCollisionsTestbed {
@@ -25,11 +26,12 @@ impl CircleCollisionsTestbed {
         let mut world = World::new();
         
         world.add_body(a);
-        world.add_body(b);
+        let body_b = world.add_body(b);
         
         CircleCollisionsTestbed {
             world,
             should_stop: false,
+            body_b,
         }
     }
 }
@@ -37,8 +39,9 @@ impl CircleCollisionsTestbed {
 impl testbed::Testbed for CircleCollisionsTestbed {
     fn sfml_loop(&mut self, input: &testbed::Input, dt: f32) {
         if !self.should_stop {
-            let f = Vec2::UP * 7.0 * self.world.bodies[1].mass;
-            self.world.bodies[1].add_force(f);
+            let body = &mut self.world.bodies[&self.body_b].borrow_mut();
+            let f = Vec2::UP * 7.0 * body.mass;
+            body.add_force(f);
         }
         
         self.world.update(dt);
@@ -47,8 +50,8 @@ impl testbed::Testbed for CircleCollisionsTestbed {
     }
     
     fn sfml_draw(&mut self, canvas: &mut testbed::Canvas, dt: f32) {
-        for body in &self.world.bodies {
-            canvas.draw_body(body);
+        for body in self.world.bodies.values() {
+            canvas.draw_body(&body.borrow());
         }
     
         for contact in self.world.contact_points().iter() {

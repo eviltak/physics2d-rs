@@ -8,34 +8,49 @@ use ::collision::{Manifold, CollisionPair};
 
 use fnv::FnvHashMap;
 
+use std::cell::RefCell;
+
 pub struct World {
-    pub bodies: Vec<Body>,
+    pub bodies: FnvHashMap<BodyId, RefCell<Body>>,
     
     // TODO: Extract to broadphaser
     pub(crate) collision_pairs: FnvHashMap<CollisionPair, Manifold>,
     
+    body_created_count: usize,
 }
 
 impl World {
     pub fn new() -> World {
         World {
-            bodies: Vec::new(),
+            bodies: FnvHashMap::default(),
             collision_pairs: FnvHashMap::default(),
+            body_created_count: 0,
         }
     }
     
-    pub fn add_body(&mut self, body: Body) {
-        self.bodies.push(body);
+    pub fn add_body(&mut self, body: Body) -> BodyId {
+        let body_id = self.body_created_count as BodyId;
+        self.bodies.insert(body_id, RefCell::new(body));
+        
+        self.body_created_count += 1;
+        
+        body_id
     }
     
     pub fn update(&mut self, dt: f32) {
-        for body in &mut self.bodies {
+        for body in self.bodies.values_mut() {
+            let body = &mut body.borrow_mut();
             body.update(dt);
         }
         
-        for i in 0..self.bodies.len() - 1 {
-            for j in i+1..self.bodies.len() {
-                let collision_pair = CollisionPair::new(i, j);
+        for body_a in self.bodies.keys() {
+            for body_b in self.bodies.keys() {
+                if body_b <= body_a {
+                    continue;
+                }
+                
+                let collision_pair = CollisionPair::new(*body_a, *body_b);
+                
                 if let Some(manifold) = collision_pair.check_collision(&self.bodies) {
                     // TODO: Do not replace manifold for cached contacts
                     self.collision_pairs.insert(collision_pair, manifold);
@@ -45,7 +60,8 @@ impl World {
             }
         }
     
-        for body in &mut self.bodies {
+        for body in self.bodies.values_mut() {
+            let body = &mut body.borrow_mut();
             body.integrate_force(dt);
         }
     
@@ -53,7 +69,8 @@ impl World {
             collision_pair.resolve_collision(&mut self.bodies, manifold, dt);
         }
     
-        for body in &mut self.bodies {
+        for body in self.bodies.values_mut() {
+            let body = &mut body.borrow_mut();
             body.integrate_velocity(dt);
         }
     }

@@ -23,8 +23,8 @@ impl testbed::Testbed for CirclesTestbed {
     }
     
     fn sfml_draw(&mut self, canvas: &mut testbed::Canvas, _dt: f32) {
-        for body in &self.world.bodies {
-            canvas.draw_body(body);
+        for body in self.world.bodies.values() {
+            canvas.draw_body(&body.borrow());
         }
     }
 }

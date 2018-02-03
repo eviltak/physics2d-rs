@@ -1,4 +1,3 @@
-
 mod detection;
 mod resolution;
 
@@ -7,6 +6,10 @@ pub use self::resolution::{Manifold, Contact};
 
 use self::detection::collide;
 use ::world::{Body, BodyId};
+
+use fnv::FnvHashMap;
+
+use std::cell::RefCell;
 
 #[derive(Hash, PartialEq, Eq)]
 pub struct CollisionPair {
@@ -25,12 +28,14 @@ impl CollisionPair {
         }
     }
     
-    pub fn check_collision(&self, bodies: &[Body]) -> Option<Manifold> {
-        collide(&bodies[self.body_id_pair.0], &bodies[self.body_id_pair.1])
+    pub fn check_collision(&self, bodies: &FnvHashMap<BodyId, RefCell<Body>>) -> Option<Manifold> {
+        collide(&bodies[&self.body_id_pair.0].borrow(), &bodies[&self.body_id_pair.1].borrow())
     }
     
-    pub fn resolve_collision(&self, bodies: &mut [Body], manifold: &Manifold, dt: f32) {
-        let (slice_a, slice_b) = bodies.split_at_mut(self.body_id_pair.0 + 1);
-        manifold.resolve(&mut slice_a[self.body_id_pair.0], &mut slice_b[self.body_id_pair.1 - self.body_id_pair.0 - 1], dt);
+    pub fn resolve_collision(&self, bodies: &mut FnvHashMap<BodyId, RefCell<Body>>, manifold: &Manifold, dt: f32) {
+        let body_a = &mut bodies[&self.body_id_pair.0].borrow_mut();
+        let body_b = &mut bodies[&self.body_id_pair.1].borrow_mut();
+        
+        manifold.resolve(body_a, body_b, dt);
     }
 }

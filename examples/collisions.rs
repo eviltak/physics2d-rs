@@ -61,8 +61,8 @@ impl testbed::Testbed for CollisionsTestbed {
     }
     
     fn sfml_draw(&mut self, canvas: &mut testbed::Canvas, dt: f32) {
-        for body in &self.world.bodies {
-            canvas.draw_body(body);
+        for body in self.world.bodies.values() {
+            canvas.draw_body(&body.borrow());
         }
         
         canvas.draw_text(format!("FPS: {}", 1.0 / dt), 16);

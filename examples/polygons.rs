@@ -1,4 +1,3 @@
-
 extern crate sfml;
 extern crate physics2d;
 
@@ -24,8 +23,8 @@ impl testbed::Testbed for PolygonsTestbed {
     }
     
     fn sfml_draw(&mut self, canvas: &mut testbed::Canvas, _dt: f32) {
-        for body in &self.world.bodies {
-            canvas.draw_body(body);
+        for body in self.world.bodies.values() {
+            canvas.draw_body(&body.borrow());
         }
     }
 }
@@ -44,8 +43,8 @@ fn main() {
     
     let mut body = Body::new(shapes::Polygon::new(
         vec![Vec2::ZERO, Vec2::RIGHT * w, Vec2::new(w, h), Vec2::UP * h])
-                                        .into_shape(),
-                                    1.0);
+                                 .into_shape(),
+                             1.0);
     
     let torque = math::PI * 5000.0 * body.inertia;
     body.add_torque(torque);
