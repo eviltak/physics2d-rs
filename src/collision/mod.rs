@@ -6,9 +6,7 @@ pub use self::detection::{Collide};
 pub use self::resolution::{Manifold, Contact};
 
 use self::detection::collide;
-use ::world::Body;
-
-pub type BodyId = usize;
+use ::world::{Body, BodyId};
 
 #[derive(Hash, PartialEq, Eq)]
 pub struct CollisionPair {

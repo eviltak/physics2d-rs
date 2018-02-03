@@ -13,4 +13,4 @@ mod collision;
 mod world;
 
 pub use math::{Vec2, Mat2, Cross};
-pub use world::{World, Body, Transform};
+pub use world::{World, Body, BodyId, Transform};

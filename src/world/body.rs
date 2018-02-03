@@ -2,6 +2,8 @@ use math::{Vec2, Cross};
 use ::shapes::{Shape, Matter};
 use ::world::Transform;
 
+pub type BodyId = usize;
+
 pub struct Body {
     pub transform: Transform,
     
