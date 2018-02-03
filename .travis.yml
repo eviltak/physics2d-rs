@@ -19,6 +19,7 @@ deploy:
 - provider: script
   script: scripts/deploy.sh
   on:
+    branch: master
     tags: true
     rust: stable
 
