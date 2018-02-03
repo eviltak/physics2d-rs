@@ -10,13 +10,13 @@ impl Circle {
     fn least_penetration_support_point(&self, self_transform: &Transform,
                                        other: &Polygon, other_transform: &Transform) -> (usize, f32, Vec2) {
         use std::f32::INFINITY;
-    
+        
         let mut face_index = 0usize;
         let mut min_pen = INFINITY;
         let mut min_support = Vec2::ZERO;
         
         let self_local_pos = other_transform.local_pos(&self_transform.position);
-    
+        
         for i in 0..other.vert_count() {
             // Vertex and normal describing ith face of other
             let normal = other.normals[i];
@@ -24,17 +24,17 @@ impl Circle {
             
             // Point on self furthest below the face
             let support = self_local_pos - normal * self.radius;
-        
+            
             // Penetration wrt this face is negative of the distance of support from this face
             let penetration = -normal.dot(&(support - vertex));
-        
+            
             if penetration < min_pen {
                 min_pen = penetration;
                 face_index = i;
                 min_support = support;
             }
         }
-    
+        
         (face_index, min_pen, min_support)
     }
 }
@@ -67,7 +67,7 @@ impl Collide<Polygon> for Circle {
         
         let rel_contact_point = (contact_point - self_transform.position);
         let contact_dist_sqr = rel_contact_point.sqr_len();
-    
+        
         if contact_dist_sqr > self.radius * self.radius {
             return None;
         }
@@ -102,8 +102,7 @@ impl Collide<Circle> for Polygon {
             // Normal must always point from self to other
             let mut manifold = manifold.unwrap();
             manifold.normal = -manifold.normal;
-    
-            println!("Poly-Circle");
+            
             Some(manifold)
         }
     }
