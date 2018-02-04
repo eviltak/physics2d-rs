@@ -5,7 +5,7 @@ pub use self::body::{Body, BodyId};
 pub use self::transform::Transform;
 pub(crate) use self::body::BodyPair;
 
-use collision::{Manifold, collide};
+use collision::{ContactManifold, collide};
 use constraint::contact::VelocityContactSolver;
 use constraint::Solver;
 
@@ -19,7 +19,7 @@ pub struct World {
     pub bodies: BodyMap,
     
     // TODO: Extract to broadphaser
-    pub(crate) manifolds: FnvHashMap<BodyPair, Manifold>,
+    pub(crate) manifolds: FnvHashMap<BodyPair, ContactManifold>,
     
     velocity_contact_solver: VelocityContactSolver,
     
@@ -69,7 +69,7 @@ impl World {
                         let manifold = self.manifolds.get_mut(&body_pair).unwrap();
                         manifold.update_contacts(new_contacts);
                     } else {
-                        self.manifolds.insert(body_pair, Manifold::new(body_pair, new_contacts));
+                        self.manifolds.insert(body_pair, ContactManifold::new(body_pair, new_contacts));
                     }
                 } else {
                     self.manifolds.remove(&body_pair);

@@ -2,7 +2,7 @@ use super::{Collide};
 use ::math::{Vec2, clamp01};
 use ::shapes::{Circle, Polygon};
 use ::world::{Body, Transform};
-use ::collision::{Contact, Manifold};
+use ::collision::{Contact, ContactManifold};
 
 impl Circle {
     /// Returns the face for which the penetration of the circle is least, the penetration and the corresponding

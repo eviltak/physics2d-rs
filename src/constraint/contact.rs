@@ -10,8 +10,8 @@ const RESTITUTION_VELOCITY_SLOP: f32 = 0.5;
 
 pub struct VelocityContactSolver;
 
-impl super::Solver<Manifold> for VelocityContactSolver {
-    fn initialize_constraints(&self, manifold: &mut Manifold, a: &Body, b: &Body, dt: f32) {
+impl super::Solver<ContactManifold> for VelocityContactSolver {
+    fn initialize_constraints(&self, manifold: &mut ContactManifold, a: &Body, b: &Body, dt: f32) {
         if a.inv_mass + b.inv_mass == 0.0 {
             return;
         }
@@ -53,7 +53,7 @@ impl super::Solver<Manifold> for VelocityContactSolver {
         }
     }
     
-    fn warm_start(&self, manifold: &mut Manifold, a: &mut Body, b: &mut Body, dt: f32) {
+    fn warm_start(&self, manifold: &mut ContactManifold, a: &mut Body, b: &mut Body, dt: f32) {
         if a.inv_mass + b.inv_mass == 0.0 {
             return;
         }
@@ -69,7 +69,7 @@ impl super::Solver<Manifold> for VelocityContactSolver {
         }
     }
     
-    fn solve(&self, manifold: &mut Manifold, a: &mut Body, b: &mut Body, dt: f32) {
+    fn solve(&self, manifold: &mut ContactManifold, a: &mut Body, b: &mut Body, dt: f32) {
         // TODO: Remove this via precondition
         if a.inv_mass + b.inv_mass == 0.0 {
             return;
@@ -142,16 +142,16 @@ impl Contact {
     }
 }
 
-pub struct Manifold {
+pub struct ContactManifold {
     pub body_a: BodyId,
     pub body_b: BodyId,
     
     pub contacts: Vec<Contact>,
 }
 
-impl Manifold {
-    pub fn new(body_pair: BodyPair, contacts: Vec<Contact>) -> Manifold {
-        Manifold {
+impl ContactManifold {
+    pub fn new(body_pair: BodyPair, contacts: Vec<Contact>) -> ContactManifold {
+        ContactManifold {
             body_a: body_pair.0,
             body_b: body_pair.1,
             contacts,
