@@ -6,6 +6,8 @@ pub use self::transform::Transform;
 pub(crate) use self::body::BodyPair;
 
 use collision::{Manifold, collide};
+use constraint::contact::VelocityContactSolver;
+use constraint::Solver;
 
 use fnv::{FnvHashMap, FnvHashSet};
 
@@ -19,6 +21,8 @@ pub struct World {
     // TODO: Extract to broadphaser
     pub(crate) manifolds: FnvHashMap<BodyPair, Manifold>,
     
+    velocity_contact_solver: VelocityContactSolver,
+    
     body_created_count: usize,
 }
 
@@ -27,6 +31,7 @@ impl World {
         World {
             bodies: FnvHashMap::default(),
             manifolds: FnvHashMap::default(),
+            velocity_contact_solver: VelocityContactSolver,
             body_created_count: 0,
         }
     }
@@ -77,17 +82,25 @@ impl World {
             body.integrate_force(dt);
         }
         
-        // TODO: Get rid of CollisionPair/Manifold, store everything in Contact
+        for (body_pair, manifold) in self.manifolds.iter_mut() {
+            let body_a = &self.bodies[&body_pair.0].borrow();
+            let body_b = &self.bodies[&body_pair.1].borrow();
+            
+            self.velocity_contact_solver.initialize_constraints(manifold, body_a, body_b, dt);
+        }
+    
         for (body_pair, manifold) in self.manifolds.iter_mut() {
             let body_a = &mut self.bodies[&body_pair.0].borrow_mut();
             let body_b = &mut self.bodies[&body_pair.1].borrow_mut();
-            manifold.pre_step(body_a, body_b, dt);
+        
+            self.velocity_contact_solver.warm_start(manifold, body_a, body_b, dt);
         }
         
         for (body_pair, manifold) in self.manifolds.iter_mut() {
             let body_a = &mut self.bodies[&body_pair.0].borrow_mut();
             let body_b = &mut self.bodies[&body_pair.1].borrow_mut();
-            manifold.resolve(body_a, body_b, dt);
+        
+            self.velocity_contact_solver.solve(manifold, body_a, body_b, dt);
         }
         
         for body in self.bodies.values_mut() {
