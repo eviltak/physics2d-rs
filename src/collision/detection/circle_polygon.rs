@@ -40,7 +40,7 @@ impl Circle {
 }
 
 impl Collide<Polygon> for Circle {
-    fn collide(&self, self_body: &Body, other: &Polygon, other_body: &Body) -> Option<Manifold> {
+    fn collide(&self, self_body: &Body, other: &Polygon, other_body: &Body) -> Option<Vec<Contact>> {
         let self_transform = &self_body.transform;
         let other_transform = &other_body.transform;
         
@@ -76,31 +76,33 @@ impl Collide<Polygon> for Circle {
             penetration = self.radius - contact_dist_sqr.sqrt()
         }
         
-        let contact = Contact::new(contact_point, penetration);
+        let normal = if corner_contact {
+            rel_contact_point / (self.radius - penetration)
+        } else {
+            -other_transform.world_dir(&face.normal)
+        };
         
-        Some(Manifold::new(
-            if corner_contact {
-                rel_contact_point / (self.radius - penetration)
-            } else {
-                -other_transform.world_dir(&face.normal)
-            },
-            vec![contact]
-        ))
+        let contact = Contact::new(contact_point, penetration, normal);
+        
+        Some(vec![contact])
     }
 }
 
 impl Collide<Circle> for Polygon {
-    fn collide(&self, self_body: &Body, other: &Circle, other_body: &Body) -> Option<Manifold> {
-        let manifold = other.collide(other_body, self, self_body);
+    fn collide(&self, self_body: &Body, other: &Circle, other_body: &Body) -> Option<Vec<Contact>> {
+        let contacts = other.collide(other_body, self, self_body);
         
-        if manifold.is_none() {
-            manifold
+        if contacts.is_none() {
+            contacts
         } else {
             // Normal must always point from self to other
-            let mut manifold = manifold.unwrap();
-            manifold.normal = -manifold.normal;
+            let mut contacts = contacts.unwrap();
             
-            Some(manifold)
+            for contact in contacts.iter_mut() {
+                contact.normal = -contact.normal;
+            }
+            
+            Some(contacts)
         }
     }
 }

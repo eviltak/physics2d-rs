@@ -12,7 +12,7 @@ use fnv::FnvHashMap;
 use std::cell::RefCell;
 use world::BodyMap;
 
-#[derive(Hash, PartialEq, Eq)]
+#[derive(Copy, Clone, Hash, PartialEq, Eq)]
 pub struct CollisionPair {
     pub body_id_pair: (BodyId, BodyId),
 }
@@ -29,7 +29,7 @@ impl CollisionPair {
         }
     }
     
-    pub fn check_collision(&self, bodies: &BodyMap) -> Option<Manifold> {
+    pub fn check_collision(&self, bodies: &BodyMap) -> Option<Vec<Contact>> {
         collide(&bodies[&self.body_id_pair.0].borrow(), &bodies[&self.body_id_pair.1].borrow())
     }
     

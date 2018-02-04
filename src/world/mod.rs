@@ -16,7 +16,7 @@ pub struct World {
     pub bodies: BodyMap,
     
     // TODO: Extract to broadphaser
-    pub(crate) collision_pairs: FnvHashMap<CollisionPair, Manifold>,
+    pub(crate) manifolds: FnvHashMap<CollisionPair, Manifold>,
     
     body_created_count: usize,
 }
@@ -25,7 +25,7 @@ impl World {
     pub fn new() -> World {
         World {
             bodies: FnvHashMap::default(),
-            collision_pairs: FnvHashMap::default(),
+            manifolds: FnvHashMap::default(),
             body_created_count: 0,
         }
     }
@@ -54,13 +54,16 @@ impl World {
                 
                 let collision_pair = CollisionPair::new(*body_a, *body_b);
                 
-                if let Some(mut manifold) = collision_pair.check_collision(&self.bodies) {
-                    if let Some(old_manifold) = self.collision_pairs.get(&collision_pair) {
-                        manifold.persist_contacts(old_manifold);
+                if let Some(new_contacts) = collision_pair.check_collision(&self.bodies) {
+                    // If we already have a manifold with the given bodies, update contacts
+                    if self.manifolds.contains_key(&collision_pair) {
+                        let manifold = self.manifolds.get_mut(&collision_pair).unwrap();
+                        manifold.update_contacts(new_contacts);
+                    } else {
+                        self.manifolds.insert(collision_pair, Manifold::new(collision_pair, new_contacts));
                     }
-                    self.collision_pairs.insert(collision_pair, manifold);
                 } else {
-                    self.collision_pairs.remove(&collision_pair);
+                    self.manifolds.remove(&collision_pair);
                 }
             }
         }
@@ -71,11 +74,11 @@ impl World {
         }
         
         // TODO: Get rid of CollisionPair/Manifold, store everything in Contact
-        for (collision_pair, manifold) in self.collision_pairs.iter_mut() {
+        for (collision_pair, manifold) in self.manifolds.iter_mut() {
             collision_pair.pre_step(&mut self.bodies, manifold, dt);
         }
         
-        for (collision_pair, manifold) in self.collision_pairs.iter_mut() {
+        for (collision_pair, manifold) in self.manifolds.iter_mut() {
             collision_pair.resolve_collision(&mut self.bodies, manifold, dt);
         }
         

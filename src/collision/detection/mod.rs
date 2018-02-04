@@ -5,13 +5,13 @@ mod circle_polygon;
 use ::math::{Vec2};
 use ::shapes::{Shape, Polygon};
 use ::world::{Body, Transform};
-use super::{Manifold};
+use super::{Manifold, Contact};
 
 pub trait Collide<T = Self> {
-    fn collide(&self, self_body: &Body, other: &T, other_body: &Body) -> Option<Manifold>;
+    fn collide(&self, self_body: &Body, other: &T, other_body: &Body) -> Option<Vec<Contact>>;
 }
 
-pub fn collide(a: &Body, b: &Body) -> Option<Manifold> {
+pub fn collide(a: &Body, b: &Body) -> Option<Vec<Contact>> {
     match b.shape {
         Shape::Circle(ref circle) => {
             match_fn_to_shape!(a.shape, collide(a, circle, b))

@@ -1,17 +1,18 @@
 use ::world::{World};
 use ::math::{Vec2};
 use collision::Manifold;
-use std::collections::hash_map::Values;
 use collision::CollisionPair;
+
+use std::collections::HashSet;
 
 pub trait DebugCollision {
     fn contact_points(&self) -> Vec<Vec2>;
-    fn manifolds(&self) -> Values<CollisionPair, Manifold>;
+    fn manifolds(&self) -> Vec<&Manifold>;
 }
 
 impl DebugCollision for World {
     fn contact_points(&self) -> Vec<Vec2> {
-        self.collision_pairs
+        self.manifolds
             .values()
             .flat_map(
                 |ref m|
@@ -20,7 +21,7 @@ impl DebugCollision for World {
             .collect()
     }
     
-    fn manifolds(&self) -> Values<CollisionPair, Manifold> {
-        self.collision_pairs.values()
+    fn manifolds(&self) -> Vec<&Manifold> {
+        self.manifolds.values().collect()
     }
 }

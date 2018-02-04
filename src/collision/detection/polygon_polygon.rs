@@ -103,7 +103,7 @@ impl Polygon {
 }
 
 impl Collide for Polygon {
-    fn collide(&self, self_body: &Body, other: &Polygon, other_body: &Body) -> Option<Manifold> {
+    fn collide(&self, self_body: &Body, other: &Polygon, other_body: &Body) -> Option<Vec<Contact>> {
         let self_transform = &self_body.transform;
         let other_transform = &other_body.transform;
         
@@ -170,18 +170,19 @@ impl Collide for Polygon {
             inc_points = clipped;
         }
         
-        Some(Manifold::new(
-            if self_is_ref_poly { ref_face.normal } else { -ref_face.normal },
-            // For each incident point, create a contact
-            inc_points.iter().filter_map(|inc_point| {
-                let d = ref_face.distance(inc_point);
-                // Only keep points behind the reference face
-                if d > 0.0 {
-                    None
-                } else {
-                    Some(Contact::new(*inc_point, -d))
-                }
-            }).collect()
-        ))
+        let normal = if self_is_ref_poly { ref_face.normal } else { -ref_face.normal };
+        
+        // For each incident point, create a contact
+        let contacts = inc_points.iter().filter_map(|inc_point| {
+            let d = ref_face.distance(inc_point);
+            // Only keep points behind the reference face
+            if d > 0.0 {
+                None
+            } else {
+                Some(Contact::new(*inc_point, -d, normal))
+            }
+        }).collect();
+        
+        Some(contacts)
     }
 }

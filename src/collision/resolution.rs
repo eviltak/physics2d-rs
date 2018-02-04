@@ -1,6 +1,9 @@
 use ::math::{Vec2, Cross};
-use ::world::{Body};
+use world::{Body, BodyId};
 use math::clamp;
+use collision::CollisionPair;
+
+use std::hash::{Hash, Hasher};
 
 const PENETRATION_SLOP: f32 = 0.005;
 const RESTITUTION_VELOCITY_SLOP: f32 = 0.5;
@@ -8,6 +11,9 @@ const RESTITUTION_VELOCITY_SLOP: f32 = 0.5;
 pub struct Contact {
     pub position: Vec2,
     pub penetration: f32,
+    
+    pub normal: Vec2,
+    tangent: Vec2,
     
     normal_impulse: f32,
     tangent_impulse: f32,
@@ -20,10 +26,12 @@ pub struct Contact {
 }
 
 impl Contact {
-    pub fn new(position: Vec2, penetration: f32) -> Contact {
+    pub fn new(position: Vec2, penetration: f32, normal: Vec2) -> Contact {
         Contact {
             position,
             penetration,
+            normal,
+            tangent: normal.cross(1.0),
             normal_impulse: 0.0,
             tangent_impulse: 0.0,
             normal_mass: 0.0,
@@ -35,30 +43,49 @@ impl Contact {
 }
 
 pub struct Manifold {
-    pub normal: Vec2,
-    pub tangent: Vec2,
+    pub body_a: BodyId,
+    pub body_b: BodyId,
+    
     pub contacts: Vec<Contact>,
 }
 
+impl PartialEq for Manifold {
+    fn eq(&self, other: &Manifold) -> bool {
+        self.body_a == other.body_a && self.body_b == other.body_b
+    }
+}
+
+impl Eq for Manifold {}
+
+impl Hash for Manifold {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.body_a.hash(state);
+        self.body_b.hash(state);
+    }
+}
+
 impl Manifold {
-    pub fn new(normal: Vec2, contacts: Vec<Contact>) -> Manifold {
+    pub fn new(body_pair: CollisionPair, contacts: Vec<Contact>) -> Manifold {
         Manifold {
-            normal,
-            tangent: normal.cross(1.0),
+            body_a: body_pair.body_id_pair.0,
+            body_b: body_pair.body_id_pair.1,
             contacts,
         }
     }
     
-    pub fn persist_contacts(&mut self, old: &Manifold) {
-        for contact in self.contacts.iter_mut() {
+    pub fn update_contacts(&mut self, mut new_contacts: Vec<Contact>) {
+        for old_contact in self.contacts.iter_mut() {
             const PERSISTENT_DISTANCE: f32 = 0.01;
-            
-            if let Some(nearest_contact) = old.contacts.iter()
-                .find(|c| (c.position - contact.position).sqr_len() <= PERSISTENT_DISTANCE) {
-                contact.normal_impulse = nearest_contact.normal_impulse;
-                contact.tangent_impulse = nearest_contact.tangent_impulse;
+            // Persist contacts based on proximity
+            if let Some(nearest_contact) = new_contacts.iter_mut()
+                .find(|c| (c.position - old_contact.position).sqr_len() <= PERSISTENT_DISTANCE) {
+                // Persist contact
+                nearest_contact.normal_impulse = old_contact.normal_impulse;
+                nearest_contact.tangent_impulse = old_contact.tangent_impulse;
             }
         }
+        
+        self.contacts = new_contacts;
     }
     
     pub fn pre_step(&mut self, a: &mut Body, b: &mut Body, dt: f32) {
@@ -71,13 +98,13 @@ impl Manifold {
             let r_b = contact.position - b.transform.position;
     
             let rel_vel = b.velocity - a.velocity + b.angular_vel.cross(&r_b) - a.angular_vel.cross(&r_a);
-            let rel_vel_normal = self.normal.dot(&rel_vel);
+            let rel_vel_normal = contact.normal.dot(&rel_vel);
     
-            let r_a_normal = r_a.dot(&self.normal);
+            let r_a_normal = r_a.dot(&contact.normal);
             let r_a_normal_sqr = r_a_normal * r_a_normal;
             let r_a_tangent_sqr = r_a.sqr_len() - r_a_normal_sqr;
     
-            let r_b_normal = r_b.dot(&self.normal);
+            let r_b_normal = r_b.dot(&contact.normal);
             let r_b_normal_sqr = r_b_normal * r_b_normal;
             let r_b_tangent_sqr = r_b.sqr_len() - r_b_normal_sqr;
     
@@ -101,7 +128,7 @@ impl Manifold {
             contact.mu = mu;
             
             // Warm start
-            let impulse = contact.normal_impulse * self.normal + contact.tangent_impulse * self.tangent;
+            let impulse = contact.normal_impulse * contact.normal + contact.tangent_impulse * contact.tangent;
             
             a.add_impulse_at_pos(-impulse, r_a);
             b.add_impulse_at_pos(impulse, r_b);
@@ -118,7 +145,7 @@ impl Manifold {
             let r_b = contact.position - b.transform.position;
             
             let rel_vel = b.velocity - a.velocity + b.angular_vel.cross(&r_b) - a.angular_vel.cross(&r_a);
-            let rel_vel_normal = self.normal.dot(&rel_vel);
+            let rel_vel_normal = contact.normal.dot(&rel_vel);
             
             // Impulse
             let j = (-rel_vel_normal + contact.normal_bias) * contact.normal_mass;
@@ -127,11 +154,11 @@ impl Manifold {
             contact.normal_impulse = f32::max(0.0, old_impulse + j);
             let j = contact.normal_impulse - old_impulse;
             
-            a.add_impulse_at_pos(-self.normal * j, r_a);
-            b.add_impulse_at_pos(self.normal * j, r_b);
+            a.add_impulse_at_pos(-contact.normal * j, r_a);
+            b.add_impulse_at_pos(contact.normal * j, r_b);
             
             // Friction
-            let rel_vel_tangent = self.tangent.dot(&rel_vel);
+            let rel_vel_tangent = contact.tangent.dot(&rel_vel);
             
             let j_t = -rel_vel_tangent * contact.tangent_mass;
             
@@ -140,13 +167,13 @@ impl Manifold {
             contact.tangent_impulse = clamp(old_impulse + j_t, -max_friction, max_friction);
             let j_t = contact.tangent_impulse - old_impulse;
             
-            a.add_impulse_at_pos(-self.tangent * j_t, r_a);
-            b.add_impulse_at_pos(self.tangent * j_t, r_b);
+            a.add_impulse_at_pos(-contact.tangent * j_t, r_a);
+            b.add_impulse_at_pos(contact.tangent * j_t, r_b);
             
             // Positional correction
             const BAUMGARTE: f32 = 0.1;
             let correction = f32::max(0.0, BAUMGARTE * (contact.penetration - PENETRATION_SLOP));
-            let pos_impulse = self.normal * correction * contact.normal_mass;
+            let pos_impulse = contact.normal * correction * contact.normal_mass;
             
             a.transform.position -= pos_impulse * a.inv_mass;
             let rotation = a.transform.rotation() - r_a.cross(pos_impulse) * a.inv_mass;
