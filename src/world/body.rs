@@ -4,6 +4,9 @@ use ::world::Transform;
 
 pub type BodyId = usize;
 
+#[derive(Copy, Clone, Eq, PartialEq, Hash)]
+pub struct BodyPair(pub BodyId, pub BodyId);
+
 pub struct Body {
     pub id: BodyId,
     

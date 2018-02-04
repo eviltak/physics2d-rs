@@ -3,8 +3,9 @@ mod transform;
 
 pub use self::body::{Body, BodyId};
 pub use self::transform::Transform;
+pub(crate) use self::body::BodyPair;
 
-use ::collision::{Manifold, CollisionPair};
+use collision::{Manifold, collide};
 
 use fnv::{FnvHashMap, FnvHashSet};
 
@@ -16,7 +17,7 @@ pub struct World {
     pub bodies: BodyMap,
     
     // TODO: Extract to broadphaser
-    pub(crate) manifolds: FnvHashMap<CollisionPair, Manifold>,
+    pub(crate) manifolds: FnvHashMap<BodyPair, Manifold>,
     
     body_created_count: usize,
 }
@@ -46,24 +47,27 @@ impl World {
             body.update(dt);
         }
         
-        for body_a in self.bodies.keys() {
-            for body_b in self.bodies.keys() {
-                if body_b <= body_a {
+        for body_a_id in self.bodies.keys() {
+            for body_b_id in self.bodies.keys() {
+                if body_b_id <= body_a_id {
                     continue;
                 }
                 
-                let collision_pair = CollisionPair::new(*body_a, *body_b);
+                let body_pair = BodyPair(*body_a_id, *body_b_id);
+    
+                let body_a = &self.bodies[&body_pair.0].borrow();
+                let body_b = &self.bodies[&body_pair.1].borrow();
                 
-                if let Some(new_contacts) = collision_pair.check_collision(&self.bodies) {
+                if let Some(new_contacts) = collide(body_a, body_b) {
                     // If we already have a manifold with the given bodies, update contacts
-                    if self.manifolds.contains_key(&collision_pair) {
-                        let manifold = self.manifolds.get_mut(&collision_pair).unwrap();
+                    if self.manifolds.contains_key(&body_pair) {
+                        let manifold = self.manifolds.get_mut(&body_pair).unwrap();
                         manifold.update_contacts(new_contacts);
                     } else {
-                        self.manifolds.insert(collision_pair, Manifold::new(collision_pair, new_contacts));
+                        self.manifolds.insert(body_pair, Manifold::new(body_pair, new_contacts));
                     }
                 } else {
-                    self.manifolds.remove(&collision_pair);
+                    self.manifolds.remove(&body_pair);
                 }
             }
         }
@@ -74,12 +78,16 @@ impl World {
         }
         
         // TODO: Get rid of CollisionPair/Manifold, store everything in Contact
-        for (collision_pair, manifold) in self.manifolds.iter_mut() {
-            collision_pair.pre_step(&mut self.bodies, manifold, dt);
+        for (body_pair, manifold) in self.manifolds.iter_mut() {
+            let body_a = &mut self.bodies[&body_pair.0].borrow_mut();
+            let body_b = &mut self.bodies[&body_pair.1].borrow_mut();
+            manifold.pre_step(body_a, body_b, dt);
         }
         
-        for (collision_pair, manifold) in self.manifolds.iter_mut() {
-            collision_pair.resolve_collision(&mut self.bodies, manifold, dt);
+        for (body_pair, manifold) in self.manifolds.iter_mut() {
+            let body_a = &mut self.bodies[&body_pair.0].borrow_mut();
+            let body_b = &mut self.bodies[&body_pair.1].borrow_mut();
+            manifold.resolve(body_a, body_b, dt);
         }
         
         for body in self.bodies.values_mut() {

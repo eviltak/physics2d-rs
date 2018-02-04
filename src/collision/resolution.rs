@@ -1,7 +1,7 @@
 use ::math::{Vec2, Cross};
 use world::{Body, BodyId};
 use math::clamp;
-use collision::CollisionPair;
+use world::BodyPair;
 
 use std::hash::{Hash, Hasher};
 
@@ -65,10 +65,10 @@ impl Hash for Manifold {
 }
 
 impl Manifold {
-    pub fn new(body_pair: CollisionPair, contacts: Vec<Contact>) -> Manifold {
+    pub fn new(body_pair: BodyPair, contacts: Vec<Contact>) -> Manifold {
         Manifold {
-            body_a: body_pair.body_id_pair.0,
-            body_b: body_pair.body_id_pair.1,
+            body_a: body_pair.0,
+            body_b: body_pair.1,
             contacts,
         }
     }

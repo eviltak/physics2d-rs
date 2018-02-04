@@ -1,7 +1,6 @@
-use ::world::{World};
+use world::{World, BodyPair};
 use ::math::{Vec2};
 use collision::Manifold;
-use collision::CollisionPair;
 
 use std::collections::HashSet;
 
