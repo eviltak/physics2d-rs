@@ -113,8 +113,8 @@ impl Collide for Polygon {
             return None;
         }
         
-        let (other_face_idx, other_pen)= other.least_penetration_face(other_transform,
-                                                                      self,self_transform);
+        let (other_face_idx, other_pen) = other.least_penetration_face(other_transform,
+                                                                       self, self_transform);
         
         if other_pen <= 0.0 {
             return None;
@@ -123,7 +123,7 @@ impl Collide for Polygon {
         let (ref_poly, ref_body, ref_face_idx): (&Polygon, &Body, usize);
         
         let (inc_poly, inc_body): (&Polygon, &Body);
-    
+        
         let self_is_ref_poly = other_pen >= 0.95 * self_pen + 0.01 * other_pen;
         
         if self_is_ref_poly {
@@ -179,7 +179,7 @@ impl Collide for Polygon {
                 if d > 0.0 {
                     None
                 } else {
-                    Some(Contact{
+                    Some(Contact {
                         point: *inc_point,
                         penetration: -d,
                     })

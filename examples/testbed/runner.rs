@@ -1,4 +1,3 @@
-
 use sfml::window::{VideoMode, Style, Event};
 use sfml::graphics::{RenderWindow, Color, RenderTarget};
 use sfml::system::{Clock};
@@ -10,7 +9,7 @@ use super::input::Input;
 pub fn run<T: Testbed>(mut testbed: T, config: super::config::Config) {
     let mut window = RenderWindow::new(
         VideoMode::new(config.window_width, config.window_height, 32),
-                                       config.title.as_ref(), Style::DEFAULT, &Default::default());
+        config.title.as_ref(), Style::DEFAULT, &Default::default());
     
     window.set_framerate_limit(60);
     

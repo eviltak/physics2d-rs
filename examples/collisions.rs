@@ -48,9 +48,9 @@ impl testbed::Testbed for CollisionsTestbed {
         if input.left_mouse_released {
             let vertices = box_vertices(5.0, 5.0);
             let polygon = shapes::Polygon::new(vertices);
-    
+            
             let mut body = Body::new(polygon.into_shape(), 10.0);
-    
+            
             body.transform.position = input.mouse_position;
             body.transform.set_rotation(0.2);
             

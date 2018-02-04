@@ -50,10 +50,10 @@ impl Canvas {
     
     fn config_shape<'a, T: sfml::graphics::Shape<'a>>(&self, shape: &mut T) {
         shape.set_fill_color(&sfml::graphics::Color::TRANSPARENT);
-    
+        
         // TODO: parameter?
         shape.set_outline_color(&sfml::graphics::Color::CYAN);
-    
+        
         // TODO: Input from config?
         shape.set_outline_thickness(1.0);
     }
@@ -61,14 +61,14 @@ impl Canvas {
     fn get_circle_drawable(&self, sfml_pos: sfml::system::Vector2f,
                            circle: &shapes::Circle) -> Box<sfml::graphics::Drawable> {
         const POINT_COUNT: u32 = 60;
-    
+        
         let radius = circle.radius * self.pixels_per_unit;
         let origin = sfml::system::Vector2f::new(1.0, 1.0) * radius;
         let drawable_pos = sfml_pos;
-    
+        
         let mut circle_shape = sfml::graphics::CircleShape::new(radius,
                                                                 POINT_COUNT);
-    
+        
         circle_shape.set_origin(origin);
         circle_shape.set_position(drawable_pos);
         
@@ -81,7 +81,7 @@ impl Canvas {
                                 body: &Body,
                                 polygon: &shapes::Polygon) -> Box<sfml::graphics::Drawable> {
         let mut convex_shape = sfml::graphics::ConvexShape::new(polygon.vert_count() as u32);
-    
+        
         for i in 0..polygon.vert_count() {
             convex_shape.set_point(i as u32,
                                    sfml_vec2(body.transform.world_dir(&polygon.vertices[i]), self.pixels_per_unit)
@@ -108,7 +108,7 @@ impl Canvas {
     
     pub fn draw_body(&mut self, body: &Body) {
         let drawable = self.get_body_drawable(body);
-    
+        
         self.draw_queue.push(drawable);
     }
     
@@ -125,7 +125,7 @@ impl Canvas {
         let sfml_b = sfml_vec2(b, self.pixels_per_unit);
         
         let mut line_array = sfml::graphics::VertexArray::new(sfml::graphics::PrimitiveType::Lines, 2);
-    
+        
         // TODO: Color parameter?
         let color = sfml::graphics::Color::RED;
         line_array.append(&sfml::graphics::Vertex::new(sfml_a, color,
@@ -148,12 +148,12 @@ impl Canvas {
         }
         
         const PADDING: f32 = 8.0;
-    
+        
         let width = self.view.size().x;
         let height = self.view.size().y;
         
         let mut text_position = sfml::system::Vector2f::new(-width / 2.0 + PADDING, -height / 2.0 + PADDING);
-    
+        
         for text_item in self.text_queue.iter() {
             let (ref text, size) = *text_item;
             let mut text_drawable = sfml::graphics::Text::new(&text, &self.font, size);

@@ -53,7 +53,7 @@ impl testbed::Testbed for CircleCollisionsTestbed {
         for body in self.world.bodies.values() {
             canvas.draw_body(&body.borrow());
         }
-    
+        
         for contact in self.world.contact_points().iter() {
             canvas.draw_point(*contact);
         }

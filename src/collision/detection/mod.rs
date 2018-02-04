@@ -7,7 +7,7 @@ use ::shapes::{Shape, Polygon};
 use ::world::{Body, Transform};
 use super::{Manifold};
 
-pub trait Collide<T=Self> {
+pub trait Collide<T = Self> {
     fn collide(&self, self_body: &Body, other: &T, other_body: &Body) -> Option<Manifold>;
 }
 
@@ -32,7 +32,9 @@ struct Face {
 impl Face {
     fn new(a: Vec2, b: Vec2, normal: Vec2) -> Face {
         Face {
-            a, b, normal,
+            a,
+            b,
+            normal,
         }
     }
     
@@ -50,7 +52,6 @@ impl Face {
 }
 
 impl Polygon {
-    
     fn face(&self, index: usize) -> Face {
         Face::new(self.vertices[index], self.vertices[(index + 1) % self.vert_count()], self.normals[index])
     }

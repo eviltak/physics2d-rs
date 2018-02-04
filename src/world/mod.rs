@@ -59,16 +59,16 @@ impl World {
                 }
             }
         }
-    
+        
         for body in self.bodies.values_mut() {
             let body = &mut body.borrow_mut();
             body.integrate_force(dt);
         }
-    
+        
         for (collision_pair, manifold) in self.collision_pairs.iter() {
             collision_pair.resolve_collision(&mut self.bodies, manifold, dt);
         }
-    
+        
         for body in self.bodies.values_mut() {
             let body = &mut body.borrow_mut();
             body.integrate_velocity(dt);

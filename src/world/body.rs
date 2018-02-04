@@ -52,10 +52,10 @@ impl Body {
         if self.is_static() {
             return;
         }
-    
+        
         self.velocity += (GRAVITY + self.force * self.inv_mass) * dt;
         self.angular_vel += self.torque * self.inv_inertia * dt;
-    
+        
         self.force = Vec2::ZERO;
         self.torque = 0.0;
     }
@@ -66,14 +66,13 @@ impl Body {
         }
         
         self.transform.position += self.velocity * dt;
-    
+        
         let new_rotation = self.transform.rotation() + self.angular_vel * dt;
         
         self.transform.set_rotation(new_rotation);
     }
     
-    pub(crate) fn update(&mut self, dt: f32) {
-    }
+    pub(crate) fn update(&mut self, dt: f32) {}
     
     pub fn set_static(&mut self) {
         self.inv_inertia = 0.0;
