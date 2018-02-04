@@ -29,7 +29,7 @@ impl CollisionPair {
         }
     }
     
-    pub fn check_collision(&self, bodies: &mut BodyMap) -> Option<Manifold> {
+    pub fn check_collision(&self, bodies: &BodyMap) -> Option<Manifold> {
         collide(&bodies[&self.body_id_pair.0].borrow(), &bodies[&self.body_id_pair.1].borrow())
     }
     
