@@ -6,7 +6,7 @@ pub use self::transform::Transform;
 
 use ::collision::{Manifold, CollisionPair};
 
-use fnv::FnvHashMap;
+use fnv::{FnvHashMap, FnvHashSet};
 
 use std::cell::RefCell;
 
@@ -30,11 +30,12 @@ impl World {
         }
     }
     
-    pub fn add_body(&mut self, body: Body) -> BodyId {
+    pub fn add_body(&mut self, mut body: Body) -> BodyId {
         let body_id = self.body_created_count as BodyId;
-        self.bodies.insert(body_id, RefCell::new(body));
-        
         self.body_created_count += 1;
+        
+        body.id = body_id;
+        self.bodies.insert(body_id, RefCell::new(body));
         
         body_id
     }
