@@ -76,10 +76,7 @@ impl Collide<Polygon> for Circle {
             penetration = self.radius - contact_dist_sqr.sqrt()
         }
         
-        let contact = Contact {
-            point: contact_point,
-            penetration,
-        };
+        let contact = Contact::new(contact_point, penetration);
         
         Some(Manifold::new(
             if corner_contact {

@@ -51,8 +51,10 @@ impl World {
                 
                 let collision_pair = CollisionPair::new(*body_a, *body_b);
                 
-                if let Some(manifold) = collision_pair.check_collision(&self.bodies) {
-                    // TODO: Do not replace manifold for cached contacts
+                if let Some(mut manifold) = collision_pair.check_collision(&self.bodies) {
+                    if let Some(old_manifold) = self.collision_pairs.get(&collision_pair) {
+                        manifold.persist_contacts(old_manifold);
+                    }
                     self.collision_pairs.insert(collision_pair, manifold);
                 } else {
                     self.collision_pairs.remove(&collision_pair);
@@ -65,7 +67,12 @@ impl World {
             body.integrate_force(dt);
         }
         
-        for (collision_pair, manifold) in self.collision_pairs.iter() {
+        // TODO: Get rid of CollisionPair/Manifold, store everything in Contact
+        for (collision_pair, manifold) in self.collision_pairs.iter_mut() {
+            collision_pair.pre_step(&mut self.bodies, manifold, dt);
+        }
+        
+        for (collision_pair, manifold) in self.collision_pairs.iter_mut() {
             collision_pair.resolve_collision(&mut self.bodies, manifold, dt);
         }
         

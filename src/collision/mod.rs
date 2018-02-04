@@ -32,7 +32,14 @@ impl CollisionPair {
         collide(&bodies[&self.body_id_pair.0].borrow(), &bodies[&self.body_id_pair.1].borrow())
     }
     
-    pub fn resolve_collision(&self, bodies: &mut FnvHashMap<BodyId, RefCell<Body>>, manifold: &Manifold, dt: f32) {
+    pub fn pre_step(&self, bodies: &mut FnvHashMap<BodyId, RefCell<Body>>, manifold: &mut Manifold, dt: f32) {
+        let body_a = &mut bodies[&self.body_id_pair.0].borrow_mut();
+        let body_b = &mut bodies[&self.body_id_pair.1].borrow_mut();
+    
+        manifold.pre_step(body_a, body_b, dt);
+    }
+    
+    pub fn resolve_collision(&self, bodies: &mut FnvHashMap<BodyId, RefCell<Body>>, manifold: &mut Manifold, dt: f32) {
         let body_a = &mut bodies[&self.body_id_pair.0].borrow_mut();
         let body_b = &mut bodies[&self.body_id_pair.1].borrow_mut();
         

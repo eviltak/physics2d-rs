@@ -179,10 +179,7 @@ impl Collide for Polygon {
                 if d > 0.0 {
                     None
                 } else {
-                    Some(Contact {
-                        point: *inc_point,
-                        penetration: -d,
-                    })
+                    Some(Contact::new(*inc_point, -d))
                 }
             }).collect()
         ))

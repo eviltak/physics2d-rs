@@ -70,8 +70,8 @@ impl testbed::Testbed for CollisionsTestbed {
         
         for manifold in self.world.manifolds() {
             for contact in manifold.contacts.iter() {
-                canvas.draw_point(contact.point);
-                canvas.draw_line(contact.point, contact.point + manifold.normal * contact.penetration)
+                canvas.draw_point(contact.position);
+                canvas.draw_line(contact.position, contact.position + manifold.normal * contact.penetration)
             }
         }
     }

@@ -15,10 +15,7 @@ impl Collide for Circle {
         let distance = normal.len();
         let normal = normal / distance;
         
-        let contact = Contact {
-            point: normal * self.radius + self_body.transform.position,
-            penetration: r - distance,
-        };
+        let contact = Contact::new(normal * self.radius + self_body.transform.position, r - distance);
         
         Some(Manifold::new(normal, vec![contact]))
     }

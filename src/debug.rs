@@ -16,7 +16,7 @@ impl DebugCollision for World {
             .flat_map(
                 |ref m|
                     m.contacts.iter()
-                     .map(|ref c| c.point))
+                     .map(|ref c| c.position))
             .collect()
     }
     
