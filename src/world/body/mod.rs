@@ -1,11 +1,12 @@
+mod pair;
+
+pub use self::pair::BodyPair;
+
 use math::{Vec2, Cross};
 use ::shapes::{Shape, Matter};
 use ::world::Transform;
 
 pub type BodyId = usize;
-
-#[derive(Copy, Clone, Eq, PartialEq, Hash)]
-pub struct BodyPair(pub BodyId, pub BodyId);
 
 pub struct Body {
     pub id: BodyId,
