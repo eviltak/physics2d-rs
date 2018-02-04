@@ -356,6 +356,38 @@ impl<'a, 'b> Mul<&'b f32> for &'a Vec2 {
     }
 }
 
+impl Mul<Vec2> for f32 {
+    type Output = Vec2;
+    
+    fn mul(self, v: Vec2) -> Vec2 {
+        Vec2::new(self * v.x, self * v.y)
+    }
+}
+
+impl<'a> Mul<Vec2> for &'a f32 {
+    type Output = Vec2;
+    
+    fn mul(self, v: Vec2) -> Vec2 {
+        Vec2::new(self * v.x, self * v.y)
+    }
+}
+
+impl<'b> Mul<&'b Vec2> for f32 {
+    type Output = Vec2;
+    
+    fn mul(self, v: &'b Vec2) -> Vec2 {
+        Vec2::new(self * v.x, self * v.y)
+    }
+}
+
+impl<'a, 'b> Mul<&'b Vec2> for &'a f32 {
+    type Output = Vec2;
+    
+    fn mul(self, v: &'b Vec2) -> Vec2 {
+        Vec2::new(self * v.x, self * v.y)
+    }
+}
+
 impl MulAssign<f32> for Vec2 {
     fn mul_assign(&mut self, s: f32) {
         *self = Vec2 {
