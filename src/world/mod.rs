@@ -10,8 +10,10 @@ use fnv::FnvHashMap;
 
 use std::cell::RefCell;
 
+pub(crate) type BodyMap = FnvHashMap<BodyId, RefCell<Body>>;
+
 pub struct World {
-    pub bodies: FnvHashMap<BodyId, RefCell<Body>>,
+    pub bodies: BodyMap,
     
     // TODO: Extract to broadphaser
     pub(crate) collision_pairs: FnvHashMap<CollisionPair, Manifold>,

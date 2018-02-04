@@ -10,6 +10,7 @@ use ::world::{Body, BodyId};
 use fnv::FnvHashMap;
 
 use std::cell::RefCell;
+use world::BodyMap;
 
 #[derive(Hash, PartialEq, Eq)]
 pub struct CollisionPair {
@@ -28,18 +29,18 @@ impl CollisionPair {
         }
     }
     
-    pub fn check_collision(&self, bodies: &FnvHashMap<BodyId, RefCell<Body>>) -> Option<Manifold> {
+    pub fn check_collision(&self, bodies: &mut BodyMap) -> Option<Manifold> {
         collide(&bodies[&self.body_id_pair.0].borrow(), &bodies[&self.body_id_pair.1].borrow())
     }
     
-    pub fn pre_step(&self, bodies: &mut FnvHashMap<BodyId, RefCell<Body>>, manifold: &mut Manifold, dt: f32) {
+    pub fn pre_step(&self, bodies: &mut BodyMap, manifold: &mut Manifold, dt: f32) {
         let body_a = &mut bodies[&self.body_id_pair.0].borrow_mut();
         let body_b = &mut bodies[&self.body_id_pair.1].borrow_mut();
     
         manifold.pre_step(body_a, body_b, dt);
     }
     
-    pub fn resolve_collision(&self, bodies: &mut FnvHashMap<BodyId, RefCell<Body>>, manifold: &mut Manifold, dt: f32) {
+    pub fn resolve_collision(&self, bodies: &mut BodyMap, manifold: &mut Manifold, dt: f32) {
         let body_a = &mut bodies[&self.body_id_pair.0].borrow_mut();
         let body_b = &mut bodies[&self.body_id_pair.1].borrow_mut();
         
