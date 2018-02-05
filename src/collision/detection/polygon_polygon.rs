@@ -2,7 +2,7 @@ use super::{Collide, Face};
 use ::math::{Vec2};
 use ::shapes::{Polygon};
 use ::world::{Body, Transform};
-use ::collision::{Contact, ContactManifold};
+use ::collision::{Contact, VelocityConstraintManifold};
 
 impl Face {
     fn clip_points_below(&self, points: &[Vec2; 2]) -> ([Vec2; 2], usize) {

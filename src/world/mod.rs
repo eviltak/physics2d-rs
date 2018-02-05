@@ -5,23 +5,24 @@ pub use self::body::{Body, BodyId};
 pub use self::transform::Transform;
 pub(crate) use self::body::BodyPair;
 
-use collision::{ContactManifold, collide};
-use constraint::contact::VelocityContactSolver;
-use constraint::Solver;
+use collision::{VelocityConstraintManifold, Contact, collide};
+use constraint::ConstraintSolver;
 
-use fnv::{FnvHashMap, FnvHashSet};
+use fnv::{FnvHashMap};
 
 use std::cell::RefCell;
 
 pub(crate) type BodyMap = FnvHashMap<BodyId, RefCell<Body>>;
+pub(crate) type ContactsMap = FnvHashMap<BodyPair, Vec<Contact>>;
+
+type VelocityConstraintManifoldMap = FnvHashMap<BodyPair, VelocityConstraintManifold>;
 
 pub struct World {
     pub bodies: BodyMap,
     
-    // TODO: Extract to broadphaser
-    pub(crate) manifolds: FnvHashMap<BodyPair, ContactManifold>,
-    
-    velocity_contact_solver: VelocityContactSolver,
+    // TODO: Why use contacts, store directly in manifolds?
+    pub(crate) contacts: ContactsMap,
+    velocity_constraint_manifolds: VelocityConstraintManifoldMap,
     
     body_created_count: usize,
 }
@@ -29,9 +30,9 @@ pub struct World {
 impl World {
     pub fn new() -> World {
         World {
-            bodies: FnvHashMap::default(),
-            manifolds: FnvHashMap::default(),
-            velocity_contact_solver: VelocityContactSolver,
+            bodies: BodyMap::default(),
+            contacts: ContactsMap::default(),
+            velocity_constraint_manifolds: VelocityConstraintManifoldMap::default(),
             body_created_count: 0,
         }
     }
@@ -52,6 +53,7 @@ impl World {
             body.update(dt);
         }
         
+        // TODO: Extract body pair generation to broadphaser
         for body_a_id in self.bodies.keys() {
             for body_b_id in self.bodies.keys() {
                 if body_b_id <= body_a_id {
@@ -62,17 +64,22 @@ impl World {
     
                 let body_a = &self.bodies[&body_pair.0].borrow();
                 let body_b = &self.bodies[&body_pair.1].borrow();
-                
+    
                 if let Some(new_contacts) = collide(body_a, body_b) {
-                    // If we already have a manifold with the given bodies, update contacts
-                    if self.manifolds.contains_key(&body_pair) {
-                        let manifold = self.manifolds.get_mut(&body_pair).unwrap();
-                        manifold.update_contacts(new_contacts);
-                    } else {
-                        self.manifolds.insert(body_pair, ContactManifold::new(body_pair, new_contacts));
+                    // TODO: Use closure (callback) when extracted to broadphaser
+                    if self.velocity_constraint_manifolds.contains_key(&body_pair) {
+                        self.velocity_constraint_manifolds.get_mut(&body_pair).unwrap().update_constraints(&new_contacts);
                     }
+                    else {
+                        self.velocity_constraint_manifolds
+                            .insert(body_pair, VelocityConstraintManifold::new(body_pair, &new_contacts));
+                    }
+                    
+                    *self.contacts.entry(body_pair).or_insert(Vec::new()) = new_contacts;
                 } else {
-                    self.manifolds.remove(&body_pair);
+                    self.contacts.remove(&body_pair);
+                    
+                    self.velocity_constraint_manifolds.remove(&body_pair);
                 }
             }
         }
@@ -82,25 +89,25 @@ impl World {
             body.integrate_force(dt);
         }
         
-        for (body_pair, manifold) in self.manifolds.iter_mut() {
+        for (body_pair, manifold) in self.velocity_constraint_manifolds.iter_mut() {
             let body_a = &self.bodies[&body_pair.0].borrow();
             let body_b = &self.bodies[&body_pair.1].borrow();
             
-            self.velocity_contact_solver.initialize(manifold, body_a, body_b, dt);
+            manifold.initialize_constraints(body_a, body_b, dt);
         }
     
-        for (body_pair, manifold) in self.manifolds.iter_mut() {
+        for (body_pair, manifold) in self.velocity_constraint_manifolds.iter_mut() {
             let body_a = &mut self.bodies[&body_pair.0].borrow_mut();
             let body_b = &mut self.bodies[&body_pair.1].borrow_mut();
         
-            self.velocity_contact_solver.warm_start(manifold, body_a, body_b, dt);
+            manifold.warm_start(body_a, body_b, dt);
         }
         
-        for (body_pair, manifold) in self.manifolds.iter_mut() {
+        for (body_pair, manifold) in self.velocity_constraint_manifolds.iter_mut() {
             let body_a = &mut self.bodies[&body_pair.0].borrow_mut();
             let body_b = &mut self.bodies[&body_pair.1].borrow_mut();
         
-            self.velocity_contact_solver.solve(manifold, body_a, body_b, dt);
+            manifold.solve_constraints(body_a, body_b, dt);
         }
         
         for body in self.bodies.values_mut() {

@@ -68,11 +68,9 @@ impl testbed::Testbed for CollisionsTestbed {
         canvas.draw_text(format!("FPS: {}", 1.0 / dt), 16);
         canvas.draw_text(format!("Body count: {}", self.world.bodies.len()), 16);
         
-        for manifold in self.world.manifolds() {
-            for contact in manifold.contacts.iter() {
-                canvas.draw_point(contact.position);
-                canvas.draw_line(contact.position, contact.position + contact.normal * contact.penetration)
-            }
+        for contact in self.world.contacts() {
+            canvas.draw_point(contact.position);
+            canvas.draw_line(contact.position, contact.position + contact.normal * contact.penetration)
         }
     }
 }
