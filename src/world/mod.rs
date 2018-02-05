@@ -86,7 +86,7 @@ impl World {
             let body_a = &self.bodies[&body_pair.0].borrow();
             let body_b = &self.bodies[&body_pair.1].borrow();
             
-            self.velocity_contact_solver.initialize_constraints(manifold, body_a, body_b, dt);
+            self.velocity_contact_solver.initialize(manifold, body_a, body_b, dt);
         }
     
         for (body_pair, manifold) in self.manifolds.iter_mut() {

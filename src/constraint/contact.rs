@@ -11,7 +11,7 @@ const RESTITUTION_VELOCITY_SLOP: f32 = 0.5;
 pub struct VelocityContactSolver;
 
 impl super::Solver<ContactManifold> for VelocityContactSolver {
-    fn initialize_constraints(&self, manifold: &mut ContactManifold, a: &Body, b: &Body, dt: f32) {
+    fn initialize(&self, manifold: &mut ContactManifold, a: &Body, b: &Body, dt: f32) {
         if a.inv_mass + b.inv_mass == 0.0 {
             return;
         }
