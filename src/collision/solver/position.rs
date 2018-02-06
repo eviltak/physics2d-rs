@@ -6,8 +6,8 @@ use world::Body;
 const PENETRATION_SLOP: f32 = 0.005;
 const BAUMGARTE: f32 = 0.1;
 
-struct PositionConstraint {
-    contact: Contact,
+pub(crate) struct PositionConstraint {
+    pub(crate) contact: Contact,
     normal_mass: f32,
 }
 
@@ -21,7 +21,7 @@ impl PositionConstraint {
 }
 
 pub struct PositionConstraintManifold {
-    constraints: Vec<PositionConstraint>,
+    pub(crate) constraints: Vec<PositionConstraint>,
 }
 
 impl PositionConstraintManifold {
