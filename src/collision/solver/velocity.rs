@@ -36,17 +36,12 @@ impl VelocityConstraint {
 }
 
 pub struct VelocityConstraintManifold {
-    pub body_a: BodyId,
-    pub body_b: BodyId,
-    
     pub(crate) constraints: Vec<VelocityConstraint>,
 }
 
 impl VelocityConstraintManifold {
-    pub fn new(body_pair: BodyPair, contacts: &Vec<Contact>) -> VelocityConstraintManifold {
+    pub fn new(contacts: &Vec<Contact>) -> VelocityConstraintManifold {
         VelocityConstraintManifold {
-            body_a: body_pair.0,
-            body_b: body_pair.1,
             constraints: contacts.iter().map(|contact| VelocityConstraint::new(*contact)).collect(),
         }
     }

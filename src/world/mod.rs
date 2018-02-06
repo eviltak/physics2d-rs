@@ -72,7 +72,7 @@ impl World {
                     self.velocity_constraint_manifolds.get_mut(&pair).unwrap().update_constraints(&new_contacts);
                 } else {
                     self.velocity_constraint_manifolds
-                        .insert(pair, VelocityConstraintManifold::new(pair, &new_contacts));
+                        .insert(pair, VelocityConstraintManifold::new(&new_contacts));
                 }
         
                 self.position_constraint_manifolds.insert(pair, PositionConstraintManifold::new(&new_contacts));
