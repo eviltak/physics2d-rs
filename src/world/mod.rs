@@ -69,17 +69,16 @@ impl World {
                 }
                 
                 let body_pair = BodyPair(*body_a_id, *body_b_id);
-    
+                
                 // TODO: Use BodyPair::with
                 let body_a = &self.bodies[&body_pair.0].borrow();
                 let body_b = &self.bodies[&body_pair.1].borrow();
-    
+                
                 if let Some(new_contacts) = collide(body_a, body_b) {
                     // TODO: Use closure (callback) when extracted to broadphaser
                     if self.velocity_constraint_manifolds.contains_key(&body_pair) {
                         self.velocity_constraint_manifolds.get_mut(&body_pair).unwrap().update_constraints(&new_contacts);
-                    }
-                    else {
+                    } else {
                         self.velocity_constraint_manifolds
                             .insert(body_pair, VelocityConstraintManifold::new(body_pair, &new_contacts));
                     }
@@ -102,33 +101,30 @@ impl World {
         }
         
         for (body_pair, manifold) in self.velocity_constraint_manifolds.iter_mut() {
-            body_pair.with(&self.bodies,
-                           |body_a, body_b|  manifold.initialize_constraints(body_a, body_b, dt));
-        }
-    
-        for (body_pair, manifold) in self.velocity_constraint_manifolds.iter_mut() {
-            body_pair.with_mut(&self.bodies,
-                               |body_a, body_b| manifold.warm_start(body_a, body_b, dt));
+            body_pair.with(&self.bodies, |body_a, body_b| manifold.initialize_constraints(body_a, body_b, dt));
         }
         
         for (body_pair, manifold) in self.velocity_constraint_manifolds.iter_mut() {
-            body_pair.with_mut(&self.bodies,
-                               |body_a, body_b| manifold.solve_constraints(body_a, body_b, dt));
+            body_pair.with_mut(&self.bodies, |body_a, body_b| manifold.warm_start(body_a, body_b, dt));
+        }
+        
+        for (body_pair, manifold) in self.velocity_constraint_manifolds.iter_mut() {
+            body_pair.with_mut(&self.bodies, |body_a, body_b| manifold.solve_constraints(body_a, body_b, dt));
         }
         
         for body in self.bodies.values_mut() {
             let body = &mut body.borrow_mut();
             body.integrate_velocity(dt);
         }
-    
+        
         for (body_pair, manifold) in self.position_constraint_manifolds.iter_mut() {
-            body_pair.with(&self.bodies, |body_a, body_b|  manifold.initialize_constraints(body_a, body_b, dt));
+            body_pair.with(&self.bodies, |body_a, body_b| manifold.initialize_constraints(body_a, body_b, dt));
         }
-    
+        
         for (body_pair, manifold) in self.position_constraint_manifolds.iter_mut() {
             body_pair.with_mut(&self.bodies, |body_a, body_b| manifold.warm_start(body_a, body_b, dt));
         }
-    
+        
         for (body_pair, manifold) in self.position_constraint_manifolds.iter_mut() {
             body_pair.with_mut(&self.bodies, |body_a, body_b| manifold.solve_constraints(body_a, body_b, dt));
         }

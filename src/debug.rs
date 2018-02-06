@@ -11,10 +11,7 @@ impl DebugCollision for World {
     fn contact_points(&self) -> Vec<Vec2> {
         self.contacts
             .values()
-            .flat_map(
-                |ref contacts|
-                    contacts.iter()
-                     .map(|ref c| c.position))
+            .flat_map(|ref contacts| contacts.iter().map(|ref c| c.position))
             .collect()
     }
     

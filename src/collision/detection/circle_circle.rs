@@ -15,7 +15,7 @@ impl Collide for Circle {
         let distance = normal.len();
         let normal = normal / distance;
         let contact_position = normal * self.radius + self_body.transform.position;
-    
+        
         let contact = Contact::new(contact_position, r - distance, normal);
         
         Some(vec![contact])
