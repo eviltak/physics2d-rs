@@ -86,6 +86,40 @@ impl Vec2 {
         }
     }
     
+    /// Returns a vector whose components are the minimum of the corresponding components
+    /// of the two vectors.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use physics2d::Vec2;
+    /// let a = Vec2::new(3.0, 40.0);
+    /// let b = Vec2::new(40.0, 3.0);
+    ///
+    /// assert_eq!(a.min(&b), Vec2::new(3.0, 3.0));
+    /// ```
+    #[inline]
+    pub fn min(&self, other: &Vec2) -> Vec2 {
+        Vec2::new(self.x.min(other.x), self.y.min(other.y))
+    }
+    
+    /// Returns a vector whose components are the maximum of the corresponding components
+    /// of the two vectors.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use physics2d::Vec2;
+    /// let a = Vec2::new(3.0, 40.0);
+    /// let b = Vec2::new(40.0, 3.0);
+    ///
+    /// assert_eq!(a.max(&b), Vec2::new(40.0, 40.0));
+    /// ```
+    #[inline]
+    pub fn max(&self, other: &Vec2) -> Vec2 {
+        Vec2::new(self.x.max(other.x), self.y.max(other.y))
+    }
+    
     pub const ZERO: Vec2 = Vec2 { x: 0.0, y: 0.0 };
     
     pub const UP: Vec2 = Vec2 { x: 0.0, y: 1.0 };

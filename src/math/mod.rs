@@ -9,6 +9,9 @@ use std::f32;
 /// The mathematical constant Pi.
 pub const PI: f32 = f32::consts::PI;
 
+/// Infinity; a value that is larger than all other possible values.
+pub const INFINITY: f32 = f32::INFINITY;
+
 /// Clamps (limits) the value of `x` in the inclusive range from `min` to `max`.
 ///
 /// If `x < min`, `min` is returned. If `x > max`, `max` is returned.

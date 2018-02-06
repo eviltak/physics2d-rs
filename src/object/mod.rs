@@ -14,4 +14,8 @@ impl Aabb {
             max,
         }
     }
+    
+    pub fn with_extents(center: Vec2, extents: Vec2) -> Aabb {
+        Aabb::new(center - extents, center + extents)
+    }
 }

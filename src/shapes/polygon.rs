@@ -1,4 +1,6 @@
-use math::{Vec2, Cross};
+use math::{Vec2, Cross, INFINITY};
+use world::Transform;
+use object::Aabb;
 
 pub struct Polygon {
     pub vertices: Vec<Vec2>,
@@ -79,5 +81,18 @@ impl super::Matter for Polygon {
         }
         
         (area * density, density_inertia * density)
+    }
+    
+    fn aabb(&self, transform: Option<&Transform>) -> Aabb {
+        let mut min = Vec2::ONE * INFINITY;
+        let mut max = -Vec2::ONE * INFINITY;
+        
+        for vertex in self.vertices.iter() {
+            let vertex = if let Some(t) = transform { t.world_pos(&vertex) } else { *vertex };
+            min = min.min(&vertex);
+            max = max.max(&vertex);
+        }
+        
+        Aabb::new(min, max)
     }
 }
