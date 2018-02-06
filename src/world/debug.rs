@@ -9,13 +9,16 @@ pub trait DebugCollision {
 
 impl DebugCollision for World {
     fn contact_points(&self) -> Vec<Vec2> {
-        self.contacts
+        self.velocity_constraint_manifolds
             .values()
-            .flat_map(|ref contacts| contacts.iter().map(|ref c| c.position))
+            .flat_map(|manifold| manifold.constraints.iter().map(|constraint| constraint.contact.position))
             .collect()
     }
     
     fn contacts(&self) -> Vec<&Contact> {
-        self.contacts.values().flat_map(|contacts| contacts).collect()
+        self.velocity_constraint_manifolds
+            .values()
+            .flat_map(|manifold| manifold.constraints.iter().map(|constraint| &constraint.contact))
+            .collect()
     }
 }

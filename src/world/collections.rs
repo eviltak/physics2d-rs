@@ -5,7 +5,6 @@ use constraint::ConstraintSolver;
 use fnv::FnvHashMap;
 
 pub type BodyMap = FnvHashMap<BodyId, BodyRef>;
-pub type ContactsMap = FnvHashMap<BodyPair, Vec<Contact>>;
 
 pub type ManifoldMap<T: ConstraintSolver> = FnvHashMap<BodyPair, T>;
 

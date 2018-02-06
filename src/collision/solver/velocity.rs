@@ -7,8 +7,8 @@ use collision::Contact;
 
 const RESTITUTION_VELOCITY_SLOP: f32 = 0.5;
 
-struct VelocityConstraint {
-    contact: Contact,
+pub(crate) struct VelocityConstraint {
+    pub(crate) contact: Contact,
     
     normal_impulse: f32,
     tangent_impulse: f32,
@@ -39,7 +39,7 @@ pub struct VelocityConstraintManifold {
     pub body_a: BodyId,
     pub body_b: BodyId,
     
-    constraints: Vec<VelocityConstraint>,
+    pub(crate) constraints: Vec<VelocityConstraint>,
 }
 
 impl VelocityConstraintManifold {

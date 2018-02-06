@@ -48,7 +48,7 @@ impl PyramidTestbed {
         //  Pyramid (taken directly from Box2D Lite)
         let mut x = Vec2::new(-window_width / 2.0 + WIDTH * 0.5 + 1.0, -window_height / 2.0 + WIDTH * 0.5 + ground_height);
         
-        const N: u32 = 18;
+        const N: u32 = 20;
         
         for i in 0..N {
             let mut y = x;

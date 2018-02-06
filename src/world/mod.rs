@@ -1,11 +1,12 @@
 mod transform;
 mod collections;
 mod body;
+pub mod debug;
 
 pub use self::body::{Body, BodyId, BodyRef, Material};
 pub use self::transform::Transform;
 pub(crate) use self::body::BodyPair;
-pub(crate) use self::collections::{BodyMap, ContactsMap};
+pub(crate) use self::collections::{BodyMap};
 
 use self::collections::{ManifoldMap, ConstraintSolverMap};
 use collision::{VelocityConstraintManifold, PositionConstraintManifold, collide};
@@ -16,8 +17,6 @@ pub struct World {
     
     broad_phase: NaiveBroadPhase,
     
-    // TODO: Why use contacts, store directly in manifolds?
-    pub(crate) contacts: ContactsMap,
     velocity_constraint_manifolds: ManifoldMap<VelocityConstraintManifold>,
     position_constraint_manifolds: ManifoldMap<PositionConstraintManifold>,
     
@@ -29,7 +28,6 @@ impl World {
         World {
             bodies: BodyMap::default(),
             broad_phase: NaiveBroadPhase,
-            contacts: ContactsMap::default(),
             velocity_constraint_manifolds: ManifoldMap::default(),
             position_constraint_manifolds: ManifoldMap::default(),
             body_created_count: 0,
@@ -62,10 +60,8 @@ impl World {
         
         let potential_pairs = self.broad_phase.potential_pairs(&self.bodies);
         
-        // TODO: Use HashSet in BroadPhase to optimize contains operation
         self.velocity_constraint_manifolds.retain(|pair, _v| potential_pairs.contains(&pair));
         self.position_constraint_manifolds.retain(|pair, _v| potential_pairs.contains(&pair));
-        self.contacts.retain(|pair, _v| potential_pairs.contains(&pair));
     
         for pair in potential_pairs {
             let body_a = &self.bodies[&pair.0].borrow();
@@ -80,11 +76,7 @@ impl World {
                 }
         
                 self.position_constraint_manifolds.insert(pair, PositionConstraintManifold::new(&new_contacts));
-        
-                *self.contacts.entry(pair).or_insert(Vec::new()) = new_contacts;
             } else {
-                self.contacts.remove(&pair);
-        
                 self.velocity_constraint_manifolds.remove(&pair);
                 self.position_constraint_manifolds.remove(&pair);
             }
