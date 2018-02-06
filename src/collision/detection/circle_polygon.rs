@@ -1,8 +1,8 @@
 use super::{Collide};
-use ::math::{Vec2, clamp01};
-use ::shapes::{Circle, Polygon};
-use ::world::{Body, Transform};
-use ::collision::{Contact, VelocityConstraintManifold};
+use math::{Vec2, clamp01};
+use shapes::{Circle, Polygon};
+use world::{Body, Transform};
+use collision::{Contact};
 
 impl Circle {
     /// Returns the face for which the penetration of the circle is least, the penetration and the corresponding
@@ -65,7 +65,7 @@ impl Collide<Polygon> for Circle {
         let contact_point = face.a + face_vec * t;
         let contact_point = other_transform.world_pos(&contact_point);
         
-        let rel_contact_point = (contact_point - self_transform.position);
+        let rel_contact_point = contact_point - self_transform.position;
         let contact_dist_sqr = rel_contact_point.sqr_len();
         
         if contact_dist_sqr > self.radius * self.radius {

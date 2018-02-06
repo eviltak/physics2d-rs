@@ -83,7 +83,7 @@ impl Body {
         self.transform.set_rotation(new_rotation);
     }
     
-    pub(crate) fn update(&mut self, dt: f32) {}
+    pub(crate) fn update(&mut self, _dt: f32) {}
     
     pub fn set_static(&mut self) {
         self.inv_inertia = 0.0;

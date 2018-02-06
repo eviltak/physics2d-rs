@@ -1,7 +1,7 @@
-use math::{Vec2, Cross};
+use math::{Cross};
 use world::{Body, BodyId};
 use math::clamp;
-use world::{BodyPair, BodyMap};
+use world::{BodyPair};
 use constraint::ConstraintSolver;
 use collision::Contact;
 
@@ -73,7 +73,7 @@ impl VelocityConstraintManifold {
 }
 
 impl ConstraintSolver for VelocityConstraintManifold {
-    fn initialize_constraints(&mut self, a: &Body, b: &Body, dt: f32) {
+    fn initialize_constraints(&mut self, a: &Body, b: &Body, _dt: f32) {
         if a.inv_mass + b.inv_mass == 0.0 {
             return;
         }
@@ -115,7 +115,7 @@ impl ConstraintSolver for VelocityConstraintManifold {
         }
     }
     
-    fn warm_start(&mut self, a: &mut Body, b: &mut Body, dt: f32) {
+    fn warm_start(&mut self, a: &mut Body, b: &mut Body, _dt: f32) {
         if a.inv_mass + b.inv_mass == 0.0 {
             return;
         }
@@ -132,7 +132,7 @@ impl ConstraintSolver for VelocityConstraintManifold {
         }
     }
     
-    fn solve_constraints(&mut self, a: &mut Body, b: &mut Body, dt: f32) {
+    fn solve_constraints(&mut self, a: &mut Body, b: &mut Body, _dt: f32) {
         // TODO: Remove this via precondition
         if a.inv_mass + b.inv_mass == 0.0 {
             return;

@@ -1,8 +1,6 @@
-use world::{World, BodyPair};
+use world::{World};
 use ::math::{Vec2};
 use collision::Contact;
-
-use std::collections::HashSet;
 
 pub trait DebugCollision {
     fn contact_points(&self) -> Vec<Vec2>;

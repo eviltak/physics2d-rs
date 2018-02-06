@@ -1,7 +1,7 @@
 use super::Collide;
-use ::shapes::{Circle};
-use ::world::{Body};
-use ::collision::{Contact, VelocityConstraintManifold};
+use shapes::{Circle};
+use world::{Body};
+use collision::{Contact};
 
 impl Collide for Circle {
     fn collide(&self, self_body: &Body, other: &Circle, other_body: &Body) -> Option<Vec<Contact>> {
