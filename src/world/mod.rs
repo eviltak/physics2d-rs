@@ -1,7 +1,7 @@
 mod body;
 mod transform;
 
-pub use self::body::{Body, BodyId};
+pub use self::body::{Body, BodyId, BodyRef};
 pub use self::transform::Transform;
 pub(crate) use self::body::BodyPair;
 
@@ -10,9 +10,7 @@ use constraint::ConstraintSolver;
 
 use fnv::{FnvHashMap};
 
-use std::cell::RefCell;
-
-pub(crate) type BodyMap = FnvHashMap<BodyId, RefCell<Body>>;
+pub(crate) type BodyMap = FnvHashMap<BodyId, BodyRef>;
 pub(crate) type ContactsMap = FnvHashMap<BodyPair, Vec<Contact>>;
 
 type VelocityConstraintManifoldMap = FnvHashMap<BodyPair, VelocityConstraintManifold>;
@@ -41,8 +39,7 @@ impl World {
         let body_id = self.body_created_count as BodyId;
         self.body_created_count += 1;
         
-        body.id = body_id;
-        self.bodies.insert(body_id, RefCell::new(body));
+        self.bodies.insert(body_id, BodyRef::new(body));
         
         body_id
     }

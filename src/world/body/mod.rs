@@ -6,11 +6,13 @@ use math::{Vec2, Cross};
 use ::shapes::{Shape, Matter};
 use ::world::Transform;
 
+use std::cell::RefCell;
+
+pub type BodyRef = RefCell<Body>;
+
 pub type BodyId = usize;
 
 pub struct Body {
-    pub id: BodyId,
-    
     pub transform: Transform,
     
     pub velocity: Vec2,
@@ -36,7 +38,6 @@ impl Body {
         let inv_inertia = if inertia != 0.0 { 1.0 / inertia } else { 0.0f32 };
         
         Body {
-            id: BodyId::default(),
             transform: Transform::new(Vec2::ZERO, 0.0),
             velocity: Vec2::ZERO,
             angular_vel: 0.0,
