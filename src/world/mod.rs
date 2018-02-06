@@ -1,19 +1,14 @@
 mod body;
 mod transform;
+mod collections;
 
 pub use self::body::{Body, BodyId, BodyRef};
 pub use self::transform::Transform;
 pub(crate) use self::body::BodyPair;
+pub(crate) use self::collections::{BodyMap, ContactsMap};
 
-use collision::{VelocityConstraintManifold, PositionConstraintManifold, Contact, collide};
-use constraint::ConstraintSolver;
-
-use fnv::{FnvHashMap};
-
-pub(crate) type BodyMap = FnvHashMap<BodyId, BodyRef>;
-pub(crate) type ContactsMap = FnvHashMap<BodyPair, Vec<Contact>>;
-
-type ManifoldMap<T> = FnvHashMap<BodyPair, T>;
+use self::collections::{ManifoldMap, ConstraintSolverMap};
+use collision::{VelocityConstraintManifold, PositionConstraintManifold, collide};
 
 pub struct World {
     bodies: BodyMap,
@@ -100,33 +95,17 @@ impl World {
             body.integrate_force(dt);
         }
         
-        for (body_pair, manifold) in self.velocity_constraint_manifolds.iter_mut() {
-            body_pair.with(&self.bodies, |body_a, body_b| manifold.initialize_constraints(body_a, body_b, dt));
-        }
-        
-        for (body_pair, manifold) in self.velocity_constraint_manifolds.iter_mut() {
-            body_pair.with_mut(&self.bodies, |body_a, body_b| manifold.warm_start(body_a, body_b, dt));
-        }
-        
-        for (body_pair, manifold) in self.velocity_constraint_manifolds.iter_mut() {
-            body_pair.with_mut(&self.bodies, |body_a, body_b| manifold.solve_constraints(body_a, body_b, dt));
-        }
+        self.velocity_constraint_manifolds.initialize_constraints(&self.bodies, dt);
+        self.velocity_constraint_manifolds.warm_start(&self.bodies, dt);
+        self.velocity_constraint_manifolds.solve_constraints(&self.bodies, dt);
         
         for body in self.bodies.values_mut() {
             let body = &mut body.borrow_mut();
             body.integrate_velocity(dt);
         }
         
-        for (body_pair, manifold) in self.position_constraint_manifolds.iter_mut() {
-            body_pair.with(&self.bodies, |body_a, body_b| manifold.initialize_constraints(body_a, body_b, dt));
-        }
-        
-        for (body_pair, manifold) in self.position_constraint_manifolds.iter_mut() {
-            body_pair.with_mut(&self.bodies, |body_a, body_b| manifold.warm_start(body_a, body_b, dt));
-        }
-        
-        for (body_pair, manifold) in self.position_constraint_manifolds.iter_mut() {
-            body_pair.with_mut(&self.bodies, |body_a, body_b| manifold.solve_constraints(body_a, body_b, dt));
-        }
+        self.position_constraint_manifolds.initialize_constraints(&self.bodies, dt);
+        self.position_constraint_manifolds.warm_start(&self.bodies, dt);
+        self.position_constraint_manifolds.solve_constraints(&self.bodies, dt);
     }
 }
