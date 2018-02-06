@@ -5,6 +5,7 @@ pub use self::pair::BodyPair;
 use math::{Vec2, Cross};
 use ::shapes::{Shape, Matter};
 use ::world::Transform;
+use object::Aabb;
 
 use std::cell::RefCell;
 
@@ -45,12 +46,15 @@ pub struct Body {
     pub inv_inertia: f32,
     
     pub shape: Shape,
+    pub aabb: Aabb,
     
     pub material: Material,
 }
 
 impl Body {
     pub fn new(shape: Shape, density: f32, material: Material) -> Body {
+        let transform = Transform::new(Vec2::ZERO, 0.0);
+        let aabb = shape.aabb(Some(&transform));
         let (mass, inertia) = shape.mass_and_inertia(density);
         
         let inv_mass = if mass != 0.0 { 1.0 / mass } else { 0.0f32 };
@@ -58,7 +62,7 @@ impl Body {
         
         Body {
             id: BodyId::default(),
-            transform: Transform::new(Vec2::ZERO, 0.0),
+            transform,
             velocity: Vec2::ZERO,
             angular_vel: 0.0,
             force: Vec2::ZERO,
@@ -70,6 +74,7 @@ impl Body {
             inv_inertia,
             
             shape,
+            aabb,
             material,
         }
     }
@@ -101,7 +106,9 @@ impl Body {
         self.transform.set_rotation(new_rotation);
     }
     
-    pub(crate) fn update(&mut self, _dt: f32) {}
+    pub(crate) fn update(&mut self, _dt: f32) {
+        self.aabb = self.shape.aabb(Some(&self.transform));
+    }
     
     pub fn set_static(&mut self) {
         self.inv_inertia = 0.0;
