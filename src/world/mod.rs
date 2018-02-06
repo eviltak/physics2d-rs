@@ -5,7 +5,7 @@ pub use self::body::{Body, BodyId, BodyRef};
 pub use self::transform::Transform;
 pub(crate) use self::body::BodyPair;
 
-use collision::{VelocityConstraintManifold, Contact, collide};
+use collision::{VelocityConstraintManifold, PositionConstraintManifold, Contact, collide};
 use constraint::ConstraintSolver;
 
 use fnv::{FnvHashMap};
@@ -13,14 +13,15 @@ use fnv::{FnvHashMap};
 pub(crate) type BodyMap = FnvHashMap<BodyId, BodyRef>;
 pub(crate) type ContactsMap = FnvHashMap<BodyPair, Vec<Contact>>;
 
-type VelocityConstraintManifoldMap = FnvHashMap<BodyPair, VelocityConstraintManifold>;
+type ManifoldMap<T> = FnvHashMap<BodyPair, T>;
 
 pub struct World {
     bodies: BodyMap,
     
     // TODO: Why use contacts, store directly in manifolds?
     pub(crate) contacts: ContactsMap,
-    velocity_constraint_manifolds: VelocityConstraintManifoldMap,
+    velocity_constraint_manifolds: ManifoldMap<VelocityConstraintManifold>,
+    position_constraint_manifolds: ManifoldMap<PositionConstraintManifold>,
     
     body_created_count: usize,
 }
@@ -30,7 +31,8 @@ impl World {
         World {
             bodies: BodyMap::default(),
             contacts: ContactsMap::default(),
-            velocity_constraint_manifolds: VelocityConstraintManifoldMap::default(),
+            velocity_constraint_manifolds: ManifoldMap::default(),
+            position_constraint_manifolds: ManifoldMap::default(),
             body_created_count: 0,
         }
     }
@@ -82,11 +84,14 @@ impl World {
                             .insert(body_pair, VelocityConstraintManifold::new(body_pair, &new_contacts));
                     }
                     
+                    self.position_constraint_manifolds.insert(body_pair, PositionConstraintManifold::new(&new_contacts));
+                    
                     *self.contacts.entry(body_pair).or_insert(Vec::new()) = new_contacts;
                 } else {
                     self.contacts.remove(&body_pair);
                     
                     self.velocity_constraint_manifolds.remove(&body_pair);
+                    self.position_constraint_manifolds.remove(&body_pair);
                 }
             }
         }
@@ -114,6 +119,18 @@ impl World {
         for body in self.bodies.values_mut() {
             let body = &mut body.borrow_mut();
             body.integrate_velocity(dt);
+        }
+    
+        for (body_pair, manifold) in self.position_constraint_manifolds.iter_mut() {
+            body_pair.with(&self.bodies, |body_a, body_b|  manifold.initialize_constraints(body_a, body_b, dt));
+        }
+    
+        for (body_pair, manifold) in self.position_constraint_manifolds.iter_mut() {
+            body_pair.with_mut(&self.bodies, |body_a, body_b| manifold.warm_start(body_a, body_b, dt));
+        }
+    
+        for (body_pair, manifold) in self.position_constraint_manifolds.iter_mut() {
+            body_pair.with_mut(&self.bodies, |body_a, body_b| manifold.solve_constraints(body_a, body_b, dt));
         }
     }
 }

@@ -5,7 +5,6 @@ use world::{BodyPair, BodyMap};
 use constraint::ConstraintSolver;
 use collision::Contact;
 
-const PENETRATION_SLOP: f32 = 0.005;
 const RESTITUTION_VELOCITY_SLOP: f32 = 0.5;
 
 struct VelocityConstraint {

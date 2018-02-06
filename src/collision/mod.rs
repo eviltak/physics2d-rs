@@ -2,7 +2,7 @@ mod detection;
 mod solver;
 
 pub use self::detection::{Collide, collide};
-pub use self::solver::{VelocityConstraintManifold};
+pub use self::solver::{VelocityConstraintManifold, PositionConstraintManifold};
 use math::{Vec2, Cross};
 
 #[derive(Copy, Clone)]
