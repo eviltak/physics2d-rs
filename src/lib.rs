@@ -14,4 +14,4 @@ mod constraint;
 mod world;
 
 pub use math::{Vec2, Mat2, Cross};
-pub use world::{World, Body, BodyId, Transform};
+pub use world::{World, Body, BodyRef, BodyId, Material, Transform};

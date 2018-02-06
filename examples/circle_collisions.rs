@@ -18,8 +18,8 @@ impl CircleCollisionsTestbed {
         let circle_a = shapes::Circle::new(5.0);
         let circle_b = shapes::Circle::new(3.0);
         
-        let mut a = Body::new(circle_a.into_shape(), 10.0);
-        let mut b = Body::new(circle_b.into_shape(), 10.0);
+        let mut a = Body::new(circle_a.into_shape(), 10.0, Material::new(0.3, 0.3));
+        let mut b = Body::new(circle_b.into_shape(), 10.0, Material::new(0.3, 0.3));
         
         a.transform.position = Vec2::UP * 25.0;
         

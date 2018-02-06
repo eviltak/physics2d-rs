@@ -44,7 +44,7 @@ fn main() {
     let mut body = Body::new(shapes::Polygon::new(
         vec![Vec2::ZERO, Vec2::RIGHT * w, Vec2::new(w, h), Vec2::UP * h])
                                  .into_shape(),
-                             1.0);
+                             1.0, Material::new(0.3, 0.3));
     
     let torque = math::PI * 5000.0 * body.inertia;
     body.add_torque(torque);

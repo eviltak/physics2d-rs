@@ -22,7 +22,7 @@ impl CollisionsTestbed {
         let ground_vertices = box_vertices(ground_width, ground_height);
         let ground_poly = shapes::Polygon::new(ground_vertices);
         
-        let mut ground = Body::new(ground_poly.into_shape(), 10.0);
+        let mut ground = Body::new(ground_poly.into_shape(), 10.0, Material::new(1.2, 0.2));
         ground.transform.position.y = -window_height / 2.0 + ground_height / 2.0 + 0.1;
         
         ground.set_static();
@@ -31,7 +31,7 @@ impl CollisionsTestbed {
         
         let obs_circle = shapes::Circle::new(5.0);
         
-        let mut obstacle = Body::new(obs_circle.into_shape(), 0.0);
+        let mut obstacle = Body::new(obs_circle.into_shape(), 0.0, Material::new(0.8, 0.8));
         obstacle.set_static();
         
         world.add_body(ground);
@@ -49,7 +49,7 @@ impl testbed::Testbed for CollisionsTestbed {
             let vertices = box_vertices(5.0, 5.0);
             let polygon = shapes::Polygon::new(vertices);
             
-            let mut body = Body::new(polygon.into_shape(), 10.0);
+            let mut body = Body::new(polygon.into_shape(), 10.0, Material::new(0.3, 0.3));
             
             body.transform.position = input.mouse_position;
             body.transform.set_rotation(0.2);

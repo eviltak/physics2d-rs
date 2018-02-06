@@ -12,6 +12,21 @@ pub type BodyRef = RefCell<Body>;
 
 pub type BodyId = usize;
 
+#[derive(Default)]
+pub struct Material {
+    pub restitution: f32,
+    pub friction: f32,
+}
+
+impl Material {
+    pub fn new(friction: f32, restitution: f32) -> Material {
+        Material {
+            restitution,
+            friction,
+        }
+    }
+}
+
 pub struct Body {
     pub id: BodyId,
     
@@ -30,10 +45,12 @@ pub struct Body {
     pub inv_inertia: f32,
     
     pub shape: Shape,
+    
+    pub material: Material,
 }
 
 impl Body {
-    pub fn new(shape: Shape, density: f32) -> Body {
+    pub fn new(shape: Shape, density: f32, material: Material) -> Body {
         let (mass, inertia) = shape.mass_and_inertia(density);
         
         let inv_mass = if mass != 0.0 { 1.0 / mass } else { 0.0f32 };
@@ -53,6 +70,7 @@ impl Body {
             inv_inertia,
             
             shape,
+            material,
         }
     }
     

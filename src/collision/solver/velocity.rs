@@ -17,7 +17,7 @@ struct VelocityConstraint {
     tangent_mass: f32,
     
     normal_bias: f32,
-    mu: f32,
+    friction_coefficient: f32,
 }
 
 impl VelocityConstraint {
@@ -30,7 +30,7 @@ impl VelocityConstraint {
             normal_mass: 0.0,
             tangent_mass: 0.0,
             normal_bias: 0.0,
-            mu: 0.0,
+            friction_coefficient: 0.0,
         }
     }
 }
@@ -103,15 +103,19 @@ impl ConstraintSolver for VelocityConstraintManifold {
             constraint.normal_mass = 1.0 / inv_normal_impulse_factor;
             constraint.tangent_mass = 1.0 / inv_tangent_impulse_factor;
             
-            // TODO: Change
-            let e = 0.5f32;
-            let res_bias = -e * f32::max(0.0, rel_vel_normal - RESTITUTION_VELOCITY_SLOP);
+            // Arithmetic mean
+            let restitution = 0.5 * (a.material.restitution + b.material.restitution);
+            let res_bias = -restitution * f32::max(0.0, rel_vel_normal - RESTITUTION_VELOCITY_SLOP);
             
             constraint.normal_bias = res_bias;
             
-            // TODO: Change
-            let mu = 0.3f32;
-            constraint.mu = mu;
+            // Harmonic mean
+            let friction_sum = a.material.friction + b.material.friction;
+            
+            let fric_coeff = if friction_sum != 0.0 {
+                2.0 * a.material.friction * b.material.friction / friction_sum
+            } else { 0.0 };
+            constraint.friction_coefficient = fric_coeff;
         }
     }
     
@@ -151,7 +155,7 @@ impl ConstraintSolver for VelocityConstraintManifold {
             
             let j_t = -rel_vel_tangent * constraint.tangent_mass;
             
-            let max_friction = constraint.mu * constraint.normal_impulse;
+            let max_friction = constraint.friction_coefficient * constraint.normal_impulse;
             
             let old_impulse = constraint.tangent_impulse;
             constraint.tangent_impulse = clamp(old_impulse + j_t, -max_friction, max_friction);

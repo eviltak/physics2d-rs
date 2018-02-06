@@ -2,7 +2,7 @@ mod body;
 mod transform;
 mod collections;
 
-pub use self::body::{Body, BodyId, BodyRef};
+pub use self::body::{Body, BodyId, BodyRef, Material};
 pub use self::transform::Transform;
 pub(crate) use self::body::BodyPair;
 pub(crate) use self::collections::{BodyMap, ContactsMap};

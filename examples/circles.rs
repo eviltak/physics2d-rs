@@ -39,7 +39,7 @@ fn main() {
     
     let mut testbed = CirclesTestbed::new();
     
-    let body = Body::new(shapes::Circle::new(2.5).into_shape(), 1.0);
+    let body = Body::new(shapes::Circle::new(2.5).into_shape(), 1.0, Material::default());
     
     testbed.world.add_body(body);
     

@@ -24,8 +24,8 @@ impl CirclePolygonCollisionsTestbed {
         
         let circle = shapes::Circle::new(5.0);
         
-        let mut a = Body::new(poly.into_shape(), 10.0);
-        let mut b = Body::new(circle.into_shape(), 10.0);
+        let mut a = Body::new(poly.into_shape(), 10.0, Material::new(0.3, 0.3));
+        let mut b = Body::new(circle.into_shape(), 10.0, Material::new(0.3, 0.3));
         
         a.transform.position = Vec2::UP * 18.0 + Vec2::RIGHT * 1.0;
         a.transform.set_rotation(math::PI / 5.0);

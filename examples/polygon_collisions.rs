@@ -25,8 +25,8 @@ impl PolygonCollisionsTestbed {
         let vert_b = vert_box(10.0, 5.0);
         let poly_b = shapes::Polygon::new(vert_b);
         
-        let mut a = Body::new(poly_a.into_shape(), 10.0);
-        let mut b = Body::new(poly_b.into_shape(), 10.0);
+        let mut a = Body::new(poly_a.into_shape(), 10.0, Material::default());
+        let mut b = Body::new(poly_b.into_shape(), 10.0, Material::default());
         
         a.transform.position = Vec2::UP * 16.0 + Vec2::RIGHT * 1.0;
         a.transform.set_rotation(math::PI / 5.0);
