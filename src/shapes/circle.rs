@@ -1,5 +1,5 @@
 use math::{PI, Vec2};
-use object::Aabb;
+use object::Bounds;
 use world::Transform;
 
 pub struct Circle {
@@ -26,10 +26,10 @@ impl super::Matter for Circle {
         (mass, inertia)
     }
     
-    fn aabb(&self, transform: Option<&Transform>) -> Aabb {
+    fn bounds(&self, transform: Option<&Transform>) -> Bounds {
         let center = transform.map_or(Vec2::ZERO, |t| t.position);
         let extents = Vec2::ONE * self.radius;
         
-        Aabb::with_extents(center, extents)
+        Bounds::with_extents(center, extents)
     }
 }
