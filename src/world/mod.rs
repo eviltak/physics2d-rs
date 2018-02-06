@@ -59,8 +59,15 @@ impl World {
             let body = &mut body.borrow_mut();
             body.update(dt);
         }
+        
+        let potential_pairs = self.broad_phase.potential_pairs(&self.bodies);
+        
+        // TODO: Use HashSet in BroadPhase to optimize contains operation
+        self.velocity_constraint_manifolds.retain(|pair, _v| potential_pairs.contains(&pair));
+        self.position_constraint_manifolds.retain(|pair, _v| potential_pairs.contains(&pair));
+        self.contacts.retain(|pair, _v| potential_pairs.contains(&pair));
     
-        for pair in self.broad_phase.potential_pairs(&self.bodies) {
+        for pair in potential_pairs {
             let body_a = &self.bodies[&pair.0].borrow();
             let body_b = &self.bodies[&pair.1].borrow();
             
