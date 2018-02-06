@@ -1,4 +1,4 @@
-use world::body::{Body, BodyId};
+use super::{Body, BodyId};
 use world::BodyMap;
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash)]

@@ -9,6 +9,7 @@ pub mod shapes;
 pub mod math;
 pub mod debug;
 
+mod object;
 mod collision;
 mod constraint;
 mod world;
