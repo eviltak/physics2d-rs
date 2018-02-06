@@ -2,6 +2,7 @@ use math::{Vec2, Cross, INFINITY};
 use world::Transform;
 use math::Bounds;
 
+#[derive(Clone)]
 pub struct Polygon {
     pub vertices: Vec<Vec2>,
     pub normals: Vec<Vec2>,

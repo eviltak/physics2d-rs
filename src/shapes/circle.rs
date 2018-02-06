@@ -2,6 +2,7 @@ use math::{PI, Vec2};
 use math::Bounds;
 use world::Transform;
 
+#[derive(Clone)]
 pub struct Circle {
     pub radius: f32,
 }

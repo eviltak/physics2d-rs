@@ -6,6 +6,7 @@ pub use self::polygon::Polygon;
 use math::Bounds;
 use world::Transform;
 
+#[derive(Clone)]
 pub enum Shape {
     Circle(Circle),
     Polygon(Polygon),
