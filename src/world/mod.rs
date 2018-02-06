@@ -16,7 +16,7 @@ pub(crate) type ContactsMap = FnvHashMap<BodyPair, Vec<Contact>>;
 type VelocityConstraintManifoldMap = FnvHashMap<BodyPair, VelocityConstraintManifold>;
 
 pub struct World {
-    pub bodies: BodyMap,
+    bodies: BodyMap,
     
     // TODO: Why use contacts, store directly in manifolds?
     pub(crate) contacts: ContactsMap,
@@ -43,6 +43,14 @@ impl World {
         self.bodies.insert(body_id, BodyRef::new(body));
         
         body_id
+    }
+    
+    pub fn body_ref(&self, body_id: &BodyId) -> &BodyRef {
+        &self.bodies[body_id]
+    }
+    
+    pub fn bodies(&self) -> Vec<&BodyRef> {
+        self.bodies.values().collect()
     }
     
     pub fn update(&mut self, dt: f32) {

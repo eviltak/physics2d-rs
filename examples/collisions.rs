@@ -61,12 +61,13 @@ impl testbed::Testbed for CollisionsTestbed {
     }
     
     fn sfml_draw(&mut self, canvas: &mut testbed::Canvas, dt: f32) {
-        for body in self.world.bodies.values() {
+        let bodies = self.world.bodies();
+        for body in bodies.iter() {
             canvas.draw_body(&body.borrow());
         }
         
         canvas.draw_text(format!("FPS: {}", 1.0 / dt), 16);
-        canvas.draw_text(format!("Body count: {}", self.world.bodies.len()), 16);
+        canvas.draw_text(format!("Body count: {}", bodies.len()), 16);
         
         for contact in self.world.contacts() {
             canvas.draw_point(contact.position);

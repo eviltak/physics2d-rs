@@ -47,7 +47,7 @@ impl PolygonCollisionsTestbed {
 impl testbed::Testbed for PolygonCollisionsTestbed {
     fn sfml_loop(&mut self, input: &testbed::Input, dt: f32) {
         if !self.should_stop {
-            let body = &mut self.world.bodies[&self.body_b].borrow_mut();
+            let body = &mut self.world.body_ref(&self.body_b).borrow_mut();
             let f = Vec2::UP * 7.0 * body.mass;
             body.add_force(f);
         }
@@ -58,7 +58,7 @@ impl testbed::Testbed for PolygonCollisionsTestbed {
     }
     
     fn sfml_draw(&mut self, canvas: &mut testbed::Canvas, dt: f32) {
-        for body in self.world.bodies.values() {
+        for body in self.world.bodies() {
             canvas.draw_body(&body.borrow());
         }
         
