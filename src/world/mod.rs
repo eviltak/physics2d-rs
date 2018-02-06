@@ -68,6 +68,7 @@ impl World {
                 
                 let body_pair = BodyPair(*body_a_id, *body_b_id);
     
+                // TODO: Use BodyPair::with
                 let body_a = &self.bodies[&body_pair.0].borrow();
                 let body_b = &self.bodies[&body_pair.1].borrow();
     
@@ -96,24 +97,18 @@ impl World {
         }
         
         for (body_pair, manifold) in self.velocity_constraint_manifolds.iter_mut() {
-            let body_a = &self.bodies[&body_pair.0].borrow();
-            let body_b = &self.bodies[&body_pair.1].borrow();
-            
-            manifold.initialize_constraints(body_a, body_b, dt);
+            body_pair.with(&self.bodies,
+                           |body_a, body_b|  manifold.initialize_constraints(body_a, body_b, dt));
         }
     
         for (body_pair, manifold) in self.velocity_constraint_manifolds.iter_mut() {
-            let body_a = &mut self.bodies[&body_pair.0].borrow_mut();
-            let body_b = &mut self.bodies[&body_pair.1].borrow_mut();
-        
-            manifold.warm_start(body_a, body_b, dt);
+            body_pair.with_mut(&self.bodies,
+                               |body_a, body_b| manifold.warm_start(body_a, body_b, dt));
         }
         
         for (body_pair, manifold) in self.velocity_constraint_manifolds.iter_mut() {
-            let body_a = &mut self.bodies[&body_pair.0].borrow_mut();
-            let body_b = &mut self.bodies[&body_pair.1].borrow_mut();
-        
-            manifold.solve_constraints(body_a, body_b, dt);
+            body_pair.with_mut(&self.bodies,
+                               |body_a, body_b| manifold.solve_constraints(body_a, body_b, dt));
         }
         
         for body in self.bodies.values_mut() {
