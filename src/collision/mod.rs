@@ -1,7 +1,9 @@
-mod detection;
+pub mod broad_phase;
+
+mod narrow_phase;
 mod solver;
 
-pub use self::detection::{Collide, collide};
+pub use self::narrow_phase::{Collide, collide};
 pub use self::solver::{VelocityConstraintManifold, PositionConstraintManifold};
 use math::{Vec2, Cross};
 
