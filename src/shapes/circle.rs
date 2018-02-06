@@ -31,6 +31,6 @@ impl super::Matter for Circle {
         let center = transform.map_or(Vec2::ZERO, |t| t.position);
         let extents = Vec2::ONE * self.radius;
         
-        Bounds::with_extents(center, extents)
+        Bounds::center_extents(center, extents)
     }
 }
