@@ -143,21 +143,10 @@ impl ConstraintSolver for VelocityConstraintManifold {
             let r_a = contact.position - a.transform.position;
             let r_b = contact.position - b.transform.position;
             
-            let rel_vel = b.velocity - a.velocity + b.angular_vel.cross(&r_b) - a.angular_vel.cross(&r_a);
-            let rel_vel_normal = contact.normal.dot(&rel_vel);
-            
-            // Impulse
-            let j = (-rel_vel_normal + constraint.normal_bias) * constraint.normal_mass;
-            
-            let old_impulse = constraint.normal_impulse;
-            constraint.normal_impulse = f32::max(0.0, old_impulse + j);
-            
-            let j = constraint.normal_impulse - old_impulse;
-            
-            a.add_impulse_at_pos(-contact.normal * j, r_a);
-            b.add_impulse_at_pos(contact.normal * j, r_b);
-            
+            // Solve tangent constraints first because normal constraints (non-penetration) are more important
             // Friction
+            let rel_vel = b.velocity - a.velocity + b.angular_vel.cross(&r_b) - a.angular_vel.cross(&r_a);
+            
             let rel_vel_tangent = contact.tangent.dot(&rel_vel);
             
             let j_t = -rel_vel_tangent * constraint.tangent_mass;
@@ -171,6 +160,21 @@ impl ConstraintSolver for VelocityConstraintManifold {
             
             a.add_impulse_at_pos(-contact.tangent * j_t, r_a);
             b.add_impulse_at_pos(contact.tangent * j_t, r_b);
+            
+            // Impulse
+            let rel_vel = b.velocity - a.velocity + b.angular_vel.cross(&r_b) - a.angular_vel.cross(&r_a);
+            
+            let rel_vel_normal = contact.normal.dot(&rel_vel);
+            
+            let j = (-rel_vel_normal + constraint.normal_bias) * constraint.normal_mass;
+            
+            let old_impulse = constraint.normal_impulse;
+            constraint.normal_impulse = f32::max(0.0, old_impulse + j);
+            
+            let j = constraint.normal_impulse - old_impulse;
+            
+            a.add_impulse_at_pos(-contact.normal * j, r_a);
+            b.add_impulse_at_pos(contact.normal * j, r_b);
         }
     }
 }
