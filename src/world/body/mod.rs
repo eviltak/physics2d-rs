@@ -5,7 +5,7 @@ pub use self::pair::BodyPair;
 use math::{Vec2, Cross};
 use ::shapes::{Shape, Matter};
 use ::world::Transform;
-use object::Bounds;
+use math::Bounds;
 
 use std::cell::RefCell;
 

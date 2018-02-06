@@ -1,6 +1,6 @@
 use math::{Vec2, Cross, INFINITY};
 use world::Transform;
-use object::Bounds;
+use math::Bounds;
 
 pub struct Polygon {
     pub vertices: Vec<Vec2>,

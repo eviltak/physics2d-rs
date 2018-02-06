@@ -3,7 +3,7 @@ mod polygon;
 
 pub use self::circle::Circle;
 pub use self::polygon::Polygon;
-use object::Bounds;
+use math::Bounds;
 use world::Transform;
 
 pub enum Shape {

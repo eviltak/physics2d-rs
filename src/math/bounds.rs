@@ -1,5 +1,3 @@
-pub mod body;
-
 use math::Vec2;
 
 pub struct Bounds {

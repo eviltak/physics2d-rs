@@ -7,8 +7,8 @@ impl BroadPhase for NaiveBroadPhase {
     fn potential_pairs(&self, bodies: &BodyMap) -> Vec<BodyPair> {
         let mut pairs = Vec::new();
         
-        for body_a_id in bodies.keys() {
-            for body_b_id in bodies.keys() {
+        for (body_a_id, body_a) in bodies.iter() {
+            for (body_b_id, body_b) in bodies.iter() {
                 if body_b_id <= body_a_id {
                     continue;
                 }

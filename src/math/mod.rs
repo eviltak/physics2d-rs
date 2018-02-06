@@ -1,8 +1,10 @@
 mod vec2;
 mod mat2;
+mod bounds;
 
 pub use self::vec2::{Vec2, Cross};
 pub use self::mat2::Mat2;
+pub use self::bounds::Bounds;
 
 use std::f32;
 

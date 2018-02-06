@@ -1,5 +1,5 @@
 use math::{PI, Vec2};
-use object::Bounds;
+use math::Bounds;
 use world::Transform;
 
 pub struct Circle {
