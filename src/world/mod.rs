@@ -39,6 +39,7 @@ impl World {
         let body_id = self.body_created_count as BodyId;
         self.body_created_count += 1;
         
+        body.id = body_id;
         self.bodies.insert(body_id, BodyRef::new(body));
         
         body_id
