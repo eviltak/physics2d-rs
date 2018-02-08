@@ -54,7 +54,7 @@ impl testbed::Testbed for PolygonCollisionsTestbed {
         
         self.world.update(dt);
         
-        self.should_stop = self.world.contact_points().len() > 0;
+        self.should_stop = self.world.contacts().len() > 0;
     }
     
     fn sfml_draw(&mut self, canvas: &mut testbed::Canvas, dt: f32) {
@@ -62,8 +62,8 @@ impl testbed::Testbed for PolygonCollisionsTestbed {
             canvas.draw_body(&body.borrow());
         }
         
-        for contact in self.world.contact_points().iter() {
-            canvas.draw_point(*contact);
+        for contact in self.world.contacts().iter() {
+            canvas.draw_point(contact.position);
         }
     }
 }
