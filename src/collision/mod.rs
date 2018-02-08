@@ -4,7 +4,7 @@ mod narrow_phase;
 mod solver;
 
 pub use self::narrow_phase::{Collide, collide};
-pub use self::solver::{VelocityConstraintManifold, PositionConstraintManifold};
+pub use self::solver::{ContactConstraint};
 use math::{Vec2, Cross};
 
 #[derive(Copy, Clone)]

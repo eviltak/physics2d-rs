@@ -8,8 +8,8 @@ pub use self::transform::Transform;
 pub(crate) use self::body::BodyPair;
 pub(crate) use self::collections::{BodyMap};
 
-use self::collections::{ManifoldMap, ConstraintSolverMap};
-use collision::{VelocityConstraintManifold, PositionConstraintManifold, collide};
+use self::collections::{ConstraintsMap, ConstraintSolverMap};
+use collision::{ContactConstraint, collide};
 use collision::broad_phase::{BroadPhase, NaiveBroadPhase};
 
 pub struct World {
@@ -17,8 +17,7 @@ pub struct World {
     
     broad_phase: NaiveBroadPhase,
     
-    velocity_constraint_manifolds: ManifoldMap<VelocityConstraintManifold>,
-    position_constraint_manifolds: ManifoldMap<PositionConstraintManifold>,
+    contact_constraints: ConstraintsMap<ContactConstraint>,
     
     body_created_count: usize,
 }
@@ -28,8 +27,7 @@ impl World {
         World {
             bodies: BodyMap::default(),
             broad_phase: NaiveBroadPhase,
-            velocity_constraint_manifolds: ManifoldMap::default(),
-            position_constraint_manifolds: ManifoldMap::default(),
+            contact_constraints: ConstraintsMap::default(),
             body_created_count: 0,
         }
     }
@@ -60,25 +58,21 @@ impl World {
         
         let potential_pairs = self.broad_phase.potential_pairs(&self.bodies);
         
-        self.velocity_constraint_manifolds.retain(|pair, _v| potential_pairs.contains(&pair));
-        self.position_constraint_manifolds.retain(|pair, _v| potential_pairs.contains(&pair));
+        self.contact_constraints.retain(|pair, _v| potential_pairs.contains(&pair));
     
         for pair in potential_pairs {
             let body_a = &self.bodies[&pair.0].borrow();
             let body_b = &self.bodies[&pair.1].borrow();
             
             if let Some(new_contacts) = collide(body_a, body_b) {
-                if self.velocity_constraint_manifolds.contains_key(&pair) {
-                    self.velocity_constraint_manifolds.get_mut(&pair).unwrap().update_constraints(&new_contacts);
-                } else {
-                    self.velocity_constraint_manifolds
-                        .insert(pair, VelocityConstraintManifold::new(&new_contacts));
-                }
-        
-                self.position_constraint_manifolds.insert(pair, PositionConstraintManifold::new(&new_contacts));
+                let new_constraints = ContactConstraint::with_persistent_contacts(
+                    self.contact_constraints.get(&pair),
+                    &new_contacts
+                );
+                
+                self.contact_constraints.insert(pair, new_constraints);
             } else {
-                self.velocity_constraint_manifolds.remove(&pair);
-                self.position_constraint_manifolds.remove(&pair);
+                self.contact_constraints.remove(&pair);
             }
         }
         
@@ -87,17 +81,16 @@ impl World {
             body.integrate_force(dt);
         }
         
-        self.velocity_constraint_manifolds.initialize_constraints(&self.bodies, dt);
-        self.velocity_constraint_manifolds.warm_start(&self.bodies, dt);
-        self.velocity_constraint_manifolds.solve_constraints(&self.bodies, dt);
+        self.contact_constraints.initialize_velocity(&self.bodies, dt);
+        self.contact_constraints.warm_start_velocity(&self.bodies, dt);
+        self.contact_constraints.solve_velocity(&self.bodies, dt);
         
         for body in self.bodies.values_mut() {
             let body = &mut body.borrow_mut();
             body.integrate_velocity(dt);
         }
         
-        self.position_constraint_manifolds.initialize_constraints(&self.bodies, dt);
-        self.position_constraint_manifolds.warm_start(&self.bodies, dt);
-        self.position_constraint_manifolds.solve_constraints(&self.bodies, dt);
+        self.contact_constraints.warm_start_position(&self.bodies, dt);
+        self.contact_constraints.solve_position(&self.bodies, dt);
     }
 }
