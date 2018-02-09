@@ -5,6 +5,8 @@ use sfml::graphics::RenderTarget;
 use testbed::physics2d_vec2;
 
 pub struct Input {
+    pub has_focus: bool,
+    
     pub mouse_position: Vec2,
     
     pub left_mouse_pressed: bool,
@@ -17,6 +19,7 @@ pub struct Input {
 impl Input {
     pub(super) fn new() -> Input {
         Input {
+            has_focus: false,
             mouse_position: Vec2::ZERO,
             left_mouse_pressed: false,
             left_mouse_released: false,
@@ -26,6 +29,8 @@ impl Input {
     }
     
     pub(super) fn collect(&mut self, window: &sfml::graphics::RenderWindow, pixels_per_unit: f32) {
+        self.has_focus = window.has_focus();
+        
         self.collect_mouse_input(window, pixels_per_unit);
     }
     
@@ -47,8 +52,8 @@ impl Input {
         self.mouse_position = physics2d_vec2(mouse_pos, pixels_per_unit);
         
         // Register mouse clicks only if the window is focused and click is done inside window
-        let left_mouse = sfml::window::mouse::Button::Left.is_pressed() && window.has_focus();
-        let right_mouse = sfml::window::mouse::Button::Right.is_pressed() && window.has_focus();
+        let left_mouse = sfml::window::mouse::Button::Left.is_pressed() && self.has_focus;
+        let right_mouse = sfml::window::mouse::Button::Right.is_pressed() && self.has_focus;
         
         self.left_mouse_released = !self.left_mouse_pressed && left_mouse;
         self.right_mouse_released = !self.right_mouse_pressed && right_mouse;
