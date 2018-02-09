@@ -11,7 +11,7 @@ sudo: required
 dist: trusty
 
 before_install:
-- sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+- echo 'deb http://ftp.de.debian.org/debian buster main' | sudo tee --append /etc/apt/sources.list
 - sudo apt-get update -q
 - sudo apt-get install libsfml-dev libcsfml-dev -y
 
