@@ -20,15 +20,26 @@ pub struct World {
     contact_constraints: ConstraintsMap<ContactConstraint>,
     
     body_created_count: usize,
+    
+    pub velocity_iterations: u8,
+    pub position_iterations: u8,
+}
+
+impl Default for World {
+    fn default() -> World {
+        World::new(8, 2)
+    }
 }
 
 impl World {
-    pub fn new() -> World {
+    pub fn new(velocity_iterations: u8, position_iterations: u8) -> World {
         World {
             bodies: BodyMap::default(),
             broad_phase: NaiveBroadPhase,
             contact_constraints: ConstraintsMap::default(),
             body_created_count: 0,
+            velocity_iterations,
+            position_iterations,
         }
     }
     
@@ -83,7 +94,10 @@ impl World {
         
         self.contact_constraints.initialize_velocity(&self.bodies, dt);
         self.contact_constraints.warm_start_velocity(&self.bodies, dt);
-        self.contact_constraints.solve_velocity(&self.bodies, dt);
+        
+        for _ in 0..self.velocity_iterations {
+            self.contact_constraints.solve_velocity(&self.bodies, dt);
+        }
         
         for body in self.bodies.values_mut() {
             let body = &mut body.borrow_mut();
@@ -91,6 +105,9 @@ impl World {
         }
         
         self.contact_constraints.warm_start_position(&self.bodies, dt);
-        self.contact_constraints.solve_position(&self.bodies, dt);
+    
+        for _ in 0..self.position_iterations {
+            self.contact_constraints.solve_position(&self.bodies, dt);
+        }
     }
 }

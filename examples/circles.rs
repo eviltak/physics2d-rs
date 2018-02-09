@@ -12,7 +12,7 @@ struct CirclesTestbed {
 impl CirclesTestbed {
     pub fn new() -> CirclesTestbed {
         CirclesTestbed {
-            world: World::new(),
+            world: World::default(),
         }
     }
 }

@@ -27,7 +27,7 @@ impl CollisionsTestbed {
         
         ground.set_static();
         
-        let mut world = World::new();
+        let mut world = World::default();
         
         let obs_circle = shapes::Circle::new(5.0);
         

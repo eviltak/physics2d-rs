@@ -16,7 +16,7 @@ impl StacksTestbed {
         let window_width = config.window_width as f32 / config.pixels_per_unit;
         let window_height = config.window_height as f32 / config.pixels_per_unit;
         
-        let mut world = World::new();
+        let mut world = World::default();
         
         let ground_width = window_width;
         let ground_height = 1.0;

@@ -23,7 +23,7 @@ impl CircleCollisionsTestbed {
         
         a.transform.position = Vec2::UP * 25.0;
         
-        let mut world = World::new();
+        let mut world = World::default();
         
         world.add_body(a);
         let body_b = world.add_body(b);

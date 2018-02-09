@@ -30,7 +30,7 @@ impl CirclePolygonCollisionsTestbed {
         a.transform.position = Vec2::UP * 18.0 + Vec2::RIGHT * 1.0;
         a.transform.set_rotation(math::PI / 5.0);
         
-        let mut world = World::new();
+        let mut world = World::default();
         
         world.add_body(a);
         let body_b = world.add_body(b);

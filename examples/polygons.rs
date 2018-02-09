@@ -12,7 +12,7 @@ struct PolygonsTestbed {
 impl PolygonsTestbed {
     pub fn new() -> PolygonsTestbed {
         PolygonsTestbed {
-            world: World::new(),
+            world: World::default(),
         }
     }
 }
