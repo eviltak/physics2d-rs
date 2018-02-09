@@ -17,7 +17,7 @@ pub struct ContactConstraint {
     normal_mass: f32,
     tangent_mass: f32,
     
-    normal_bias: f32,
+    restitution: f32,
     friction_coefficient: f32,
 }
 
@@ -30,7 +30,7 @@ impl ContactConstraint {
             tangent_impulse: 0.0,
             normal_mass: 0.0,
             tangent_mass: 0.0,
-            normal_bias: 0.0,
+            restitution: 0.0,
             friction_coefficient: 0.0,
         }
     }
@@ -95,10 +95,7 @@ impl Constraint for ContactConstraint {
         self.tangent_mass = 1.0 / inv_tangent_impulse_factor;
         
         // Arithmetic mean
-        let restitution = 0.5 * (a.material.restitution + b.material.restitution);
-        let res_bias = -restitution * f32::max(0.0, rel_vel_normal - RESTITUTION_VELOCITY_SLOP);
-        
-        self.normal_bias = res_bias;
+        self.restitution = 0.5 * (a.material.restitution + b.material.restitution);
         
         // Harmonic mean
         let friction_sum = a.material.friction + b.material.friction;
@@ -160,7 +157,10 @@ impl Constraint for ContactConstraint {
         
         let rel_vel_normal = contact.normal.dot(&rel_vel);
         
-        let j = (-rel_vel_normal + self.normal_bias) * self.normal_mass;
+        let res_bias = -self.restitution * f32::max(0.0, rel_vel_normal - RESTITUTION_VELOCITY_SLOP);
+        let bias = res_bias;
+        
+        let j = (-rel_vel_normal + bias) * self.normal_mass;
         
         let old_impulse = self.normal_impulse;
         self.normal_impulse = f32::max(0.0, old_impulse + j);
