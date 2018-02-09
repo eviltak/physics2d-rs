@@ -13,7 +13,7 @@ dist: trusty
 before_install:
 - echo 'deb http://ftp.de.debian.org/debian buster main' | sudo tee --append /etc/apt/sources.list
 - sudo apt-get update -q
-- sudo apt-get install libsfml-dev libcsfml-dev -y
+- sudo apt-get install libsfml-dev libcsfml-dev -y --allow-unauthenticated
 
 deploy:
 - provider: script
