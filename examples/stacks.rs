@@ -82,6 +82,12 @@ impl testbed::Testbed for StacksTestbed {
             self.world.add_body(body);
         }
         
+        if input.pressed_keys.contains(&testbed::Key::Right) {
+            self.world.velocity_iterations += 1;
+        } else if input.pressed_keys.contains(&testbed::Key::Left) {
+            self.world.velocity_iterations -= 1;
+        }
+        
         self.world.update(dt);
     }
     
@@ -93,6 +99,8 @@ impl testbed::Testbed for StacksTestbed {
         
         canvas.draw_text(format!("FPS: {}", 1.0 / dt), 16);
         canvas.draw_text(format!("Body count: {}", bodies.len()), 16);
+        canvas.draw_text(format!("Velocity iterations: {}", self.world.velocity_iterations), 16);
+        canvas.draw_text(format!("Position iterations: {}", self.world.position_iterations), 16);
         
         for contact in self.world.contacts() {
             canvas.draw_point(contact.position);
