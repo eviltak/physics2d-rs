@@ -1,3 +1,5 @@
+extern crate sfml;
+
 mod runner;
 mod canvas;
 mod config;
@@ -8,7 +10,6 @@ pub use self::canvas::Canvas;
 pub use self::config::Config;
 pub use self::input::Input;
 
-use sfml;
 use physics2d::Vec2;
 
 pub trait Testbed {

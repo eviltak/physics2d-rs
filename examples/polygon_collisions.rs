@@ -1,4 +1,3 @@
-extern crate sfml;
 extern crate physics2d;
 
 mod testbed;

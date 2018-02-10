@@ -1,6 +1,6 @@
 use physics2d::*;
-use sfml;
-use sfml::graphics::RenderTarget;
+use testbed::sfml;
+use testbed::sfml::graphics::RenderTarget;
 
 use testbed::physics2d_vec2;
 

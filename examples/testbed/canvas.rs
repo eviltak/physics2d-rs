@@ -1,5 +1,5 @@
-use sfml;
-use sfml::graphics::{RenderTarget, Transformable};
+use testbed::sfml;
+use testbed::sfml::graphics::{RenderTarget, Transformable};
 
 use std::{env, path};
 
