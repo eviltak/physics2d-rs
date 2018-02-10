@@ -1,3 +1,5 @@
+pub mod pool;
+
 macro_rules! match_fn_to_variants {
     ($enum_name:ident::{$($variant:ident),*}; $val:expr, $fn_name:ident$args:tt) => {
         match $val {
