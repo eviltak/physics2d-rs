@@ -29,6 +29,8 @@ pub fn run<T: Testbed>(mut testbed: T, config: super::config::Config) {
             if event == Event::Closed {
                 window.close();
             }
+            
+            input.collect_event(event);
         }
         
         let dt = clock.restart().as_seconds();

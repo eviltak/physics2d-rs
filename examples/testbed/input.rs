@@ -1,5 +1,7 @@
 use physics2d::*;
+
 use testbed::sfml;
+use testbed::sfml::window::Event;
 use testbed::sfml::graphics::RenderTarget;
 
 use testbed::physics2d_vec2;
@@ -28,9 +30,15 @@ impl Input {
         }
     }
     
+    pub(super) fn collect_event(&mut self, event: Event) {
+        match event {
+            Event::GainedFocus => self.has_focus = true,
+            Event::LostFocus => self.has_focus = false,
+            _ => {}
+        }
+    }
+    
     pub(super) fn collect(&mut self, window: &sfml::graphics::RenderWindow, pixels_per_unit: f32) {
-        self.has_focus = window.has_focus();
-        
         self.collect_mouse_input(window, pixels_per_unit);
     }
     
