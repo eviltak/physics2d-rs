@@ -6,6 +6,8 @@ use testbed::sfml::graphics::RenderTarget;
 
 use testbed::physics2d_vec2;
 
+pub use testbed::sfml::window::Key as Key;
+
 pub struct Input {
     pub has_focus: bool,
     
@@ -16,6 +18,8 @@ pub struct Input {
     
     pub right_mouse_pressed: bool,
     pub right_mouse_released: bool,
+    
+    pub pressed_keys: Vec<Key>,
 }
 
 impl Input {
@@ -27,13 +31,21 @@ impl Input {
             left_mouse_released: false,
             right_mouse_pressed: false,
             right_mouse_released: false,
+            pressed_keys: Vec::new(),
         }
+    }
+    
+    pub(super) fn clear(&mut self) {
+        self.pressed_keys.clear();
     }
     
     pub(super) fn collect_event(&mut self, event: Event) {
         match event {
             Event::GainedFocus => self.has_focus = true,
             Event::LostFocus => self.has_focus = false,
+            Event::KeyPressed { code, alt, ctrl, shift, system } => {
+                self.pressed_keys.push(code);
+            }
             _ => {}
         }
     }

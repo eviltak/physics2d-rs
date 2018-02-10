@@ -1,4 +1,4 @@
-extern crate sfml;
+pub extern crate sfml;
 
 mod runner;
 mod canvas;
@@ -8,7 +8,7 @@ mod input;
 pub use self::runner::run;
 pub use self::canvas::Canvas;
 pub use self::config::Config;
-pub use self::input::Input;
+pub use self::input::{Input, Key};
 
 use physics2d::Vec2;
 

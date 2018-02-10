@@ -23,6 +23,8 @@ pub fn run<T: Testbed>(mut testbed: T, config: super::config::Config) {
     
     // The main loop - ends as soon as the window is closed
     while window.is_open() {
+        input.clear();
+        
         // Event processing
         while let Some(event) = window.poll_event() {
             // Request closing for the window
