@@ -1,4 +1,5 @@
 mod naive;
+mod bounds_tree;
 
 pub use self::naive::NaiveBroadPhase;
 
