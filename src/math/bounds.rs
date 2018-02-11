@@ -39,6 +39,19 @@ impl Bounds {
         Bounds::new(center - extents, center + extents)
     }
     
+    /// Returns the perimeter of the given bounding volume.
+    ///
+    /// # Example
+    /// ```
+    /// # use physics2d::{Bounds, Vec2};
+    /// let b = Bounds::center_extents(Vec2::ONE, Vec2::new(2.0, 15.1));
+    /// assert_eq!(b.perimeter(), 2.0 * 2.0 * (2.0 + 15.1));
+    /// ```
+    #[inline]
+    pub fn perimeter(&self) -> f32 {
+        2.0 * (self.max.x - self.min.x + self.max.y - self.min.y)
+    }
+    
     /// Checks whether two `Bounds` are intersecting.
     ///
     /// # Example
@@ -58,5 +71,27 @@ impl Bounds {
         } else {
             true
         }
+    }
+    
+    /// Returns a bounding volume that completely encompasses both the bounding volume represented
+    /// by `self` and `other`.
+    ///
+    /// # Example
+    /// ```
+    /// # use physics2d::{Bounds, Vec2};
+    /// let b1 = Bounds::center_extents(Vec2::ONE, Vec2::ONE);
+    /// let b2 = Bounds::center_extents(Vec2::new(0.5, 0.5), Vec2::ONE);
+    ///
+    /// let union = Bounds::new(Vec2::new(-0.5, -0.5), Vec2::new(2.0, 2.0));
+    ///
+    /// assert_eq!(b1.union(&b2), union);
+    ///
+    /// let b3 = Bounds::new(Vec2::new(-0.5, -0.5), Vec2::new(-0.4, -0.4));
+    /// let b4 = Bounds::new(Vec2::new(1.9, -0.325), Vec2::new(2.0, 2.0));
+    ///
+    /// assert_eq!(b3.union(&b4), union);
+    /// ```
+    pub fn union(&self, other: &Bounds) -> Bounds {
+        Bounds::new(self.min.min(&other.min), self.max.max(&other.max))
     }
 }
