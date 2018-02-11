@@ -76,6 +76,25 @@ impl BoundsTree {
         self.pool.get_mut(node_id)
     }
     
+    /// Walks up the tree from `node_id`, balancing subtrees and fixing ancestor heights and bounds.
+    fn update_ancestors(&mut self, mut node_id: NodeId) {
+        while node_id != NodeId::NULL {
+            // Balance
+        
+            let left_id = self.get_node(node_id).left;
+            let right_id = self.get_node(node_id).right;
+        
+            let new_height = 1 + self.get_node(left_id).height.max(self.get_node(right_id).height);
+            let new_bounds = self.get_node(left_id).bounds.union(&self.get_node(right_id).bounds);
+        
+            let node = self.get_node_mut(node_id);
+            node.height = new_height;
+            node.bounds = new_bounds;
+        
+            node_id = node.parent;
+        }
+    }
+    
     /// Inserts the leaf node identified by `leaf_id` into the tree. The leaf node should already 
     /// have been allocated in the node pool.
     ///
@@ -141,21 +160,57 @@ impl BoundsTree {
             }
         }
         
-        // Walk back up tree balancing and fixing heights and bounds
-        let mut node_id = self.get_node(leaf_id).parent;
-        
-        while node_id != NodeId::NULL {
-            let left_id = self.get_node(node_id).left;
-            let right_id = self.get_node(node_id).right;
-            
-            let new_height = 1 + self.get_node(left_id).height.max(self.get_node(right_id).height);
-            let new_bounds = self.get_node(left_id).bounds.union(&self.get_node(right_id).bounds);
-            
-            let node = self.get_node_mut(node_id);
-            node.height = new_height;
-            node.bounds = new_bounds;
-            
-            node_id = node.parent;
+        let parent_id = self.get_node(leaf_id).parent;
+        self.update_ancestors(parent_id);
+    }
+    
+    /// Removes the leaf identified by `leaf_id` from the tree. The leaf node must be freed from
+    /// the node pool after it is removed.
+    ///
+    /// The removal process involves replacing the parent of the leaf with its sibling.
+    fn remove_leaf(&mut self, leaf_id: NodeId) {
+        if self.root_id == leaf_id {
+            self.root_id = NodeId::NULL;
+            return;
         }
+        
+        let parent_id = self.get_node(leaf_id).parent;
+        let sibling_id = {
+            let parent = self.get_node(parent_id);
+            if parent.left == leaf_id {
+                parent.right
+            } else {
+                parent.left
+            }
+        };
+        
+        if self.root_id == parent_id {
+            // Root is parent, replace root
+            
+            self.pool.free(parent_id);
+            
+            self.root_id = sibling_id;
+            self.get_node_mut(sibling_id).parent = NodeId::NULL;
+            
+            return;
+        }
+    
+        // Delete parent and connect sibling to grandparent in its place
+        
+        let grandparent_id = self.get_node(parent_id).parent;
+    
+        let is_parent_left_child = self.get_node(grandparent_id).left == parent_id;
+        
+        self.pool.free(parent_id);
+    
+        if is_parent_left_child {
+            self.get_node_mut(grandparent_id).left = sibling_id;
+        } else {
+            self.get_node_mut(grandparent_id).right = sibling_id;
+        }
+        
+        self.get_node_mut(sibling_id).parent = grandparent_id;
+        
+        self.update_ancestors(grandparent_id);
     }
 }
