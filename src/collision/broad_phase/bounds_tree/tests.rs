@@ -2,8 +2,7 @@ use super::*;
 
 #[test]
 fn insert_leaf() {
-    let mut tree = BoundsTree::<usize>::new();
-    let (a, b, c) = (tree.pool.allocate(), tree.pool.allocate(), tree.pool.allocate());
+    let mut tree = BoundsTree::new();
     
     // Upon insertion, b and c will be siblings.
     // The tree should have the following structure:
@@ -13,27 +12,25 @@ fn insert_leaf() {
     //             /    \
     //            b      c
     
-    tree.get_node_mut(a).bounds = Bounds::new(Vec2::ZERO, Vec2::ONE * 3.0);
-    tree.get_node_mut(b).bounds = Bounds::new(Vec2::RIGHT * 4.0, Vec2::RIGHT * 4.0 + Vec2::ONE);
-    tree.get_node_mut(c).bounds = Bounds::new(Vec2::RIGHT * 4.0 + Vec2::UP * 1.01,
-                                              Vec2::RIGHT * 4.0 + Vec2::UP * 1.01 + Vec2::ONE);
+    let bounds_a = Bounds::new(Vec2::ZERO, Vec2::ONE * 3.0);
+    let bounds_b = Bounds::new(Vec2::RIGHT * 4.0, Vec2::RIGHT * 4.0 + Vec2::ONE);
+    let bounds_c = Bounds::new(Vec2::RIGHT * 4.0 + Vec2::UP * 1.01,
+                               Vec2::RIGHT * 4.0 + Vec2::UP * 1.01 + Vec2::ONE);
     
-    tree.insert_leaf(a);
+    let a = tree.insert_leaf(bounds_a, 0);
     
     assert_eq!(tree.root_id, a);
     
-    tree.insert_leaf(b);
+    let b = tree.insert_leaf(bounds_b, 1);
     
     assert_ne!(tree.root_id, a);
     
     assert_eq!(tree.get_root().left, a);
     assert_eq!(tree.get_root().right, b);
     
-    tree.insert_leaf(c);
+    let c = tree.insert_leaf(bounds_c, 2);
     
     let root = tree.get_root();
-    
-    println!("{:?}", root.bounds.perimeter());
     
     // left (a) unchanged, right made branch and b pushed down
     assert_eq!(root.left, a);
@@ -47,8 +44,7 @@ fn insert_leaf() {
 
 #[test]
 fn remove_leaf() {
-    let mut tree = BoundsTree::<usize>::new();
-    let (a, b, c) = (tree.pool.allocate(), tree.pool.allocate(), tree.pool.allocate());
+    let mut tree = BoundsTree::new();
     
     // Upon insertion, b and c will be siblings.
     // The tree should have the following structure:
@@ -58,15 +54,14 @@ fn remove_leaf() {
     //             /    \
     //            b      c
     
-    tree.get_node_mut(a).bounds = Bounds::new(Vec2::ZERO, Vec2::ONE * 3.0);
-    tree.get_node_mut(b).bounds = Bounds::new(Vec2::RIGHT * 4.0, Vec2::RIGHT * 4.0 + Vec2::ONE);
-    tree.get_node_mut(c).bounds = Bounds::new(Vec2::RIGHT * 4.0 + Vec2::UP * 1.01,
-                                              Vec2::RIGHT * 4.0 + Vec2::UP * 1.01 + Vec2::ONE);
+    let bounds_a = Bounds::new(Vec2::ZERO, Vec2::ONE * 3.0);
+    let bounds_b = Bounds::new(Vec2::RIGHT * 4.0, Vec2::RIGHT * 4.0 + Vec2::ONE);
+    let bounds_c = Bounds::new(Vec2::RIGHT * 4.0 + Vec2::UP * 1.01,
+                               Vec2::RIGHT * 4.0 + Vec2::UP * 1.01 + Vec2::ONE);
     
-    
-    tree.insert_leaf(a);
-    tree.insert_leaf(b);
-    tree.insert_leaf(c);
+    let a = tree.insert_leaf(bounds_a, 0);
+    let b = tree.insert_leaf(bounds_b, 1);
+    let c = tree.insert_leaf(bounds_c, 2);
     
     assert_ne!(tree.get_root().right, c);
     

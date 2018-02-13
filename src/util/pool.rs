@@ -10,6 +10,13 @@ impl<T: Default> PoolObject<T> {
             next,
         }
     }
+    
+    pub fn with_data(next: PoolId, data: T) -> PoolObject<T> {
+        PoolObject {
+            data,
+            next,
+        }
+    }
 }
 
 pub type PoolId = usize;
@@ -35,19 +42,23 @@ impl<T: Default> Pool<T> {
         }
     }
     
-    pub fn allocate(&mut self) -> PoolId {
+    pub fn allocate_with(&mut self, data: T) -> PoolId {
         assert!(self.next_free_object_id <= self.object_pool.len());
-        
+    
         if self.next_free_object_id == self.object_pool.len() {
             // Expand our node pool
-            self.object_pool.push(PoolObject::new(self.next_free_object_id + 1));
+            self.object_pool.push(PoolObject::with_data(self.next_free_object_id + 1, data));
         }
-        
+    
         self.object_count += 1;
-        
+    
         let object_id = self.next_free_object_id;
         self.next_free_object_id += 1;
         object_id
+    }
+    
+    pub fn allocate(&mut self) -> PoolId {
+        self.allocate_with(T::default())
     }
     
     pub fn free(&mut self, id: PoolId) {

@@ -3,8 +3,10 @@ mod tests;
 
 use math::{Bounds, Vec2};
 use util::pool;
+use world::{Body, BodyMap, BodyId};
 
 use std;
+use collision::broad_phase::{BroadPhase, BodyPairSet, ProxyId};
 
 trait Nullable {
     const NULL: Self;
@@ -43,6 +45,17 @@ impl<T: Default> Default for Node<T> {
 }
 
 impl<T: Default> Node<T> {
+    fn new(bounds: Bounds, data: T) -> Node<T> {
+        Node {
+            bounds,
+            parent: NodeId::NULL,
+            left: NodeId::NULL,
+            right: NodeId::NULL,
+            data,
+            height: 0,
+        }
+    }
+    
     fn is_leaf(&self) -> bool {
         self.left == NodeId::NULL
     }
@@ -98,15 +111,19 @@ impl<T: Default> BoundsTree<T> {
         }
     }
     
-    /// Inserts the leaf node identified by `leaf_id` into the tree. The leaf node should already 
-    /// have been allocated in the node pool.
+    /// Inserts a leaf node with the given `data` into the tree.
     ///
     /// When inserting the leaf node in a new branch with an existing leaf, the existing leaf is
     /// made the `left` child of the new branch, and the new leaf node is made the `right` child.
-    fn insert_leaf(&mut self, leaf_id: NodeId) {
+    ///
+    /// # Returns
+    /// The `NodeId` of the inserted leaf node.
+    fn insert_leaf(&mut self, bounds: Bounds, data: T) -> NodeId {
+        let leaf_id = self.pool.allocate_with(Node::new(bounds, data));
+        
         if self.root_id == NodeId::NULL {
             self.root_id = leaf_id;
-            return;
+            return leaf_id;
         }
     
         let leaf_bounds = self.get_node(leaf_id).bounds;
@@ -165,15 +182,17 @@ impl<T: Default> BoundsTree<T> {
         
         let parent_id = self.get_node(leaf_id).parent;
         self.update_ancestors(parent_id);
+        
+        leaf_id
     }
     
-    /// Removes the leaf identified by `leaf_id` from the tree. The leaf node must be freed from
-    /// the node pool after it is removed.
+    /// Removes the leaf identified by `leaf_id` from the tree.
     ///
     /// The removal process involves replacing the parent of the leaf with its sibling.
     fn remove_leaf(&mut self, leaf_id: NodeId) {
         if self.root_id == leaf_id {
             self.root_id = NodeId::NULL;
+            self.pool.free(leaf_id);
             return;
         }
         
@@ -195,6 +214,8 @@ impl<T: Default> BoundsTree<T> {
             self.root_id = sibling_id;
             self.get_node_mut(sibling_id).parent = NodeId::NULL;
             
+            self.pool.free(leaf_id);
+            
             return;
         }
     
@@ -215,6 +236,8 @@ impl<T: Default> BoundsTree<T> {
         self.get_node_mut(sibling_id).parent = grandparent_id;
         
         self.update_ancestors(grandparent_id);
+        
+        self.pool.free(leaf_id);
     }
     
     fn query<F>(&self, bounds: Bounds, mut f: F)
@@ -239,5 +262,27 @@ impl<T: Default> BoundsTree<T> {
                 stack.push(node.right);
             }
         }
+    }
+}
+
+struct BoundsTreeBroadPhase {
+    tree: BoundsTree<BodyId>,
+}
+
+impl BroadPhase for BoundsTreeBroadPhase {
+    fn new_potential_pairs(&self, bodies: &BodyMap) -> BodyPairSet {
+        unimplemented!()
+    }
+    
+    fn create_proxy(&mut self, body: &Body) -> ProxyId {
+        self.tree.insert_leaf(body.bounds, body.id)
+    }
+    
+    fn destroy_proxy(&mut self, proxy_id: ProxyId) {
+        self.tree.remove_leaf(proxy_id);
+    }
+    
+    fn update_proxy(&mut self, proxy_id: ProxyId, body: &Body) {
+        // TODO: Explore rotation based method instead
     }
 }
