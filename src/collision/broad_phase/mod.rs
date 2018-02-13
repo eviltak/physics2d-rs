@@ -12,7 +12,7 @@ pub type BodyPairSet = FnvHashSet<BodyPair>;
 pub type ProxyId = usize;
 
 pub trait BroadPhase {
-    fn potential_pairs(&self, bodies: &BodyMap) -> BodyPairSet;
+    fn new_potential_pairs(&self, bodies: &BodyMap) -> BodyPairSet;
     
     fn create_proxy(&mut self, body: &Body) -> ProxyId;
     fn destroy_proxy(&mut self, proxy_id: ProxyId);

@@ -72,7 +72,7 @@ impl World {
             self.broad_phase.update_proxy(body.proxy_id, body);
         }
         
-        let potential_pairs = self.broad_phase.potential_pairs(&self.bodies);
+        let potential_pairs = self.broad_phase.new_potential_pairs(&self.bodies);
         
         // TODO: Make hashmap return new pairs only, retain by overlap check
         self.contact_constraints.retain(|pair, _v| potential_pairs.contains(&pair));

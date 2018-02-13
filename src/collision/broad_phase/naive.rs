@@ -4,7 +4,7 @@ use super::{BodyPairSet, BroadPhase, ProxyId};
 pub struct NaiveBroadPhase;
 
 impl BroadPhase for NaiveBroadPhase {
-    fn potential_pairs(&self, bodies: &BodyMap) -> BodyPairSet {
+    fn new_potential_pairs(&self, bodies: &BodyMap) -> BodyPairSet {
         let mut pairs = BodyPairSet::default();
         
         for (body_a_id, body_a) in bodies.iter() {
