@@ -110,4 +110,18 @@ impl Bounds {
     pub fn union(&self, other: &Bounds) -> Bounds {
         Bounds::new(self.min.min(&other.min), self.max.max(&other.max))
     }
+    
+    /// Expands the `Bounds` in all directions by `margin`.
+    ///
+    /// # Example
+    /// ```
+    /// # use physics2d::{Bounds, Vec2};
+    /// let b1 = Bounds::center_extents(Vec2::ONE, Vec2::new(0.5, 0.5));
+    /// let b2 = Bounds::center_extents(Vec2::ONE, Vec2::ONE);
+    ///
+    /// assert_eq!(b1.expand(0.5), b2);
+    /// ```
+    pub fn expand(&self, margin: f32) -> Bounds {
+        Bounds::new(self.min - Vec2::ONE * margin, self.max + Vec2::ONE * margin)
+    }
 }
