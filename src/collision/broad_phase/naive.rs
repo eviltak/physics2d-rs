@@ -1,6 +1,5 @@
-use collision::broad_phase::BroadPhase;
-use world::{BodyMap, BodyPair};
-use super::BodyPairSet;
+use world::{BodyMap, BodyPair, Body};
+use super::{BodyPairSet, BroadPhase, ProxyId};
 
 pub struct NaiveBroadPhase;
 
@@ -26,4 +25,12 @@ impl BroadPhase for NaiveBroadPhase {
         
         pairs
     }
+    
+    fn create_proxy(&mut self, _body: &Body) -> ProxyId {
+        ProxyId::default()
+    }
+    
+    fn destroy_proxy(&mut self, _proxy_id: ProxyId) {}
+    
+    fn update_proxy(&mut self, _proxy_id: ProxyId, _body: &Body) {}
 }
