@@ -8,6 +8,7 @@ use physics2d::debug::DebugCollision;
 
 struct PyramidTestbed {
     world: World,
+    debug_draw: bool,
 }
 
 impl PyramidTestbed {
@@ -65,6 +66,7 @@ impl PyramidTestbed {
         
         PyramidTestbed {
             world,
+            debug_draw: false,
         }
     }
 }
@@ -83,6 +85,10 @@ impl testbed::Testbed for PyramidTestbed {
             self.world.add_body(body);
         }
         
+        if input.pressed_keys.contains(&testbed::Key::D) {
+            self.debug_draw = !self.debug_draw;
+        }
+        
         self.world.update(dt);
     }
     
@@ -96,10 +102,13 @@ impl testbed::Testbed for PyramidTestbed {
         
         canvas.draw_text(format!("FPS: {}", 1.0 / dt), 16);
         canvas.draw_text(format!("Body count: {}", body_count), 16);
+        canvas.draw_text(format!("Debug Draw (D to toggle): {}", self.debug_draw), 16);
         
-        for contact in self.world.contacts() {
-            canvas.draw_point(contact.position);
-            canvas.draw_line(contact.position, contact.position + contact.normal * contact.penetration)
+        if self.debug_draw {
+            for contact in self.world.contacts() {
+                canvas.draw_point(contact.position);
+                canvas.draw_line(contact.position, contact.position + contact.normal * contact.penetration)
+            }
         }
     }
 }
