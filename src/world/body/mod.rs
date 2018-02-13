@@ -9,8 +9,19 @@ use math::Bounds;
 
 use std::cell::RefCell;
 
+/// A reference to a `Body`.
+///
+/// ## Rationale for `RefCell`
+/// A body is referred to via a `RefCell` for interior mutability in the internal `Body` storage
+/// structure. While it is entirely possible to modify the code to not require interior mutability,
+/// independence from `RefCell` comes at the cost of increased `Body` lookups. Benchmarks show that
+/// the overhead of `RefCell` is slightly but noticeably lower than the cost of increased lookups.
 pub type BodyRef = RefCell<Body>;
 
+/// The identifier used for looking up a `Body` in a `World`.
+///
+/// An identifier is used to avoid the need for an `Rc` - the `Body` can be looked up on demand
+/// through the `World`.
 pub type BodyId = usize;
 
 #[derive(Default)]
