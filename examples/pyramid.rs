@@ -42,13 +42,13 @@ impl PyramidTestbed {
         right_wall.set_static();
         world.add_body(right_wall);
         
-        const WIDTH: f32 = 3.0;
+        const WIDTH: f32 = 2.5;
         let square = shapes::Polygon::new(box_vertices(WIDTH, WIDTH));
         
         //  Pyramid (taken directly from Box2D Lite)
-        let mut x = Vec2::new(-window_width / 2.0 + WIDTH * 0.5 + 1.0, -window_height / 2.0 + WIDTH * 0.5 + ground_height);
+        let mut x = Vec2::new(-window_width / 2.0 + WIDTH * 0.5 + 2.0, -window_height / 2.0 + WIDTH * 0.5 + ground_height);
         
-        const N: u32 = 20;
+        const N: u32 = 40;
         
         for i in 0..N {
             let mut y = x;
@@ -120,8 +120,8 @@ fn box_vertices(w: f32, h: f32) -> Vec<Vec2> {
 fn main() {
     let config = testbed::Config {
         title: "Pyramid".to_string(),
-        window_width: 800,
-        window_height: 600,
+        window_width: 1280,
+        window_height: 720,
         pixels_per_unit: 10.0,
     };
     
