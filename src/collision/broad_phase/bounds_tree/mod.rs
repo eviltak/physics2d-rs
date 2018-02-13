@@ -269,13 +269,15 @@ struct BoundsTreeBroadPhase {
     tree: BoundsTree<BodyId>,
 }
 
+const MARGIN: f32 = 0.05;
+
 impl BroadPhase for BoundsTreeBroadPhase {
     fn new_potential_pairs(&self, bodies: &BodyMap) -> BodyPairSet {
         unimplemented!()
     }
     
     fn create_proxy(&mut self, body: &Body) -> ProxyId {
-        self.tree.insert_leaf(body.bounds, body.id)
+        self.tree.insert_leaf(body.bounds.expand(MARGIN), body.id)
     }
     
     fn destroy_proxy(&mut self, proxy_id: ProxyId) {
@@ -284,5 +286,13 @@ impl BroadPhase for BoundsTreeBroadPhase {
     
     fn update_proxy(&mut self, proxy_id: ProxyId, body: &Body) {
         // TODO: Explore rotation based method instead
+        
+        if self.tree.get_node(proxy_id).bounds.contains(&body.bounds) {
+            return;
+        }
+        
+        self.destroy_proxy(proxy_id);
+        
+        self.create_proxy(body);
     }
 }
