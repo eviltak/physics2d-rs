@@ -10,13 +10,6 @@ impl<T: Default> PoolObject<T> {
             next,
         }
     }
-    
-    pub fn with_data(next: PoolId, data: T) -> PoolObject<T> {
-        PoolObject {
-            data,
-            next,
-        }
-    }
 }
 
 pub type PoolId = usize;
@@ -30,10 +23,6 @@ pub struct Pool<T: Default> {
 impl<T: Default> Pool<T> {
     pub fn new(initial_capacity: PoolId) -> Pool<T> {
         let mut node_pool = Vec::with_capacity(initial_capacity);
-    
-        for i in 0..initial_capacity {
-            node_pool.push(PoolObject::new(i + 1));
-        }
         
         Pool {
             object_pool: node_pool,
@@ -47,13 +36,16 @@ impl<T: Default> Pool<T> {
     
         if self.next_free_object_id == self.object_pool.len() {
             // Expand our node pool
-            self.object_pool.push(PoolObject::with_data(self.next_free_object_id + 1, data));
+            self.object_pool.push(PoolObject::new(self.next_free_object_id + 1));
         }
     
         self.object_count += 1;
     
         let object_id = self.next_free_object_id;
-        self.next_free_object_id += 1;
+        
+        self.object_pool[object_id].data = data;
+        self.next_free_object_id = self.object_pool[object_id].next;
+        
         object_id
     }
     
