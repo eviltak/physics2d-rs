@@ -2,7 +2,7 @@ use super::*;
 
 #[test]
 fn insert_leaf() {
-    let mut tree = BoundsTree::new();
+    let mut tree = BoundsTree::<usize>::new();
     let (a, b, c) = (tree.pool.allocate(), tree.pool.allocate(), tree.pool.allocate());
     
     // Upon insertion, b and c will be siblings.
@@ -47,7 +47,7 @@ fn insert_leaf() {
 
 #[test]
 fn remove_leaf() {
-    let mut tree = BoundsTree::new();
+    let mut tree = BoundsTree::<usize>::new();
     let (a, b, c) = (tree.pool.allocate(), tree.pool.allocate(), tree.pool.allocate());
     
     // Upon insertion, b and c will be siblings.

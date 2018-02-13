@@ -16,7 +16,7 @@ pub type PoolId = usize;
 
 pub struct Pool<T: Default> {
     object_pool: Vec<PoolObject<T>>,
-    object_count: usize,
+    pub object_count: usize,
     next_free_object_id: PoolId,
 }
 

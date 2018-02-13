@@ -17,41 +17,44 @@ impl Nullable for NodeId {
 }
 
 #[derive(Clone)]
-struct Node {
+struct Node<T: Default> {
     bounds: Bounds,
     
     parent: NodeId,
     left: NodeId,
     right: NodeId,
     
+    data: T,
+    
     height: u32,
 }
 
-impl Default for Node {
-    fn default() -> Node {
+impl<T: Default> Default for Node<T> {
+    fn default() -> Node<T> {
         Node {
             bounds: Bounds::new(Vec2::ZERO, Vec2::ZERO),
             parent: NodeId::NULL,
             left: NodeId::NULL,
             right: NodeId::NULL,
+            data: T::default(),
             height: 0,
         }
     }
 }
 
-impl Node {
+impl<T: Default> Node<T> {
     fn is_leaf(&self) -> bool {
         self.left == NodeId::NULL
     }
 }
 
-struct BoundsTree {
-    pool: pool::Pool<Node>,
+struct BoundsTree<T: Default> {
+    pool: pool::Pool<Node<T>>,
     pub root_id: NodeId,
 }
 
-impl BoundsTree {
-    pub fn new() -> BoundsTree {
+impl<T: Default> BoundsTree<T> {
+    pub fn new() -> BoundsTree<T> {
         let mut pool = pool::Pool::default();
         BoundsTree {
             root_id: NodeId::NULL,
@@ -59,20 +62,20 @@ impl BoundsTree {
         }
     }
     
-    pub fn get_root(&self) -> &Node {
+    pub fn get_root(&self) -> &Node<T> {
         self.get_node(self.root_id)
     }
     
-    pub fn get_root_mut(&mut self) -> &mut Node {
+    pub fn get_root_mut(&mut self) -> &mut Node<T> {
         let root_id = self.root_id;
         self.get_node_mut(root_id)
     }
     
-    pub fn get_node(&self, node_id: NodeId) -> &Node {
+    pub fn get_node(&self, node_id: NodeId) -> &Node<T> {
         self.pool.get(node_id)
     }
     
-    pub fn get_node_mut(&mut self, node_id: NodeId) -> &mut Node {
+    pub fn get_node_mut(&mut self, node_id: NodeId) -> &mut Node<T> {
         self.pool.get_mut(node_id)
     }
     
@@ -212,5 +215,29 @@ impl BoundsTree {
         self.get_node_mut(sibling_id).parent = grandparent_id;
         
         self.update_ancestors(grandparent_id);
+    }
+    
+    fn query<F>(&self, bounds: Bounds, mut f: F)
+        where F: FnMut(&Node<T>) -> bool {
+        let mut stack = Vec::with_capacity(self.pool.object_count);
+        stack.push(self.root_id);
+    
+        while stack.len() > 0 {
+            let node_id = stack.pop().unwrap();
+            let node = self.get_node(node_id);
+            
+            if !bounds.intersects(&node.bounds) {
+                continue;
+            }
+            
+            if node.is_leaf() {
+                if !f(node) {
+                    return;
+                }
+            } else {
+                stack.push(node.left);
+                stack.push(node.right);
+            }
+        }
     }
 }
