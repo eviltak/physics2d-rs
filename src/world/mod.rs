@@ -53,7 +53,7 @@ impl World {
         body_id
     }
     
-    pub fn body_ref(&self, body_id: &BodyId) -> &BodyRef {
+    pub fn get_body(&self, body_id: &BodyId) -> &BodyRef {
         &self.bodies[body_id]
     }
     
