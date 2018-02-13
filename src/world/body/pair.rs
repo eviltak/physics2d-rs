@@ -5,6 +5,11 @@ use world::BodyMap;
 pub struct BodyPair(pub BodyId, pub BodyId);
 
 impl BodyPair {
+    pub fn new(id_a: BodyId, id_b: BodyId) -> BodyPair {
+        let (id_a, id_b) = (id_a.min(id_b), id_a.max(id_b));
+        BodyPair(id_a, id_b)
+    }
+    
     pub fn with<F, R>(&self, bodies: &BodyMap, mut f: F) -> R
         where F: FnMut(&Body, &Body) -> R {
         let body_a = &bodies[&self.0].borrow();

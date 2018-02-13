@@ -1,9 +1,11 @@
+extern crate core;
+
 #[cfg(test)]
 mod tests;
 
 use math::{Bounds, Vec2};
 use util::pool;
-use world::{Body, BodyMap, BodyId};
+use world::{Body, BodyMap, BodyId, BodyPair};
 
 use std;
 use collision::broad_phase::{BroadPhase, BodyPairSet, ProxyId};
@@ -265,15 +267,38 @@ impl<T: Default> BoundsTree<T> {
     }
 }
 
-struct BoundsTreeBroadPhase {
+pub struct BoundsTreeBroadPhase {
     tree: BoundsTree<BodyId>,
+    reinserted_bodies: Vec<BodyId>,
+}
+
+impl BoundsTreeBroadPhase {
+    pub fn new() -> BoundsTreeBroadPhase {
+        BoundsTreeBroadPhase {
+            tree: BoundsTree::new(),
+            reinserted_bodies: Vec::new(),
+        }
+    }
 }
 
 const MARGIN: f32 = 0.05;
 
 impl BroadPhase for BoundsTreeBroadPhase {
     fn new_potential_pairs(&self, bodies: &BodyMap) -> BodyPairSet {
-        unimplemented!()
+        let mut pairs = BodyPairSet::default();
+    
+        for body_id in self.reinserted_bodies.iter() {
+            self.tree.query(bodies[&body_id].borrow().bounds, |node| {
+                if node.data == *body_id {
+                    return true;
+                }
+                
+                pairs.insert(BodyPair::new(node.data, *body_id));
+                true
+            });
+        }
+        
+        pairs
     }
     
     fn create_proxy(&mut self, body: &Body) -> ProxyId {
@@ -291,8 +316,12 @@ impl BroadPhase for BoundsTreeBroadPhase {
             return;
         }
         
+        // Proxy (node) id is guaranteed to remain the same after the reinsert
+        
         self.destroy_proxy(proxy_id);
         
         self.create_proxy(body);
+        
+        self.reinserted_bodies.push(body.id);
     }
 }

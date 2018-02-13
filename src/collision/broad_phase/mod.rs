@@ -2,6 +2,7 @@ mod naive;
 mod bounds_tree;
 
 pub use self::naive::NaiveBroadPhase;
+pub use self::bounds_tree::BoundsTreeBroadPhase;
 
 use world::{BodyMap, BodyPair, Body};
 

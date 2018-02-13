@@ -10,12 +10,12 @@ pub(crate) use self::collections::{BodyMap, BodiesIter};
 
 use self::collections::{ConstraintsMap, ConstraintSolverMap};
 use collision::{ContactConstraint, collide};
-use collision::broad_phase::{BroadPhase, NaiveBroadPhase};
+use collision::broad_phase::{BroadPhase, NaiveBroadPhase, BoundsTreeBroadPhase};
 
 pub struct World {
     bodies: BodyMap,
     
-    broad_phase: NaiveBroadPhase,
+    broad_phase: BoundsTreeBroadPhase,
     
     contact_constraints: ConstraintsMap<ContactConstraint>,
     
@@ -35,7 +35,7 @@ impl World {
     pub fn new(velocity_iterations: u8, position_iterations: u8) -> World {
         World {
             bodies: BodyMap::default(),
-            broad_phase: NaiveBroadPhase,
+            broad_phase: BoundsTreeBroadPhase::new(),
             contact_constraints: ConstraintsMap::default(),
             body_created_count: 0,
             velocity_iterations,
@@ -75,7 +75,11 @@ impl World {
         let potential_pairs = self.broad_phase.new_potential_pairs(&self.bodies);
         
         // TODO: Make hashmap return new pairs only, retain by overlap check
-        self.contact_constraints.retain(|pair, _v| potential_pairs.contains(&pair));
+        for (pair, constraints) in self.contact_constraints.iter_mut() {
+            if !pair.with(&self.bodies, |a, b| a.bounds.intersects(&b.bounds)) {
+                constraints.clear();
+            }
+        }
     
         for pair in potential_pairs {
             let body_a = &self.bodies[&pair.0].borrow();
