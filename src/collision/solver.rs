@@ -1,6 +1,6 @@
 use collision::Contact;
 use constraint::Constraint;
-use world::Body;
+use world::{Body, BodyId, BodyMap};
 use math::{clamp, Cross};
 
 const PENETRATION_SLOP: f32 = 0.005;
@@ -64,7 +64,10 @@ impl ContactConstraint {
 }
 
 impl Constraint for ContactConstraint {
-    fn initialize_velocity(&mut self, a: &Body, b: &Body, dt: f32) {
+    fn initialize_velocity(&mut self, body_map: &BodyMap, id_a: &BodyId, id_b: &BodyId, dt: f32) {
+        let a = &body_map[id_a];
+        let b = &body_map[id_b];
+        
         // TODO: Remove this, have collision detection handle it
         if a.inv_mass + b.inv_mass == 0.0 {
             return;
@@ -106,103 +109,167 @@ impl Constraint for ContactConstraint {
         self.friction_coefficient = fric_coeff;
     }
     
-    fn warm_start_velocity(&mut self, a: &mut Body, b: &mut Body, dt: f32) {
-        // TODO: Remove this, have collision detection handle it
-        if a.inv_mass + b.inv_mass == 0.0 {
-            return;
-        }
-        
+    fn warm_start_velocity(&mut self, body_map: &mut BodyMap, id_a: &BodyId, id_b: &BodyId, dt: f32) {
         let contact = &self.contact;
-        let r_a = contact.position - a.transform.position;
-        let r_b = contact.position - b.transform.position;
         
-        let impulse = self.normal_impulse * contact.normal + self.tangent_impulse * contact.tangent;
+        // TODO: Move to function?
+        let impulse = {
+            let a = &body_map[id_a];
+            let b = &body_map[id_b];
         
-        a.add_impulse_at_pos(-impulse, r_a);
-        b.add_impulse_at_pos(impulse, r_b);
+            // TODO: Remove this, have collision detection handle it
+            if a.inv_mass + b.inv_mass == 0.0 {
+                return;
+            }
+        
+            self.normal_impulse * contact.normal + self.tangent_impulse * contact.tangent
+        };
+        
+        {
+            let a = body_map.get_mut(id_a).unwrap();
+            let r_a = contact.position - a.transform.position;
+            
+            a.add_impulse_at_pos(-impulse, r_a);
+        }
+        {
+            let b = body_map.get_mut(id_b).unwrap();
+            let r_b = contact.position - b.transform.position;
+            
+            b.add_impulse_at_pos(impulse, r_b);
+        }
     }
     
-    fn warm_start_position(&mut self, a: &mut Body, b: &mut Body, dt: f32) {}
+    fn warm_start_position(&mut self, body_map: &mut BodyMap, id_a: &BodyId, id_b: &BodyId, dt: f32) {}
     
-    fn solve_velocity(&mut self, a: &mut Body, b: &mut Body, dt: f32) {
-        // TODO: Remove this, have collision detection handle it
-        if a.inv_mass + b.inv_mass == 0.0 {
-            return;
+    fn solve_velocity(&mut self, body_map: &mut BodyMap, id_a: &BodyId, id_b: &BodyId, dt: f32) {
+        let contact = &self.contact;
+        
+        // TODO: Move to function?
+        let j_t = {
+            let a = &body_map[id_a];
+            let b = &body_map[id_b];
+        
+            // TODO: Remove this, have collision detection handle it
+            if a.inv_mass + b.inv_mass == 0.0 {
+                return;
+            }
+            
+            let r_a = contact.position - a.transform.position;
+            let r_b = contact.position - b.transform.position;
+        
+            // Solve tangent constraints first because normal constraints (non-penetration) are more important
+            // Friction
+            let rel_vel = b.velocity - a.velocity + b.angular_vel.cross(&r_b) - a.angular_vel.cross(&r_a);
+        
+            let rel_vel_tangent = contact.tangent.dot(&rel_vel);
+        
+            let j_t = -rel_vel_tangent * self.tangent_mass;
+        
+            let max_friction = self.friction_coefficient * self.normal_impulse;
+        
+            let old_impulse = self.tangent_impulse;
+            self.tangent_impulse = clamp(old_impulse + j_t, -max_friction, max_friction);
+            self.tangent_impulse - old_impulse
+        };
+    
+        {
+            let a = body_map.get_mut(id_a).unwrap();
+            let r_a = contact.position - a.transform.position;
+            
+            a.add_impulse_at_pos(-contact.tangent * j_t, r_a);
+        }
+        {
+            let b = body_map.get_mut(id_b).unwrap();
+            let r_b = contact.position - b.transform.position;
+            
+            b.add_impulse_at_pos(contact.tangent * j_t, r_b);
         }
         
-        let contact = &self.contact;
-        let r_a = contact.position - a.transform.position;
-        let r_b = contact.position - b.transform.position;
+        // Normal Impulse
+        // TODO: Move to function?
+        let j = {
+            let a = &body_map[id_a];
+            let b = &body_map[id_b];
+            
+            let r_a = contact.position - a.transform.position;
+            let r_b = contact.position - b.transform.position;
         
-        // Solve tangent constraints first because normal constraints (non-penetration) are more important
-        // Friction
-        let rel_vel = b.velocity - a.velocity + b.angular_vel.cross(&r_b) - a.angular_vel.cross(&r_a);
+            let rel_vel = b.velocity - a.velocity + b.angular_vel.cross(&r_b) - a.angular_vel.cross(&r_a);
         
-        let rel_vel_tangent = contact.tangent.dot(&rel_vel);
+            let rel_vel_normal = contact.normal.dot(&rel_vel);
         
-        let j_t = -rel_vel_tangent * self.tangent_mass;
+            let res_bias = -self.restitution * f32::max(0.0, rel_vel_normal - RESTITUTION_VELOCITY_SLOP);
+            let bias = res_bias;
         
-        let max_friction = self.friction_coefficient * self.normal_impulse;
+            let j = (-rel_vel_normal + bias) * self.normal_mass;
         
-        let old_impulse = self.tangent_impulse;
-        self.tangent_impulse = clamp(old_impulse + j_t, -max_friction, max_friction);
+            let old_impulse = self.normal_impulse;
+            self.normal_impulse = f32::max(0.0, old_impulse + j);
+            self.normal_impulse - old_impulse
+        };
         
-        let j_t = self.tangent_impulse - old_impulse;
-        
-        a.add_impulse_at_pos(-contact.tangent * j_t, r_a);
-        b.add_impulse_at_pos(contact.tangent * j_t, r_b);
-        
-        // Impulse
-        let rel_vel = b.velocity - a.velocity + b.angular_vel.cross(&r_b) - a.angular_vel.cross(&r_a);
-        
-        let rel_vel_normal = contact.normal.dot(&rel_vel);
-        
-        let res_bias = -self.restitution * f32::max(0.0, rel_vel_normal - RESTITUTION_VELOCITY_SLOP);
-        let bias = res_bias;
-        
-        let j = (-rel_vel_normal + bias) * self.normal_mass;
-        
-        let old_impulse = self.normal_impulse;
-        self.normal_impulse = f32::max(0.0, old_impulse + j);
-        
-        let j = self.normal_impulse - old_impulse;
-        
-        a.add_impulse_at_pos(-contact.normal * j, r_a);
-        b.add_impulse_at_pos(contact.normal * j, r_b);
+        {
+            let a = body_map.get_mut(id_a).unwrap();
+            let r_a = contact.position - a.transform.position;
+            
+            a.add_impulse_at_pos(-contact.normal * j, r_a);
+        }
+        {
+            let b = body_map.get_mut(id_b).unwrap();
+            let r_b = contact.position - b.transform.position;
+            
+            b.add_impulse_at_pos(contact.normal * j, r_b);
+        }
     }
     
-    fn solve_position(&mut self, a: &mut Body, b: &mut Body, dt: f32) {
-        // TODO: Remove this, have collision detection handle it
-        if a.inv_mass + b.inv_mass == 0.0 {
-            return;
-        }
-        
+    fn solve_position(&mut self, body_map: &mut BodyMap, id_a: &BodyId, id_b: &BodyId, dt: f32) {
         let contact = &self.contact;
-        let r_a = contact.position - a.transform.position;
-        let r_b = contact.position - b.transform.position;
         
-        let r_a_tangent = r_a.dot(&contact.tangent);
-        let r_a_tangent_sqr = r_a_tangent * r_a_tangent;
+        // TODO: Move to function?
+        let pos_impulse = {
+            let a = &body_map[id_a];
+            let b = &body_map[id_b];
         
-        let r_b_tangent = r_b.dot(&contact.tangent);
-        let r_b_tangent_sqr = r_b_tangent * r_b_tangent;
+            // TODO: Remove this, have collision detection handle it
+            if a.inv_mass + b.inv_mass == 0.0 {
+                return;
+            }
+            
+            let r_a = contact.position - a.transform.position;
+            let r_b = contact.position - b.transform.position;
         
-        let inv_mass_sum = a.inv_mass + b.inv_mass;
+            let r_a_tangent = r_a.dot(&contact.tangent);
+            let r_a_tangent_sqr = r_a_tangent * r_a_tangent;
         
-        let inv_normal_impulse_factor = inv_mass_sum + r_a_tangent_sqr * a.inv_inertia + r_b_tangent_sqr * b.inv_inertia;
-        let normal_mass = 1.0 / inv_normal_impulse_factor;
+            let r_b_tangent = r_b.dot(&contact.tangent);
+            let r_b_tangent_sqr = r_b_tangent * r_b_tangent;
         
-        let correction = f32::max(0.0, BAUMGARTE * (contact.penetration - PENETRATION_SLOP));
-        let pos_impulse = normal_mass * contact.normal * correction;
+            let inv_mass_sum = a.inv_mass + b.inv_mass;
         
-        a.transform.position -= pos_impulse * a.inv_mass;
+            let inv_normal_impulse_factor = inv_mass_sum + r_a_tangent_sqr * a.inv_inertia + r_b_tangent_sqr * b.inv_inertia;
+            let normal_mass = 1.0 / inv_normal_impulse_factor;
         
-        let rotation = a.transform.rotation() - r_a.cross(pos_impulse) * a.inv_mass;
-        a.transform.set_rotation(rotation);
-        
-        b.transform.position += pos_impulse * b.inv_mass;
-        
-        let rotation = b.transform.rotation() + r_b.cross(pos_impulse) * b.inv_mass;
-        b.transform.set_rotation(rotation);
+            let correction = f32::max(0.0, BAUMGARTE * (contact.penetration - PENETRATION_SLOP));
+            normal_mass * contact.normal * correction
+        };
+    
+        {
+    
+            let a = body_map.get_mut(id_a).unwrap();
+            a.transform.position -= pos_impulse * a.inv_mass;
+            
+            let r_a = contact.position - a.transform.position;
+            let rotation = a.transform.rotation() - r_a.cross(pos_impulse) * a.inv_mass;
+            a.transform.set_rotation(rotation);
+        }
+    
+        {
+            let b = body_map.get_mut(id_b).unwrap();
+            b.transform.position += pos_impulse * b.inv_mass;
+            
+            let r_b = contact.position - b.transform.position;
+            let rotation = b.transform.rotation() + r_b.cross(pos_impulse) * b.inv_mass;
+            b.transform.set_rotation(rotation);
+        }
     }
 }

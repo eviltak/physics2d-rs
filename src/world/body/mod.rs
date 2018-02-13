@@ -7,10 +7,6 @@ use ::shapes::{Shape, Matter};
 use ::world::Transform;
 use math::Bounds;
 
-use std::cell::RefCell;
-
-pub type BodyRef = RefCell<Body>;
-
 pub type BodyId = usize;
 
 #[derive(Default)]

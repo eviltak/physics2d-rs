@@ -15,4 +15,4 @@ mod world;
 pub use world::debug;
 
 pub use math::{Vec2, Mat2, Cross, Bounds};
-pub use world::{World, Body, BodyRef, BodyId, Material, Transform};
+pub use world::{World, Body, BodyId, Material, Transform};

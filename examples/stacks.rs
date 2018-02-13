@@ -94,7 +94,7 @@ impl testbed::Testbed for StacksTestbed {
     fn sfml_draw(&mut self, canvas: &mut testbed::Canvas, dt: f32) {
         let bodies = self.world.bodies();
         for body in bodies.iter() {
-            canvas.draw_body(&body.borrow());
+            canvas.draw_body(body);
         }
         
         canvas.draw_text(format!("FPS: {}", 1.0 / dt), 16);
