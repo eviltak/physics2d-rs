@@ -8,6 +8,7 @@ use ::world::Transform;
 use math::Bounds;
 
 use std::cell::RefCell;
+use collision::broad_phase;
 
 /// A reference to a `Body`.
 ///
@@ -41,6 +42,7 @@ impl Material {
 
 pub struct Body {
     pub id: BodyId,
+    pub(crate) proxy_id: broad_phase::ProxyId,
     
     pub transform: Transform,
     
@@ -73,6 +75,7 @@ impl Body {
         
         Body {
             id: BodyId::default(),
+            proxy_id: broad_phase::ProxyId::default(),
             transform,
             velocity: Vec2::ZERO,
             angular_vel: 0.0,

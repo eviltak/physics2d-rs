@@ -48,6 +48,7 @@ impl World {
         self.body_created_count += 1;
         
         body.id = body_id;
+        body.proxy_id = self.broad_phase.create_proxy(&body);
         self.bodies.insert(body_id, BodyRef::new(body));
         
         body_id
@@ -64,9 +65,11 @@ impl World {
     }
     
     pub fn update(&mut self, dt: f32) {
-        for body in self.bodies.values_mut() {
+        for body in self.bodies.values() {
             let body = &mut body.borrow_mut();
+            
             body.update(dt);
+            self.broad_phase.update_proxy(body.proxy_id, body);
         }
         
         let potential_pairs = self.broad_phase.potential_pairs(&self.bodies);
