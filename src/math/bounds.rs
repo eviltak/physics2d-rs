@@ -73,6 +73,22 @@ impl Bounds {
         }
     }
     
+    
+    /// Checks whether this `Bounds` fully contains the other.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use physics2d::{Bounds, Vec2};
+    /// let b1 = Bounds::center_extents(Vec2::ONE, Vec2::ONE);
+    /// let b2 = Bounds::center_extents(Vec2::new(0.5, 0.5), Vec2::new(0.5, 0.5));
+    /// assert!(b1.contains(&b2));
+    /// ```
+    #[inline]
+    pub fn contains(&self, other: &Bounds) -> bool {
+        self.min.min(&other.min) == self.min && self.max.max(&other.max) == self.max
+    }
+    
     /// Returns a bounding volume that completely encompasses both the bounding volume represented
     /// by `self` and `other`.
     ///
