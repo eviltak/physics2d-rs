@@ -114,10 +114,23 @@ impl Canvas {
     
     pub fn draw_point(&mut self, point: Vec2) {
         let sfml_pos = sfml_vec2(point, self.pixels_per_unit);
+        const WIDTH: f32 = 2.0;
+        let sfml_offsets = vec![
+            sfml::system::Vector2f::new(WIDTH, WIDTH),
+            sfml::system::Vector2f::new(WIDTH, -WIDTH),
+            sfml::system::Vector2f::new(-WIDTH, -WIDTH),
+            sfml::system::Vector2f::new(-WIDTH, WIDTH),
+        ];
         
-        let drawable = self.get_circle_drawable(sfml_pos, &shapes::Circle::new(0.2));
+        let mut quad = sfml::graphics::VertexArray::new(sfml::graphics::PrimitiveType::Quads, 4);
         
-        self.draw_queue.push(drawable);
+        // TODO: Color parameter?
+        for sfml_offset in sfml_offsets {
+            let color = sfml::graphics::Color::RED;
+            quad.append(&sfml::graphics::Vertex::new(sfml_pos - sfml_offset, color, sfml_offset));
+        }
+        
+        self.draw_queue.push(Box::new(quad));
     }
     
     pub fn draw_line(&mut self, a: Vec2, b: Vec2) {
