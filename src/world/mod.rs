@@ -6,7 +6,7 @@ pub mod debug;
 pub use self::body::{Body, BodyId, BodyRef, Material};
 pub use self::transform::Transform;
 pub(crate) use self::body::BodyPair;
-pub(crate) use self::collections::{BodyMap};
+pub(crate) use self::collections::{BodyMap, BodiesIter};
 
 use self::collections::{ConstraintsMap, ConstraintSolverMap};
 use collision::{ContactConstraint, collide};
@@ -57,8 +57,10 @@ impl World {
         &self.bodies[body_id]
     }
     
-    pub fn bodies(&self) -> Vec<&BodyRef> {
-        self.bodies.values().collect()
+    pub fn bodies_iter(&self) -> BodiesIter {
+        BodiesIter {
+            values: self.bodies.values()
+        }
     }
     
     pub fn update(&mut self, dt: f32) {
@@ -69,6 +71,7 @@ impl World {
         
         let potential_pairs = self.broad_phase.potential_pairs(&self.bodies);
         
+        // TODO: Make hashmap return new pairs only, retain by overlap check
         self.contact_constraints.retain(|pair, _v| potential_pairs.contains(&pair));
     
         for pair in potential_pairs {

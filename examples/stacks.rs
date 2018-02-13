@@ -92,13 +92,15 @@ impl testbed::Testbed for StacksTestbed {
     }
     
     fn sfml_draw(&mut self, canvas: &mut testbed::Canvas, dt: f32) {
-        let bodies = self.world.bodies();
-        for body in bodies.iter() {
+        let bodies = self.world.bodies_iter();
+        let body_count = bodies.len();
+    
+        for body in bodies {
             canvas.draw_body(&body.borrow());
         }
         
         canvas.draw_text(format!("FPS: {}", 1.0 / dt), 16);
-        canvas.draw_text(format!("Body count: {}", bodies.len()), 16);
+        canvas.draw_text(format!("Body count: {}", body_count), 16);
         canvas.draw_text(format!("Velocity iterations: {}", self.world.velocity_iterations), 16);
         canvas.draw_text(format!("Position iterations: {}", self.world.position_iterations), 16);
         

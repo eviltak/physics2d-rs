@@ -1,10 +1,32 @@
+extern crate core;
+
 use world::{BodyId, BodyRef, BodyPair};
 use collision::Contact;
 use constraint::Constraint;
 
 use fnv::FnvHashMap;
 
+use std::collections::hash_map::Values;
+
 pub type BodyMap = FnvHashMap<BodyId, BodyRef>;
+
+pub struct BodiesIter<'a> {
+    pub(crate) values: Values<'a, BodyId, BodyRef>,
+}
+
+impl<'a> Iterator for BodiesIter<'a> {
+    type Item = &'a BodyRef;
+    
+    fn next(&mut self) -> Option<Self::Item> {
+        self.values.next()
+    }
+}
+
+impl<'a> ExactSizeIterator for BodiesIter<'a> {
+    fn len(&self) -> usize {
+        self.values.len()
+    }
+}
 
 pub type ConstraintsMap<T: Constraint> = FnvHashMap<BodyPair, Vec<T>>;
 

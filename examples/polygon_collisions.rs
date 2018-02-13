@@ -57,7 +57,7 @@ impl testbed::Testbed for PolygonCollisionsTestbed {
     }
     
     fn sfml_draw(&mut self, canvas: &mut testbed::Canvas, dt: f32) {
-        for body in self.world.bodies() {
+        for body in self.world.bodies_iter() {
             canvas.draw_body(&body.borrow());
         }
         
