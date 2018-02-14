@@ -197,12 +197,12 @@ impl Constraint for ContactConstraint {
         
         a.transform.position -= pos_impulse * a.inv_mass;
         
-        let rotation = a.transform.rotation() - r_a.cross(pos_impulse) * a.inv_mass;
+        let rotation = a.transform.rotation() - r_a.cross(pos_impulse) * a.inv_inertia;
         a.transform.set_rotation(rotation);
         
         b.transform.position += pos_impulse * b.inv_mass;
         
-        let rotation = b.transform.rotation() + r_b.cross(pos_impulse) * b.inv_mass;
+        let rotation = b.transform.rotation() + r_b.cross(pos_impulse) * b.inv_inertia;
         b.transform.set_rotation(rotation);
     }
 }
