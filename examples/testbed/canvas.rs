@@ -1,3 +1,5 @@
+extern crate physics2d;
+
 use testbed::sfml;
 use testbed::sfml::graphics::{RenderTarget, Transformable};
 
@@ -58,58 +60,62 @@ impl Canvas {
         shape.set_outline_thickness(1.0);
     }
     
-    fn get_circle_drawable(&self, sfml_pos: sfml::system::Vector2f,
-                           circle: &shapes::Circle) -> Box<sfml::graphics::Drawable> {
-        const POINT_COUNT: u32 = 60;
+    fn draw_circle(&mut self, sfml_pos: sfml::system::Vector2f,
+                   transform: &Transform,
+                   circle: &shapes::Circle) {
+        const POINT_COUNT: u32 = 30;
         
-        let radius = circle.radius * self.pixels_per_unit;
-        let origin = sfml::system::Vector2f::new(1.0, 1.0) * radius;
-        let drawable_pos = sfml_pos;
+        let mut vertex_array = sfml::graphics::VertexArray::default();
+        vertex_array.set_primitive_type(sfml::graphics::PrimitiveType::LineStrip);
         
-        let mut circle_shape = sfml::graphics::CircleShape::new(radius,
-                                                                POINT_COUNT);
-        
-        circle_shape.set_origin(origin);
-        circle_shape.set_position(drawable_pos);
-        
-        self.config_shape(&mut circle_shape);
-        
-        Box::new(circle_shape)
-    }
-    
-    fn get_polygon_drawable<'a>(&self, sfml_pos: sfml::system::Vector2f,
-                                body: &Body,
-                                polygon: &shapes::Polygon) -> Box<sfml::graphics::Drawable> {
-        let mut convex_shape = sfml::graphics::ConvexShape::new(polygon.vert_count() as u32);
-        
-        for i in 0..polygon.vert_count() {
-            convex_shape.set_point(i as u32,
-                                   sfml_vec2(body.transform.world_dir(&polygon.vertices[i]), self.pixels_per_unit)
+        for i in 0..POINT_COUNT {
+            let angle = 2.0f32 * math::PI * i as f32 / POINT_COUNT as f32;
+            let p = transform.position + Vec2::new(angle.cos(), angle.sin()) * circle.radius;
+            let sfml_vertex = sfml::graphics::Vertex::new(
+                sfml_vec2(p, self.pixels_per_unit),
+                // TODO: Parameter?
+                sfml::graphics::Color::CYAN,
+                sfml::system::Vector2f::new(0.0, 0.0)
             );
+            vertex_array.append(&sfml_vertex);
         }
         
-        convex_shape.set_position(sfml_pos);
+        let first_vertex = vertex_array[0];
+        vertex_array.append(&first_vertex);
         
-        self.config_shape(&mut convex_shape);
-        
-        Box::new(convex_shape)
+        self.draw_queue.push(Box::new(vertex_array));
     }
     
-    fn get_body_drawable(&self, body: &Body) -> Box<sfml::graphics::Drawable> {
-        let sfml_pos = sfml_vec2(body.transform.position, self.pixels_per_unit);
+    fn draw_polygon(&mut self, sfml_pos: sfml::system::Vector2f,
+                    transform: &Transform,
+                    polygon: &shapes::Polygon) {
+    
+        let mut vertex_array = sfml::graphics::VertexArray::default();
+        vertex_array.set_primitive_type(sfml::graphics::PrimitiveType::LineStrip);
         
-        let drawable = match body.shape {
-            shapes::Shape::Circle(ref circle) => self.get_circle_drawable(sfml_pos, circle),
-            shapes::Shape::Polygon(ref polygon) => self.get_polygon_drawable(sfml_pos, body, polygon),
-        };
+        for vertex in polygon.vertices.iter() {
+            let sfml_vertex = sfml::graphics::Vertex::new(
+                sfml_vec2(transform.world_pos(vertex), self.pixels_per_unit),
+                // TODO: Parameter?
+                sfml::graphics::Color::CYAN,
+                sfml::system::Vector2f::new(0.0, 0.0)
+            );
+            vertex_array.append(&sfml_vertex);
+        }
         
-        drawable
+        let first_vertex = vertex_array[0];
+        vertex_array.append(&first_vertex);
+        
+        self.draw_queue.push(Box::new(vertex_array));
     }
     
     pub fn draw_body(&mut self, body: &Body) {
-        let drawable = self.get_body_drawable(body);
+        let sfml_pos = sfml_vec2(body.transform.position, self.pixels_per_unit);
         
-        self.draw_queue.push(drawable);
+        match body.shape {
+            shapes::Shape::Circle(ref circle) => self.draw_circle(sfml_pos, &body.transform, circle),
+            shapes::Shape::Polygon(ref polygon) => self.draw_polygon(sfml_pos, &body.transform, polygon),
+        };
     }
     
     pub fn draw_point(&mut self, point: Vec2) {
@@ -154,6 +160,7 @@ impl Canvas {
     }
     
     pub fn process_draw_queue(&mut self, window: &mut sfml::graphics::RenderWindow) {
+        // TODO: Move outside fn
         window.set_view(&self.view);
         
         for drawable in self.draw_queue.iter() {
