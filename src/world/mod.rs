@@ -72,7 +72,7 @@ impl World {
             self.broad_phase.update_proxy(body.proxy_id, body);
         }
         
-        let potential_pairs = self.broad_phase.new_potential_pairs(&self.bodies);
+        let mut potential_pairs = self.broad_phase.new_potential_pairs(&self.bodies);
         
         self.broad_phase.post_update();
         
@@ -82,6 +82,12 @@ impl World {
                 constraints.clear();
             }
         }
+        
+        potential_pairs.extend(
+            self.contact_constraints.keys().filter(|pair| {
+                !self.contact_constraints[pair].is_empty()
+            })
+        );
     
         for pair in potential_pairs {
             let body_a = &self.bodies[&pair.0].borrow();
