@@ -279,6 +279,10 @@ impl BoundsTreeBroadPhase {
             reinserted_bodies: Vec::new(),
         }
     }
+    
+    pub fn post_update(&mut self) {
+        self.reinserted_bodies.clear();
+    }
 }
 
 const MARGIN: f32 = 0.05;

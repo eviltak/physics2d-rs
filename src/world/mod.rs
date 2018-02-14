@@ -74,6 +74,8 @@ impl World {
         
         let potential_pairs = self.broad_phase.new_potential_pairs(&self.bodies);
         
+        self.broad_phase.post_update();
+        
         // TODO: Make hashmap return new pairs only, retain by overlap check
         for (pair, constraints) in self.contact_constraints.iter_mut() {
             if !pair.with(&self.bodies, |a, b| a.bounds.intersects(&b.bounds)) {
