@@ -15,9 +15,9 @@ impl BroadPhase for NaiveBroadPhase {
                 
                 let body_a = &body_a.borrow();
                 let body_b = &body_b.borrow();
-                let body_pair = BodyPair(*body_a_id, *body_b_id);
                 
-                if body_a.bounds.intersects(&body_b.bounds) {
+                if body_a.bounds.intersects(&body_b.bounds) && (!body_a.is_static() || !body_b.is_static()) {
+                    let body_pair = BodyPair(*body_a_id, *body_b_id);
                     pairs.insert(body_pair);
                 }
             }

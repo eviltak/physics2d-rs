@@ -65,11 +65,6 @@ impl ContactConstraint {
 
 impl Constraint for ContactConstraint {
     fn initialize_velocity(&mut self, a: &Body, b: &Body, dt: f32) {
-        // TODO: Remove this, have collision detection handle it
-        if a.inv_mass + b.inv_mass == 0.0 {
-            return;
-        }
-        
         let contact = &self.contact;
         let r_a = contact.position - a.transform.position;
         let r_b = contact.position - b.transform.position;
@@ -107,11 +102,6 @@ impl Constraint for ContactConstraint {
     }
     
     fn warm_start_velocity(&mut self, a: &mut Body, b: &mut Body, dt: f32) {
-        // TODO: Remove this, have collision detection handle it
-        if a.inv_mass + b.inv_mass == 0.0 {
-            return;
-        }
-        
         let contact = &self.contact;
         let r_a = contact.position - a.transform.position;
         let r_b = contact.position - b.transform.position;
@@ -125,11 +115,6 @@ impl Constraint for ContactConstraint {
     fn warm_start_position(&mut self, a: &mut Body, b: &mut Body, dt: f32) {}
     
     fn solve_velocity(&mut self, a: &mut Body, b: &mut Body, dt: f32) {
-        // TODO: Remove this, have collision detection handle it
-        if a.inv_mass + b.inv_mass == 0.0 {
-            return;
-        }
-        
         let contact = &self.contact;
         let r_a = contact.position - a.transform.position;
         let r_b = contact.position - b.transform.position;
@@ -172,11 +157,6 @@ impl Constraint for ContactConstraint {
     }
     
     fn solve_position(&mut self, a: &mut Body, b: &mut Body, dt: f32) {
-        // TODO: Remove this, have collision detection handle it
-        if a.inv_mass + b.inv_mass == 0.0 {
-            return;
-        }
-        
         let contact = &self.contact;
         let r_a = contact.position - a.transform.position;
         let r_b = contact.position - b.transform.position;

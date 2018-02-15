@@ -384,7 +384,13 @@ impl BroadPhase for BoundsTreeBroadPhase {
         let mut pairs = BodyPairSet::default();
     
         for body_id in self.reinserted_bodies.iter() {
-            self.tree.query(bodies[&body_id].borrow().bounds, |node| {
+            let body = bodies[&body_id].borrow();
+            
+            if body.is_static() {
+                continue;
+            }
+            
+            self.tree.query(body.bounds, |node| {
                 if node.data == *body_id {
                     return true;
                 }
