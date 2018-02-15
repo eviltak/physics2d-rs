@@ -76,18 +76,15 @@ impl World {
         
         self.broad_phase.post_update();
         
-        // TODO: Make hashmap return new pairs only, retain by overlap check
         for (pair, constraints) in self.contact_constraints.iter_mut() {
             if !pair.with(&self.bodies, |a, b| a.bounds.intersects(&b.bounds)) {
                 constraints.clear();
             }
         }
         
-        potential_pairs.extend(
-            self.contact_constraints.keys().filter(|pair| {
-                !self.contact_constraints[pair].is_empty()
-            })
-        );
+        self.contact_constraints.retain(|pair, constraints| !constraints.is_empty());
+        
+        potential_pairs.extend(self.contact_constraints.keys());
     
         for pair in potential_pairs {
             let body_a = &self.bodies[&pair.0].borrow();
