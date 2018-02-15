@@ -94,22 +94,114 @@ impl<T: Default> BoundsTree<T> {
         self.pool.get_mut(node_id)
     }
     
+    /// Updates the height and bounds of a branch node.
+    fn update_branch_node(&mut self, node_id: NodeId) {
+        let left_id = self.get_node(node_id).left;
+        let right_id = self.get_node(node_id).right;
+        
+        let new_height = 1 + self.get_node(left_id).height.max(self.get_node(right_id).height);
+        let new_bounds = self.get_node(left_id).bounds.union(&self.get_node(right_id).bounds);
+        
+        let node = self.get_node_mut(node_id);
+        node.height = new_height;
+        node.bounds = new_bounds;
+    }
+    
+    /// Rotates the subtree rooted at `node_id` so that it is rooted at `child_id`. After this
+    /// operation, the subtree will be rooted at `child_id`.
+    fn rotate(&mut self, node_id: NodeId, child_id: NodeId) {
+        let is_left_child = {
+            let node = self.get_node(node_id);
+            assert!(node.left == child_id || node.right == child_id);
+            node.left == child_id
+        };
+        
+        let grandchild_left_id = self.get_node(child_id).left;
+        let grandchild_right_id = self.get_node(child_id).right;
+        
+        // Swap node and child
+        let node_parent_id = self.get_node(node_id).parent;
+        {
+            let child = self.get_node_mut(child_id);
+            child.parent = node_parent_id;
+            // It doesn't matter which child of `child` `node` is
+            child.left = node_id;
+        }
+    
+        self.get_node_mut(node_id).parent = child_id;
+    
+        // Replace `node` with `child` in child's (formerly node's) parent
+        if self.root_id == node_id {
+            self.root_id = child_id;
+        } else {
+            let node_parent = self.get_node_mut(node_parent_id);
+            
+            if node_parent.left == node_id {
+                node_parent.left = child_id;
+            } else {
+                debug_assert_eq!(node_parent.right, node_id);
+                node_parent.right = child_id;
+            }
+        }
+        
+        // Place the shallower grandchild as a child of `node`, replacing `child`
+        // child.right becomes the deeper grandchild (child.left == node)
+        // If both grandchildren are equally deep, move the left to node and retain the right
+        if self.get_node(grandchild_left_id).height <= self.get_node(grandchild_right_id).height {
+            if is_left_child {
+                self.get_node_mut(node_id).left = grandchild_left_id;
+            } else {
+                self.get_node_mut(node_id).right = grandchild_left_id;
+            }
+            
+            self.get_node_mut(grandchild_left_id).parent = node_id;
+            self.get_node_mut(child_id).right = grandchild_right_id;
+        } else {
+            if is_left_child {
+                self.get_node_mut(node_id).left = grandchild_right_id;
+            } else {
+                self.get_node_mut(node_id).right = grandchild_right_id;
+            }
+            
+            self.get_node_mut(grandchild_right_id).parent = node_id;
+            self.get_node_mut(child_id).right = grandchild_left_id;
+        }
+        
+        self.update_branch_node(node_id);
+        self.update_branch_node(child_id);
+    }
+    
+    /// Balances the subtree rooted at `node_id` and returns the `NodeId` of the new subtree root.
+    fn balance_subtree(&mut self, node_id: NodeId) -> NodeId {
+        if self.get_node(node_id).height < 2 {
+            return node_id;
+        }
+        
+        let left_id = self.get_node(node_id).left;
+        let right_id = self.get_node(node_id).right;
+        
+        let height_diff = self.get_node(right_id).height as i32 - self.get_node(left_id).height as i32;
+        
+        if height_diff > 1 {
+            self.rotate(node_id, right_id);
+            right_id
+        } else if height_diff < -1 {
+            self.rotate(node_id, left_id);
+            left_id
+        } else {
+            // Already balanced
+            node_id
+        }
+    }
+
     /// Walks up the tree from `node_id`, balancing subtrees and fixing ancestor heights and bounds.
     fn update_ancestors(&mut self, mut node_id: NodeId) {
         while node_id != NodeId::NULL {
-            // Balance
-        
-            let left_id = self.get_node(node_id).left;
-            let right_id = self.get_node(node_id).right;
-        
-            let new_height = 1 + self.get_node(left_id).height.max(self.get_node(right_id).height);
-            let new_bounds = self.get_node(left_id).bounds.union(&self.get_node(right_id).bounds);
-        
-            let node = self.get_node_mut(node_id);
-            node.height = new_height;
-            node.bounds = new_bounds;
-        
-            node_id = node.parent;
+            node_id = self.balance_subtree(node_id);
+            
+            self.update_branch_node(node_id);
+            
+            node_id = self.get_node(node_id).parent;
         }
     }
     
