@@ -5,10 +5,11 @@ mod tests;
 
 use math::{Bounds, Vec2};
 use util::pool;
-use world::{Body, BodyMap, BodyId, BodyPair};
+use world::{BodyMap, ConstraintsMap, BodyPair, Body, BodyId};
+use collision::ContactConstraint;
 
 use std;
-use collision::broad_phase::{BroadPhase, BodyPairSet, ProxyId};
+use collision::broad_phase::{BroadPhase, ProxyId};
 
 trait Nullable {
     const NULL: Self;
@@ -380,9 +381,8 @@ impl BoundsTreeBroadPhase {
 const MARGIN: f32 = 0.05;
 
 impl BroadPhase for BoundsTreeBroadPhase {
-    fn new_potential_pairs(&self, bodies: &BodyMap) -> BodyPairSet {
-        let mut pairs = BodyPairSet::default();
-    
+    fn new_potential_pairs(&self, bodies: &BodyMap,
+                           constraints: &mut ConstraintsMap<ContactConstraint>) {
         for body_id in self.reinserted_bodies.iter() {
             let body = bodies[&body_id].borrow();
             
@@ -395,12 +395,13 @@ impl BroadPhase for BoundsTreeBroadPhase {
                     return true;
                 }
                 
-                pairs.insert(BodyPair::new(node.data, *body_id));
+                let body_pair = BodyPair::new(node.data, *body_id);
+                if !constraints.contains_key(&body_pair) {
+                    constraints.insert(body_pair, Vec::new());
+                }
                 true
             });
         }
-        
-        pairs
     }
     
     fn create_proxy(&mut self, body: &Body) -> ProxyId {

@@ -35,17 +35,15 @@ impl ContactConstraint {
         }
     }
     
-    pub fn with_persistent_contacts(old_constraints: Option<&Vec<ContactConstraint>>,
+    pub fn with_contacts(new_contacts: &Vec<Contact>) -> Vec<ContactConstraint> {
+        new_contacts.iter().map(|contact| ContactConstraint::new(*contact)).collect()
+    }
+    
+    pub fn with_persistent_contacts(old_constraints: &Vec<ContactConstraint>,
                                     new_contacts: &Vec<Contact>) -> Vec<ContactConstraint> {
         let mut new_constraints: Vec<ContactConstraint> =
             new_contacts.iter().map(|contact| ContactConstraint::new(*contact)).collect();
         
-        if old_constraints.is_none() {
-            return new_constraints;
-        }
-        
-        let old_constraints = old_constraints.unwrap();
-    
         for old_constraint in old_constraints.iter() {
             const PERSISTENT_DISTANCE: f32 = 0.01;
         
@@ -58,7 +56,7 @@ impl ContactConstraint {
                 near_constraint.tangent_impulse = old_constraint.tangent_impulse;
             }
         }
-    
+        
         new_constraints
     }
 }

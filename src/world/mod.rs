@@ -6,9 +6,9 @@ pub mod debug;
 pub use self::body::{Body, BodyId, BodyRef, Material};
 pub use self::transform::Transform;
 pub(crate) use self::body::BodyPair;
-pub(crate) use self::collections::{BodyMap, BodiesIter};
+pub(crate) use self::collections::{BodyMap, ConstraintsMap, BodiesIter};
 
-use self::collections::{ConstraintsMap, ConstraintSolverMap};
+use self::collections::{ConstraintSolverMap};
 use collision::{ContactConstraint, collide};
 use collision::broad_phase::{BroadPhase, NaiveBroadPhase, BoundsTreeBroadPhase};
 
@@ -72,31 +72,36 @@ impl World {
             self.broad_phase.update_proxy(body.proxy_id, body);
         }
         
-        let mut potential_pairs = self.broad_phase.new_potential_pairs(&self.bodies);
-        
-        self.broad_phase.post_update();
-        
         {
             let bodies = &self.bodies;
             self.contact_constraints.retain(|pair, constraints| pair.with(bodies, |a, b| a.bounds.intersects(&b.bounds)));
         }
         
-        potential_pairs.extend(self.contact_constraints.keys());
-    
-        for pair in potential_pairs {
-            let body_a = &self.bodies[&pair.0].borrow();
-            let body_b = &self.bodies[&pair.1].borrow();
-            
-            if let Some(new_contacts) = collide(body_a, body_b) {
-                let new_constraints = ContactConstraint::with_persistent_contacts(
-                    self.contact_constraints.get(&pair),
-                    &new_contacts
-                );
+        self.broad_phase.new_potential_pairs(&self.bodies, &mut self.contact_constraints);
+        
+        self.broad_phase.post_update();
+        
+        {
+            let bodies = &self.bodies;
+            self.contact_constraints.retain(|pair, constraints| {
+                let body_a = &bodies[&pair.0].borrow();
+                let body_b = &bodies[&pair.1].borrow();
                 
-                self.contact_constraints.insert(pair, new_constraints);
-            } else {
-                self.contact_constraints.remove(&pair);
-            }
+                if let Some(new_contacts) = collide(body_a, body_b) {
+                    let new_constraints =
+                        if !constraints.is_empty() {
+                            ContactConstraint::with_persistent_contacts(constraints, &new_contacts)
+                        } else {
+                            ContactConstraint::with_contacts(&new_contacts)
+                        };
+                    
+                    *constraints = new_constraints;
+                    
+                    true
+                } else {
+                    false
+                }
+            });
         }
         
         for body in self.bodies.values_mut() {
