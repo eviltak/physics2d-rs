@@ -76,13 +76,10 @@ impl World {
         
         self.broad_phase.post_update();
         
-        for (pair, constraints) in self.contact_constraints.iter_mut() {
-            if !pair.with(&self.bodies, |a, b| a.bounds.intersects(&b.bounds)) {
-                constraints.clear();
-            }
+        {
+            let bodies = &self.bodies;
+            self.contact_constraints.retain(|pair, constraints| pair.with(bodies, |a, b| a.bounds.intersects(&b.bounds)));
         }
-        
-        self.contact_constraints.retain(|pair, constraints| !constraints.is_empty());
         
         potential_pairs.extend(self.contact_constraints.keys());
     
