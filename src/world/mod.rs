@@ -3,7 +3,7 @@ mod collections;
 mod body;
 pub mod debug;
 
-pub use self::body::{Body, BodyId, BodyRef, Material};
+pub use self::body::{Body, BodyId, Material};
 pub use self::transform::Transform;
 pub(crate) use self::body::BodyPair;
 pub(crate) use self::collections::{BodyMap, ConstraintsMap, BodiesIter};
@@ -54,11 +54,11 @@ impl World {
         body_id
     }
     
-    pub fn get_body(&self, body_id: &BodyId) -> &BodyRef {
+    pub fn get_body(&self, body_id: &BodyId) -> &Body {
         &self.bodies[body_id]
     }
     
-    pub fn get_body_mut(&mut self, body_id: &BodyId) -> &mut BodyRef {
+    pub fn get_body_mut(&mut self, body_id: &BodyId) -> &mut Body {
         self.bodies.get_mut(body_id).unwrap()
     }
     
