@@ -96,7 +96,7 @@ impl testbed::Testbed for StacksTestbed {
         let body_count = bodies.len();
     
         for body in bodies {
-            canvas.draw_body(&body.borrow());
+            canvas.draw_body(body);
         }
         
         canvas.draw_text(format!("FPS: {}", 1.0 / dt), 16);
