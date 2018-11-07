@@ -38,7 +38,7 @@ impl CircleCollisionsTestbed {
 impl testbed::Testbed for CircleCollisionsTestbed {
     fn sfml_loop(&mut self, input: &testbed::Input, dt: f32) {
         if !self.should_stop {
-            let body = &mut self.world.get_body(&self.body_b).borrow_mut();
+            let body = self.world.get_body_mut(&self.body_b);
             let f = Vec2::UP * 7.0 * body.mass;
             body.add_force(f);
         }
@@ -50,7 +50,7 @@ impl testbed::Testbed for CircleCollisionsTestbed {
     
     fn sfml_draw(&mut self, canvas: &mut testbed::Canvas, dt: f32) {
         for body in self.world.bodies_iter() {
-            canvas.draw_body(&body.borrow());
+            canvas.draw_body(body);
         }
         
         for contact in self.world.contacts().iter() {

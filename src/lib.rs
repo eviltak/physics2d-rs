@@ -11,6 +11,7 @@ pub mod math;
 mod collision;
 mod constraint;
 mod world;
+mod joint;
 
 pub use world::debug;
 

@@ -17,7 +17,7 @@ use collision::broad_phase;
 /// structure. While it is entirely possible to modify the code to not require interior mutability,
 /// independence from `RefCell` comes at the cost of increased `Body` lookups. Benchmarks show that
 /// the overhead of `RefCell` is slightly but noticeably lower than the cost of increased lookups.
-pub type BodyRef = RefCell<Body>;
+pub type BodyRef = Body;
 
 /// The identifier used for looking up a `Body` in a `World`.
 ///

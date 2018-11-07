@@ -49,13 +49,17 @@ impl World {
         
         body.id = body_id;
         body.proxy_id = self.broad_phase.create_proxy(&body);
-        self.bodies.insert(body_id, BodyRef::new(body));
+        self.bodies.insert(body_id, body);
         
         body_id
     }
     
     pub fn get_body(&self, body_id: &BodyId) -> &BodyRef {
         &self.bodies[body_id]
+    }
+    
+    pub fn get_body_mut(&mut self, body_id: &BodyId) -> &mut BodyRef {
+        self.bodies.get_mut(body_id).unwrap()
     }
     
     pub fn bodies_iter(&self) -> BodiesIter {
@@ -65,9 +69,7 @@ impl World {
     }
     
     pub fn update(&mut self, dt: f32) {
-        for body in self.bodies.values() {
-            let body = &mut body.borrow_mut();
-            
+        for body in self.bodies.values_mut() {
             body.update(dt);
             self.broad_phase.update_proxy(body.proxy_id, body);
         }
@@ -84,8 +86,8 @@ impl World {
         {
             let bodies = &self.bodies;
             self.contact_constraints.retain(|pair, constraints| {
-                let body_a = &bodies[&pair.0].borrow();
-                let body_b = &bodies[&pair.1].borrow();
+                let body_a = &bodies[&pair.0];
+                let body_b = &bodies[&pair.1];
                 
                 if let Some(new_contacts) = collide(body_a, body_b) {
                     let new_constraints =
@@ -105,26 +107,24 @@ impl World {
         }
         
         for body in self.bodies.values_mut() {
-            let body = &mut body.borrow_mut();
             body.integrate_force(dt);
         }
         
-        self.contact_constraints.initialize_velocity(&self.bodies, dt);
-        self.contact_constraints.warm_start_velocity(&self.bodies, dt);
+        self.contact_constraints.initialize_velocity(&mut self.bodies, dt);
+        self.contact_constraints.warm_start_velocity(&mut self.bodies, dt);
         
         for _ in 0..self.velocity_iterations {
-            self.contact_constraints.solve_velocity(&self.bodies, dt);
+            self.contact_constraints.solve_velocity(&mut self.bodies, dt);
         }
         
         for body in self.bodies.values_mut() {
-            let body = &mut body.borrow_mut();
             body.integrate_velocity(dt);
         }
         
-        self.contact_constraints.warm_start_position(&self.bodies, dt);
+        self.contact_constraints.warm_start_position(&mut self.bodies, dt);
     
         for _ in 0..self.position_iterations {
-            self.contact_constraints.solve_position(&self.bodies, dt);
+            self.contact_constraints.solve_position(&mut self.bodies, dt);
         }
     }
 }

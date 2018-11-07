@@ -384,7 +384,7 @@ impl BroadPhase for BoundsTreeBroadPhase {
     fn new_potential_pairs(&self, bodies: &BodyMap,
                            constraints: &mut ConstraintsMap<ContactConstraint>) {
         for body_id in self.reinserted_bodies.iter() {
-            let body = bodies[&body_id].borrow();
+            let body = &bodies[&body_id];
             
             if body.is_static() {
                 continue;
