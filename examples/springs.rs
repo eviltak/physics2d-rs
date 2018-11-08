@@ -17,6 +17,17 @@ impl SpringsTestbed {
         let window_width = config.window_width as f32 / config.pixels_per_unit;
         let window_height = config.window_height as f32 / config.pixels_per_unit;
         
+        let ground_width = window_width / 2.0;
+        let ground_height = window_height / 10.0;
+    
+        let ground_vertices = box_vertices(ground_width, ground_height);
+        let ground_poly = shapes::Polygon::new(ground_vertices);
+    
+        let mut ground = Body::new(ground_poly.into_shape(), 10.0, Material::new(1.2, 0.2));
+        ground.transform.position.y = -window_height / 2.0 + ground_height / 2.0 + 0.1;
+    
+        ground.set_static();
+        
         let box_width = 2.5;
         let box_height = 2.5;
         
@@ -24,19 +35,26 @@ impl SpringsTestbed {
         let box_poly = shapes::Polygon::new(box_vertices);
         
         let mut box_body = Body::new(box_poly.into_shape(), 10.0, Material::new(1.2, 0.2));
-        box_body.transform.position.y = -20.0;
+        box_body.transform.position.y = 10.0;
         
         let circle = shapes::Circle::new(1.5);
     
         let mut circle_body = Body::new(circle.into_shape(), 10.0, Material::new(0.8, 0.8));
-        circle_body.set_static();
         
         let mut world = World::default();
+        
+        let box_anchor = Vec2::ZERO;
+        let circle_anchor = Vec2::ZERO;
+    
+        let distance = (box_body.transform.world_pos(&box_anchor) -
+            circle_body.transform.world_pos(&circle_anchor)).len();
     
         let box_id = world.add_body(box_body);
         let circle_id = world.add_body(circle_body);
         
-        world.add_joint((box_id, circle_id), Joint::Spring(SpringJoint::new(Vec2::ZERO, Vec2::ZERO, 15.0, 0.25, 0.0)));
+        world.add_body(ground);
+        
+        world.add_joint((box_id, circle_id), Joint::Spring(SpringJoint::new(box_anchor, circle_anchor, distance, 0.2, 0.5)));
         
         SpringsTestbed {
             world,
@@ -81,10 +99,17 @@ impl testbed::Testbed for SpringsTestbed {
         
         let Joint::Spring(ref joint) = &self.world.get_joints((self.box_id, self.circle_id)).unwrap()[0];
         {
-            let b = self.world.get_body(&self.circle_id).transform.world_pos(&joint.local_anchor_b);
-            let a = self.world.get_body(&self.box_id).transform.world_pos(&joint.local_anchor_a);
-            let n = b - a;
-            let n = n.normalized();
+            let circle = self.world.get_body(&self.circle_id);
+            let box_body = self.world.get_body(&self.box_id);
+            
+            let b = circle.transform.world_pos(&joint.local_anchor_b);
+            let a = box_body.transform.world_pos(&joint.local_anchor_a);
+            
+            let n = (b - a).normalized();
+            
+            canvas.draw_point(a);
+            canvas.draw_point(b);
+            
             canvas.draw_line(a, a + n * joint.distance);
         }
     }

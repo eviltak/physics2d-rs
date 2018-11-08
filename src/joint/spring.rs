@@ -2,6 +2,8 @@ use constraint::Constraint;
 use world::Body;
 use math::{Vec2, PI, Cross};
 
+const SPRING_DISPLACEMENT_SLOP: f32 = 0.05;
+
 #[derive(Clone)]
 pub struct SpringJoint {
     pub local_anchor_a: Vec2,
@@ -117,7 +119,7 @@ impl Constraint for SpringJoint {
         let rel_vel_normal = self.normal.dot(&rel_vel);
         
         // baumgarte bias = beta * x / dt
-        let bias = self.beta * self.x / dt;
+        let bias = self.beta * f32::max(self.x.abs() - SPRING_DISPLACEMENT_SLOP, 0.0) * self.x.signum() / dt;
         
         let impulse = -(rel_vel_normal + bias + self.softness * self.impulse) * self.mass;
         
