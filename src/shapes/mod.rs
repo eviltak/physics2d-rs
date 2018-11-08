@@ -12,7 +12,7 @@ pub enum Shape {
     Polygon(Polygon),
 }
 
-generate_match_fn_macro_for_enum!(Shape::{Circle, Polygon}; match_fn_to_shape);
+generate_match_borrow_fn_macro_for_enum!(Shape::{Circle, Polygon}; match_fn_to_shape);
 
 pub trait Matter {
     fn mass_and_inertia(&self, density: f32) -> (f32, f32);

@@ -11,6 +11,7 @@ pub(crate) use self::collections::{BodyMap, ConstraintsMap, BodiesIter};
 use self::collections::{ConstraintSolverMap};
 use collision::{ContactConstraint, collide};
 use collision::broad_phase::{BroadPhase, NaiveBroadPhase, BoundsTreeBroadPhase};
+use joint::Joint;
 
 pub struct World {
     bodies: BodyMap,
@@ -18,6 +19,7 @@ pub struct World {
     broad_phase: BoundsTreeBroadPhase,
     
     contact_constraints: ConstraintsMap<ContactConstraint>,
+    joints: ConstraintsMap<Joint>,
     
     body_created_count: usize,
     
@@ -37,6 +39,7 @@ impl World {
             bodies: BodyMap::default(),
             broad_phase: BoundsTreeBroadPhase::new(),
             contact_constraints: ConstraintsMap::default(),
+            joints: ConstraintsMap::default(),
             body_created_count: 0,
             velocity_iterations,
             position_iterations,
@@ -52,6 +55,17 @@ impl World {
         self.bodies.insert(body_id, body);
         
         body_id
+    }
+    
+    pub fn add_joint(&mut self, bodies: (BodyId, BodyId), joint: Joint) {
+        let bodies = BodyPair::new(bodies.0, bodies.1);
+        let body_joints = self.joints.entry(bodies).or_insert(Vec::new());
+        body_joints.push(joint);
+    }
+    
+    pub fn get_joints(&self, bodies: (BodyId, BodyId)) -> Option<&Vec<Joint>> {
+        let bodies = BodyPair::new(bodies.0, bodies.1);
+        self.joints.get(&bodies)
     }
     
     pub fn get_body(&self, body_id: &BodyId) -> &Body {
@@ -113,7 +127,12 @@ impl World {
         self.contact_constraints.initialize_velocity(&mut self.bodies, dt);
         self.contact_constraints.warm_start_velocity(&mut self.bodies, dt);
         
+        self.joints.initialize_velocity(&mut self.bodies, dt);
+        self.joints.warm_start_velocity(&mut self.bodies, dt);
+        
         for _ in 0..self.velocity_iterations {
+            self.joints.solve_velocity(&mut self.bodies, dt);
+            
             self.contact_constraints.solve_velocity(&mut self.bodies, dt);
         }
         
@@ -124,6 +143,8 @@ impl World {
         self.contact_constraints.warm_start_position(&mut self.bodies, dt);
     
         for _ in 0..self.position_iterations {
+            self.joints.solve_position(&mut self.bodies, dt);
+            
             self.contact_constraints.solve_position(&mut self.bodies, dt);
         }
     }

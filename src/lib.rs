@@ -17,3 +17,4 @@ pub use world::debug;
 
 pub use math::{Vec2, Mat2, Cross, Bounds};
 pub use world::{World, Body, BodyId, Material, Transform};
+pub use joint::{Joint, SpringJoint};
