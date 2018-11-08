@@ -54,7 +54,7 @@ impl SpringsTestbed {
         
         world.add_body(ground);
         
-        world.add_joint((box_id, circle_id), Joint::Spring(SpringJoint::new(box_anchor, circle_anchor, distance, 0.2, 0.5)));
+        world.add_joint((box_id, circle_id), Joint::Spring(SpringJoint::new(box_anchor, circle_anchor, distance, 0.2, 2.5)));
         
         SpringsTestbed {
             world,
@@ -68,14 +68,20 @@ impl testbed::Testbed for SpringsTestbed {
     fn sfml_loop(&mut self, input: &testbed::Input, dt: f32) {
         if input.left_mouse_released {
             let vertices = box_vertices(5.0, 5.0);
-            let polygon = shapes::Polygon::new(vertices);
+            let polygon = shapes::Circle::new(5.0);
             
             let mut body = Body::new(polygon.into_shape(), 10.0, Material::new(0.3, 0.3));
             
             body.transform.position = input.mouse_position;
-            body.transform.set_rotation(0.0);
+            body.transform.position.x = 0.0;
             
             self.world.add_body(body);
+        }
+        
+        if input.right_mouse_released {
+            let Joint::Spring(ref mut joint) =
+                &mut self.world.get_joints_mut((self.box_id, self.circle_id)).unwrap()[0];
+            joint.frequency += 0.1;
         }
         
         self.world.update(dt);

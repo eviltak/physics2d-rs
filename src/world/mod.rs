@@ -68,6 +68,11 @@ impl World {
         self.joints.get(&bodies)
     }
     
+    pub fn get_joints_mut(&mut self, bodies: (BodyId, BodyId)) -> Option<&mut Vec<Joint>> {
+        let bodies = BodyPair::new(bodies.0, bodies.1);
+        self.joints.get_mut(&bodies)
+    }
+    
     pub fn get_body(&self, body_id: &BodyId) -> &Body {
         &self.bodies[body_id]
     }
