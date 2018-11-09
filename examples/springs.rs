@@ -67,8 +67,7 @@ impl SpringsTestbed {
 impl testbed::Testbed for SpringsTestbed {
     fn sfml_loop(&mut self, input: &testbed::Input, dt: f32) {
         if input.left_mouse_released {
-            let vertices = box_vertices(5.0, 5.0);
-            let polygon = shapes::Circle::new(5.0);
+            let polygon = shapes::Circle::new(3.0);
             
             let mut body = Body::new(polygon.into_shape(), 10.0, Material::new(0.3, 0.3));
             
