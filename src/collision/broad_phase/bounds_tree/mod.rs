@@ -97,12 +97,18 @@ impl<T: Default> BoundsTree<T> {
     
     /// Updates the height and bounds of a branch node.
     fn update_branch_node(&mut self, node_id: NodeId) {
-        let left_id = self.get_node(node_id).left;
-        let right_id = self.get_node(node_id).right;
-        
-        let new_height = 1 + self.get_node(left_id).height.max(self.get_node(right_id).height);
-        let new_bounds = self.get_node(left_id).bounds.union(&self.get_node(right_id).bounds);
-        
+        let (new_height, new_bounds) = {
+            let node = self.get_node(node_id);
+    
+            let left = self.get_node(node.left);
+            let right = self.get_node(node.right);
+    
+            let new_height = 1 + left.height.max(right.height);
+            let new_bounds = left.bounds.union(&right.bounds);
+            
+            (new_height, new_bounds)
+        };
+    
         let node = self.get_node_mut(node_id);
         node.height = new_height;
         node.bounds = new_bounds;
@@ -111,17 +117,18 @@ impl<T: Default> BoundsTree<T> {
     /// Rotates the subtree rooted at `node_id` so that it is rooted at `child_id`. After this
     /// operation, the subtree will be rooted at `child_id`.
     fn rotate(&mut self, node_id: NodeId, child_id: NodeId) {
-        let is_left_child = {
+        let (is_left_child, node_parent_id) = {
             let node = self.get_node(node_id);
             assert!(node.left == child_id || node.right == child_id);
-            node.left == child_id
+            (node.left == child_id, node.parent)
         };
         
-        let grandchild_left_id = self.get_node(child_id).left;
-        let grandchild_right_id = self.get_node(child_id).right;
+        let (grandchild_left_id, grandchild_right_id) = {
+            let child = self.get_node(child_id);
+            (child.left, child.right)
+        };
         
         // Swap node and child
-        let node_parent_id = self.get_node(node_id).parent;
         {
             let child = self.get_node_mut(child_id);
             child.parent = node_parent_id;
@@ -177,9 +184,11 @@ impl<T: Default> BoundsTree<T> {
         if self.get_node(node_id).height < 2 {
             return node_id;
         }
-        
-        let left_id = self.get_node(node_id).left;
-        let right_id = self.get_node(node_id).right;
+    
+        let (left_id, right_id) = {
+            let node = self.get_node(node_id);
+            (node.left, node.right)
+        };
         
         let height_diff = self.get_node(right_id).height as i32 - self.get_node(left_id).height as i32;
         
@@ -243,10 +252,11 @@ impl<T: Default> BoundsTree<T> {
         // Create new node that will become parent and replace sibling's position in the tree
         
         let parent_id = self.pool.allocate();
-        
-        let sibling_parent_id = self.get_node(sibling_id).parent;
-        let sibling_bounds = self.get_node(sibling_id).bounds;
-        let sibling_height = self.get_node(sibling_id).height;
+    
+        let (sibling_parent_id, sibling_bounds, sibling_height) = {
+            let sibling = self.get_node(sibling_id);
+            (sibling.parent, sibling.bounds, sibling.height)
+        };
         
         {
             let parent = self.get_node_mut(parent_id);
