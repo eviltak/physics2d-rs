@@ -54,7 +54,7 @@ impl SpringsTestbed {
         
         world.add_body(ground);
         
-        world.add_joint((box_id, circle_id), Joint::Spring(SpringJoint::new(box_anchor, circle_anchor, distance, 0.2, 2.5)));
+        world.add_joint((box_id, circle_id), SpringJoint::new(box_anchor, circle_anchor, distance, 0.2, 2.5).into_joint());
         
         SpringsTestbed {
             world,

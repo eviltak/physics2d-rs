@@ -1,6 +1,7 @@
 use constraint::Constraint;
 use world::Body;
 use math::{Vec2, PI, Cross};
+use joint::Joint;
 
 const SPRING_DISPLACEMENT_SLOP: f32 = 0.05;
 
@@ -50,6 +51,10 @@ impl SpringJoint {
             damp_coeff: 0.0,
             omega: 0.0
         }
+    }
+    
+    pub fn into_joint(self) -> Joint {
+        Joint::Spring(self)
     }
 }
 
