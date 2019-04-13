@@ -94,8 +94,8 @@ impl Constraint for SpringJoint {
         let inv_softness = dt * (self.damp_coeff + dt * self.k);
         self.softness = if inv_softness != 0.0 { 1.0 / inv_softness } else { 0.0 };
     
-        // baumgarte beta = dt * k / dt(b + dt * k) = dt * k * softness
-        self.beta = dt * self.k * self.softness;
+        // baumgarte beta = dt^2 * k / dt(b + dt * k) = dt^2 * k * softness
+        self.beta = dt * dt * self.k * self.softness;
         
         // Add softness to inv. constraint mass (since softness * impulse is on LHS of impulse eqn)
         // inv_red_mass * impulse = -rel_vel_normal - bias - softness * total_impulse

@@ -54,7 +54,7 @@ impl SpringsTestbed {
         
         world.add_body(ground);
         
-        world.add_joint((box_id, circle_id), SpringJoint::new(box_anchor, circle_anchor, distance, 0.2, 2.5).into_joint());
+        world.add_joint((box_id, circle_id), SpringJoint::new(box_anchor, circle_anchor, distance, 1.0, 0.1).into_joint());
         
         SpringsTestbed {
             world,
@@ -80,7 +80,7 @@ impl testbed::Testbed for SpringsTestbed {
         if input.right_mouse_released {
             let Joint::Spring(ref mut joint) =
                 &mut self.world.get_joints_mut((self.box_id, self.circle_id)).unwrap()[0];
-            joint.frequency += 0.1;
+            joint.frequency += 1.0;
         }
         
         self.world.update(dt);
