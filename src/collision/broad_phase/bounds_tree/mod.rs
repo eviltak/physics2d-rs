@@ -388,6 +388,7 @@ impl BoundsTreeBroadPhase {
     }
 }
 
+// TODO: Base margin on smallest body size/proportional to body size
 const MARGIN: f32 = 0.05;
 
 impl BroadPhase for BoundsTreeBroadPhase {

@@ -34,7 +34,7 @@ impl SpringsTestbed {
         let box_vertices = box_vertices(box_width, box_height);
         let box_poly = shapes::Polygon::new(box_vertices);
         
-        let mut box_body = Body::new(box_poly.into_shape(), 10.0, Material::new(1.2, 0.2));
+        let mut box_body = Body::new(box_poly.into_shape(), 500.0, Material::new(1.2, 0.2));
         box_body.transform.position.y = 10.0;
         
         let circle = shapes::Circle::new(1.5);
@@ -54,7 +54,7 @@ impl SpringsTestbed {
         
         world.add_body(ground);
         
-        world.add_joint((box_id, circle_id), SpringJoint::new(box_anchor, circle_anchor, distance, 1.0, 0.1).into_joint());
+        world.add_joint((box_id, circle_id), SpringJoint::new(box_anchor, circle_anchor, distance, 1.5, 0.7).into_joint());
         
         SpringsTestbed {
             world,

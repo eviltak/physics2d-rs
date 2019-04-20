@@ -90,13 +90,8 @@ impl Constraint for ContactConstraint {
         // Arithmetic mean
         self.restitution = 0.5 * (a.material.restitution + b.material.restitution);
         
-        // Harmonic mean
-        let friction_sum = a.material.friction + b.material.friction;
-        
-        let fric_coeff = if friction_sum != 0.0 {
-            2.0 * a.material.friction * b.material.friction / friction_sum
-        } else { 0.0 };
-        self.friction_coefficient = fric_coeff;
+        // Geometric mean
+        self.friction_coefficient = (a.material.friction * b.material.friction).sqrt();
     }
     
     fn warm_start_velocity(&mut self, a: &mut Body, b: &mut Body, dt: f32) {
