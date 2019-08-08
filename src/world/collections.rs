@@ -10,24 +10,6 @@ use std::collections::hash_map::Values;
 
 pub type BodyMap = FnvHashMap<BodyId, Body>;
 
-pub struct BodiesIter<'a> {
-    pub(crate) values: Values<'a, BodyId, Body>,
-}
-
-impl<'a> Iterator for BodiesIter<'a> {
-    type Item = &'a Body;
-    
-    fn next(&mut self) -> Option<Self::Item> {
-        self.values.next()
-    }
-}
-
-impl<'a> ExactSizeIterator for BodiesIter<'a> {
-    fn len(&self) -> usize {
-        self.values.len()
-    }
-}
-
 pub type ConstraintsMap<T: Constraint> = FnvHashMap<BodyPair, Vec<T>>;
 
 // TODO: Rename

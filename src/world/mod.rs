@@ -6,7 +6,7 @@ pub mod debug;
 pub use self::body::{Body, BodyId, Material};
 pub use self::transform::Transform;
 pub(crate) use self::body::BodyPair;
-pub(crate) use self::collections::{BodyMap, ConstraintsMap, BodiesIter};
+pub(crate) use self::collections::{BodyMap, ConstraintsMap};
 
 use self::collections::{ConstraintSolverMap};
 use collision::{ContactConstraint, collide};
@@ -81,10 +81,12 @@ impl World {
         self.bodies.get_mut(body_id).unwrap()
     }
     
-    pub fn bodies_iter(&self) -> BodiesIter {
-        BodiesIter {
-            values: self.bodies.values()
-        }
+    pub fn bodies_iter(&self) -> impl Iterator<Item=&Body> {
+        self.bodies.values()
+    }
+
+    pub fn body_count(&self) -> usize {
+        self.bodies.len()
     }
     
     pub fn update(&mut self, dt: f32) {

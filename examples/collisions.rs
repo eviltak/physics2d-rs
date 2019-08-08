@@ -61,7 +61,7 @@ impl testbed::Testbed for CollisionsTestbed {
     
     fn sfml_draw(&mut self, canvas: &mut testbed::Canvas, dt: f32) {
         let bodies = self.world.bodies_iter();
-        let body_count = bodies.len();
+        let body_count = self.world.body_count();
     
         for body in bodies {
             canvas.draw_body(body);
