@@ -104,8 +104,8 @@ impl testbed::Testbed for SpringsTestbed {
         
         let Joint::Spring(ref joint) = &self.world.get_joints((self.box_id, self.circle_id)).unwrap()[0];
         {
-            let circle = self.world.get_body(&self.circle_id);
-            let box_body = self.world.get_body(&self.box_id);
+            let circle = self.world.get_body(self.circle_id);
+            let box_body = self.world.get_body(self.box_id);
             
             let b = circle.transform.world_pos(&joint.local_anchor_b);
             let a = box_body.transform.world_pos(&joint.local_anchor_a);

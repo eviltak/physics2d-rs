@@ -21,8 +21,6 @@ pub struct World {
     contact_constraints: ConstraintsMap<ContactConstraint>,
     joints: ConstraintsMap<Joint>,
     
-    body_created_count: usize,
-    
     pub velocity_iterations: u8,
     pub position_iterations: u8,
 }
@@ -40,21 +38,14 @@ impl World {
             broad_phase: BoundsTreeBroadPhase::new(),
             contact_constraints: ConstraintsMap::default(),
             joints: ConstraintsMap::default(),
-            body_created_count: 0,
             velocity_iterations,
             position_iterations,
         }
     }
     
     pub fn add_body(&mut self, mut body: Body) -> BodyId {
-        let body_id = self.body_created_count as BodyId;
-        self.body_created_count += 1;
-        
-        body.id = body_id;
         body.proxy_id = self.broad_phase.create_proxy(&body);
-        self.bodies.insert(body_id, body);
-        
-        body_id
+        self.bodies.add(body)
     }
     
     pub fn add_joint(&mut self, bodies: (BodyId, BodyId), joint: Joint) {
@@ -73,16 +64,16 @@ impl World {
         self.joints.get_mut(&bodies)
     }
     
-    pub fn get_body(&self, body_id: &BodyId) -> &Body {
+    pub fn get_body(&self, body_id: BodyId) -> &Body {
         &self.bodies[body_id]
     }
     
-    pub fn get_body_mut(&mut self, body_id: &BodyId) -> &mut Body {
+    pub fn get_body_mut(&mut self, body_id: BodyId) -> &mut Body {
         self.bodies.get_mut(body_id).unwrap()
     }
     
     pub fn bodies_iter(&self) -> impl Iterator<Item=&Body> {
-        self.bodies.values()
+        self.bodies.iter()
     }
 
     pub fn body_count(&self) -> usize {
@@ -90,7 +81,7 @@ impl World {
     }
     
     pub fn update(&mut self, dt: f32) {
-        for body in self.bodies.values_mut() {
+        for body in self.bodies.iter_mut() {
             body.update(dt);
             self.broad_phase.update_proxy(body.proxy_id, body);
         }
@@ -107,8 +98,8 @@ impl World {
         {
             let bodies = &self.bodies;
             self.contact_constraints.retain(|pair, constraints| {
-                let body_a = &bodies[&pair.0];
-                let body_b = &bodies[&pair.1];
+                let body_a = &bodies[pair.0];
+                let body_b = &bodies[pair.1];
                 
                 if let Some(new_contacts) = collide(body_a, body_b) {
                     let new_constraints =
@@ -127,7 +118,7 @@ impl World {
             });
         }
         
-        for body in self.bodies.values_mut() {
+        for body in self.bodies.iter_mut() {
             body.integrate_force(dt);
         }
         
@@ -143,7 +134,7 @@ impl World {
             self.contact_constraints.solve_velocity(&mut self.bodies, dt);
         }
         
-        for body in self.bodies.values_mut() {
+        for body in self.bodies.iter_mut() {
             body.integrate_velocity(dt);
         }
         

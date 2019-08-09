@@ -9,35 +9,31 @@ impl BodyPair {
         let (id_a, id_b) = (id_a.min(id_b), id_a.max(id_b));
         BodyPair(id_a, id_b)
     }
-    
+
     pub fn as_ref<'a>(&self, bodies: &'a BodyMap) -> (&'a Body, &'a Body) {
-        (&bodies[&self.0], &bodies[&self.1])
+        (&bodies[self.0], &bodies[self.1])
     }
-    
+
     pub fn as_mut<'a>(&self, bodies: &'a mut BodyMap) -> (&'a mut Body, &'a mut Body) {
         unsafe {
-            let body_a = bodies.get_mut(&self.0).unwrap() as *mut _;
-            let body_b = bodies.get_mut(&self.1).unwrap() as *mut _;
-        
+            let body_a = bodies.get_mut(self.0).unwrap() as *mut _;
+            let body_b = bodies.get_mut(self.1).unwrap() as *mut _;
+
             (&mut *body_a, &mut *body_b)
         }
     }
-    
+
     pub fn with<F, R>(&self, bodies: &BodyMap, mut f: F) -> R
         where F: FnMut(&Body, &Body) -> R {
-        let body_a = &bodies[&self.0];
-        let body_b = &bodies[&self.1];
-        
+        let (body_a, body_b) = self.as_ref(bodies);
+
         f(body_a, body_b)
     }
-    
+
     pub fn with_mut<F, R>(&self, bodies: &mut BodyMap, mut f: F) -> R
         where F: FnMut(&mut Body, &mut Body) -> R {
-        unsafe {
-            let body_a = bodies.get_mut(&self.0).unwrap() as *mut _;
-            let body_b = bodies.get_mut(&self.1).unwrap() as *mut _;
-    
-            f(&mut *body_a, &mut *body_b)
-        }
+        let (body_a, body_b) = self.as_mut(bodies);
+
+        f(body_a, body_b)
     }
 }

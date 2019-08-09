@@ -7,8 +7,89 @@ use constraint::Constraint;
 use fnv::FnvHashMap;
 
 use std::collections::hash_map::Values;
+use std::ops::{Index, IndexMut};
 
-pub type BodyMap = FnvHashMap<BodyId, Body>;
+// TODO: Rename
+#[derive(Default)]
+pub struct BodyMap {
+    bodies: Vec<Option<Body>>,
+    len: usize,
+}
+
+impl BodyMap {
+    pub fn new() -> BodyMap {
+        BodyMap {
+            bodies: Vec::new(),
+            len: 0,
+        }
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item=&Body> {
+        self.bodies.iter().filter_map(|body| body.as_ref())
+    }
+
+    pub fn iter_mut(&mut self) -> impl Iterator<Item=&mut Body> {
+        self.bodies.iter_mut().filter_map(|body| body.as_mut())
+    }
+
+    pub fn len(&self) -> usize {
+        self.len
+    }
+
+    pub fn get(&self, id: BodyId) -> Option<&Body> {
+        self.bodies.get(id).and_then(|body| body.as_ref())
+    }
+
+    pub fn get_mut(&mut self, id: BodyId) -> Option<&mut Body> {
+        self.bodies.get_mut(id).and_then(|body| body.as_mut())
+    }
+
+    pub fn add(&mut self, mut body: Body) -> BodyId {
+        self.len += 1;
+
+        match self.bodies.iter().position(|entry| entry.is_none()) {
+            Some(index) => {
+                body.id = index;
+                self.bodies[index] = Some(body);
+                index
+            }
+            None => {
+                let index = self.bodies.len();
+                body.id = index;
+                self.bodies.push(Some(body));
+                index
+            }
+        }
+    }
+
+    pub fn remove(&mut self, id: BodyId) -> Option<Body> {
+        self.len -= 1;
+        self.bodies.remove(id)
+    }
+}
+
+impl Index<BodyId> for BodyMap {
+    type Output = Body;
+
+    fn index(&self, index: BodyId) -> &Self::Output {
+        match self.get(index) {
+            Some(body) => body,
+            None => {
+                println!("Index: {}, Count: {}", index, self.len);
+                panic!("Invalid body id")
+            }
+        }
+    }
+}
+
+impl IndexMut<BodyId> for BodyMap {
+    fn index_mut(&mut self, index: BodyId) -> &mut Self::Output {
+        match self.get_mut(index) {
+            Some(body) => body,
+            None => panic!("Invalid body id")
+        }
+    }
+}
 
 pub type ConstraintsMap<T: Constraint> = FnvHashMap<BodyPair, Vec<T>>;
 
