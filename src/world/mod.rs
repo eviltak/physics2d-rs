@@ -6,7 +6,7 @@ pub mod debug;
 pub use self::body::{Body, BodyId, Material};
 pub use self::transform::Transform;
 pub(crate) use self::body::BodyPair;
-pub(crate) use self::collections::{BodyMap, ConstraintsMap};
+pub(crate) use self::collections::{Bodies, ConstraintsMap};
 
 use self::collections::{ConstraintSolverMap};
 use collision::{ContactConstraint, collide};
@@ -14,7 +14,7 @@ use collision::broad_phase::{BroadPhase, NaiveBroadPhase, BoundsTreeBroadPhase};
 use joint::Joint;
 
 pub struct World {
-    bodies: BodyMap,
+    bodies: Bodies,
     
     broad_phase: BoundsTreeBroadPhase,
     
@@ -34,7 +34,7 @@ impl Default for World {
 impl World {
     pub fn new(velocity_iterations: u8, position_iterations: u8) -> World {
         World {
-            bodies: BodyMap::default(),
+            bodies: Bodies::default(),
             broad_phase: BoundsTreeBroadPhase::new(),
             contact_constraints: ConstraintsMap::default(),
             joints: ConstraintsMap::default(),

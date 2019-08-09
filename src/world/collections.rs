@@ -9,16 +9,15 @@ use fnv::FnvHashMap;
 use std::collections::hash_map::Values;
 use std::ops::{Index, IndexMut};
 
-// TODO: Rename
 #[derive(Default)]
-pub struct BodyMap {
+pub struct Bodies {
     bodies: Vec<Option<Body>>,
     len: usize,
 }
 
-impl BodyMap {
-    pub fn new() -> BodyMap {
-        BodyMap {
+impl Bodies {
+    pub fn new() -> Bodies {
+        Bodies {
             bodies: Vec::new(),
             len: 0,
         }
@@ -68,7 +67,7 @@ impl BodyMap {
     }
 }
 
-impl Index<BodyId> for BodyMap {
+impl Index<BodyId> for Bodies {
     type Output = Body;
 
     fn index(&self, index: BodyId) -> &Self::Output {
@@ -82,7 +81,7 @@ impl Index<BodyId> for BodyMap {
     }
 }
 
-impl IndexMut<BodyId> for BodyMap {
+impl IndexMut<BodyId> for Bodies {
     fn index_mut(&mut self, index: BodyId) -> &mut Self::Output {
         match self.get_mut(index) {
             Some(body) => body,
@@ -95,17 +94,17 @@ pub type ConstraintsMap<T: Constraint> = FnvHashMap<BodyPair, Vec<T>>;
 
 // TODO: Rename
 pub trait ConstraintSolverMap {
-    fn initialize_velocity(&mut self, body_map: &BodyMap, dt: f32);
+    fn initialize_velocity(&mut self, body_map: &Bodies, dt: f32);
     
-    fn warm_start_velocity(&mut self, body_map: &mut BodyMap, dt: f32);
-    fn warm_start_position(&mut self, body_map: &mut BodyMap, dt: f32);
+    fn warm_start_velocity(&mut self, body_map: &mut Bodies, dt: f32);
+    fn warm_start_position(&mut self, body_map: &mut Bodies, dt: f32);
     
-    fn solve_velocity(&mut self, body_map: &mut BodyMap, dt: f32);
-    fn solve_position(&mut self, body_map: &mut BodyMap, dt: f32);
+    fn solve_velocity(&mut self, body_map: &mut Bodies, dt: f32);
+    fn solve_position(&mut self, body_map: &mut Bodies, dt: f32);
 }
 
 impl<T: Constraint> ConstraintSolverMap for ConstraintsMap<T> {
-    fn initialize_velocity(&mut self, body_map: &BodyMap, dt: f32) {
+    fn initialize_velocity(&mut self, body_map: &Bodies, dt: f32) {
         for (body_pair, constraints) in self.iter_mut() {
             let (body_a, body_b) = body_pair.as_ref(body_map);
             
@@ -115,7 +114,7 @@ impl<T: Constraint> ConstraintSolverMap for ConstraintsMap<T> {
         }
     }
     
-    fn warm_start_velocity(&mut self, body_map: &mut BodyMap, dt: f32) {
+    fn warm_start_velocity(&mut self, body_map: &mut Bodies, dt: f32) {
         for (body_pair, constraints) in self.iter_mut() {
             let (body_a, body_b) = body_pair.as_mut(body_map);
             
@@ -125,7 +124,7 @@ impl<T: Constraint> ConstraintSolverMap for ConstraintsMap<T> {
         }
     }
     
-    fn warm_start_position(&mut self, body_map: &mut BodyMap, dt: f32) {
+    fn warm_start_position(&mut self, body_map: &mut Bodies, dt: f32) {
         for (body_pair, constraints) in self.iter_mut() {
             let (body_a, body_b) = body_pair.as_mut(body_map);
             
@@ -135,7 +134,7 @@ impl<T: Constraint> ConstraintSolverMap for ConstraintsMap<T> {
         }
     }
     
-    fn solve_velocity(&mut self, body_map: &mut BodyMap, dt: f32) {
+    fn solve_velocity(&mut self, body_map: &mut Bodies, dt: f32) {
         for (body_pair, constraints) in self.iter_mut() {
             let (body_a, body_b) = body_pair.as_mut(body_map);
             
@@ -144,7 +143,7 @@ impl<T: Constraint> ConstraintSolverMap for ConstraintsMap<T> {
             }
         }
     }
-    fn solve_position(&mut self, body_map: &mut BodyMap, dt: f32) {
+    fn solve_position(&mut self, body_map: &mut Bodies, dt: f32) {
         for (body_pair, constraints) in self.iter_mut() {
             let (body_a, body_b) = body_pair.as_mut(body_map);
             

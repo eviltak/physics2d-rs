@@ -1,11 +1,11 @@
-use world::{BodyMap, ConstraintsMap, BodyPair, Body};
+use world::{Bodies, ConstraintsMap, BodyPair, Body};
 use collision::ContactConstraint;
 use super::{BroadPhase, ProxyId};
 
 pub struct NaiveBroadPhase;
 
 impl BroadPhase for NaiveBroadPhase {
-    fn new_potential_pairs(&self, bodies: &BodyMap, constraints: &mut ConstraintsMap<ContactConstraint>) {
+    fn new_potential_pairs(&self, bodies: &Bodies, constraints: &mut ConstraintsMap<ContactConstraint>) {
         for body_a in bodies.iter() {
             for body_b in bodies.iter() {
                 let body_a_id = body_a.id;

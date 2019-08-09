@@ -5,7 +5,7 @@ mod tests;
 
 use math::{Bounds, Vec2};
 use util::pool;
-use world::{BodyMap, ConstraintsMap, BodyPair, Body, BodyId};
+use world::{Bodies, ConstraintsMap, BodyPair, Body, BodyId};
 use collision::ContactConstraint;
 
 use std;
@@ -392,7 +392,7 @@ impl BoundsTreeBroadPhase {
 const MARGIN: f32 = 0.05;
 
 impl BroadPhase for BoundsTreeBroadPhase {
-    fn new_potential_pairs(&self, bodies: &BodyMap,
+    fn new_potential_pairs(&self, bodies: &Bodies,
                            constraints: &mut ConstraintsMap<ContactConstraint>) {
         for body_id in self.reinserted_bodies.iter() {
             let body = &bodies[*body_id];
