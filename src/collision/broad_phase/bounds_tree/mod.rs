@@ -66,7 +66,7 @@ impl<T: Default> Node<T> {
 
 struct BoundsTree<T: Default> {
     pool: pool::Pool<Node<T>>,
-    pub root_id: NodeId,
+    root_id: NodeId,
 }
 
 impl<T: Default> BoundsTree<T> {

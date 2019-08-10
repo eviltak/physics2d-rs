@@ -88,7 +88,9 @@ impl World {
         
         {
             let bodies = &self.bodies;
-            self.contact_constraints.retain(|pair, constraints| pair.with(bodies, |a, b| a.bounds.intersects(&b.bounds)));
+            self.contact_constraints.retain(|pair, _|
+                pair.with(bodies, |a, b| a.bounds.intersects(&b.bounds))
+            );
         }
         
         self.broad_phase.new_potential_pairs(&self.bodies, &mut self.contact_constraints);
