@@ -111,17 +111,19 @@ impl Bounds {
         Bounds::new(self.min.min(&other.min), self.max.max(&other.max))
     }
     
-    /// Expands the `Bounds` in all directions by `margin`.
+    /// Expands the `Bounds` in all directions by a `factor`.
     ///
     /// # Example
     /// ```
     /// # use physics2d::{Bounds, Vec2};
-    /// let b1 = Bounds::center_extents(Vec2::ONE, Vec2::new(0.5, 0.5));
-    /// let b2 = Bounds::center_extents(Vec2::ONE, Vec2::ONE);
+    /// # let extents = Vec2::new(0.5, 0.5);
+    /// # let factor = 0.5;
+    /// let b1 = Bounds::center_extents(Vec2::ONE, extents);
+    /// let b2 = Bounds::center_extents(Vec2::ONE, extents * (1.0 + factor));
     ///
-    /// assert_eq!(b1.expand(0.5), b2);
+    /// assert_eq!(b1.expand_by(factor), b2);
     /// ```
-    pub fn expand(&self, margin: f32) -> Bounds {
-        Bounds::new(self.min - Vec2::ONE * margin, self.max + Vec2::ONE * margin)
+    pub fn expand_by(&self, factor: f32) -> Bounds {
+        Bounds::center_extents(0.5 * (self.max + self.min), 0.5 * (self.max - self.min) * (1.0 + factor))
     }
 }

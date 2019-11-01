@@ -388,8 +388,7 @@ impl BoundsTreeBroadPhase {
     }
 }
 
-// TODO: Base margin on smallest body size/proportional to body size
-const MARGIN: f32 = 0.05;
+const EXPANSION_FACTOR: f32 = 0.05;
 
 impl BroadPhase for BoundsTreeBroadPhase {
     fn new_potential_pairs(&self, bodies: &Bodies,
@@ -416,7 +415,7 @@ impl BroadPhase for BoundsTreeBroadPhase {
     }
     
     fn create_proxy(&mut self, body: &Body) -> ProxyId {
-        self.tree.insert_leaf(body.bounds.expand(MARGIN), body.id)
+        self.tree.insert_leaf(body.bounds.expand_by(EXPANSION_FACTOR), body.id)
     }
     
     fn destroy_proxy(&mut self, proxy_id: ProxyId) {
