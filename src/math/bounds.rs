@@ -24,8 +24,7 @@ impl Bounds {
         }
     }
     
-    /// Creates a new `Bounds` with the given center and extents. `extents` is the vector
-    /// from the center to the farthest point (`max`) of the bounding volume. `min` and `max` of the
+    /// Creates a new `Bounds` with the given center and extents. `min` and `max` of the
     /// created bounding volume are `center - extents` and `center + extents` respectively.
     ///
     /// # Example
@@ -38,7 +37,7 @@ impl Bounds {
     pub fn center_extents(center: Vec2, extents: Vec2) -> Bounds {
         Bounds::new(center - extents, center + extents)
     }
-    
+
     /// Returns the perimeter of the given bounding volume.
     ///
     /// # Example
@@ -51,7 +50,20 @@ impl Bounds {
     pub fn perimeter(&self) -> f32 {
         2.0 * (self.max.x - self.min.x + self.max.y - self.min.y)
     }
-    
+
+    /// Returns the center of this bounding volume.
+    #[inline]
+    pub fn center(&self) -> Vec2 {
+        0.5 * (self.max + self.min)
+    }
+
+
+    /// Returns the vector from the center to the farthest point (`max`) of the bounding volume.
+    #[inline]
+    pub fn extents(&self) -> Vec2 {
+        0.5 * (self.max - self.min)
+    }
+
     /// Checks whether two `Bounds` are intersecting.
     ///
     /// # Example
@@ -72,8 +84,7 @@ impl Bounds {
             true
         }
     }
-    
-    
+
     /// Checks whether this `Bounds` fully contains the other.
     ///
     /// # Example
@@ -88,7 +99,7 @@ impl Bounds {
     pub fn contains(&self, other: &Bounds) -> bool {
         self.min.min(&other.min) == self.min && self.max.max(&other.max) == self.max
     }
-    
+
     /// Returns a bounding volume that completely encompasses both the bounding volume represented
     /// by `self` and `other`.
     ///
@@ -110,7 +121,7 @@ impl Bounds {
     pub fn union(&self, other: &Bounds) -> Bounds {
         Bounds::new(self.min.min(&other.min), self.max.max(&other.max))
     }
-    
+
     /// Expands the `Bounds` in all directions by a `factor`.
     ///
     /// # Example
@@ -124,6 +135,6 @@ impl Bounds {
     /// assert_eq!(b1.expand_by(factor), b2);
     /// ```
     pub fn expand_by(&self, factor: f32) -> Bounds {
-        Bounds::center_extents(0.5 * (self.max + self.min), 0.5 * (self.max - self.min) * (1.0 + factor))
+        Bounds::center_extents(self.center(), self.extents() * (1.0 + factor))
     }
 }
