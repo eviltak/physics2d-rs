@@ -1,22 +1,22 @@
 [package]
-name = "physics2d"
-version = "0.6.0"
-authors = ["Arav Singhal <singhal.arav@gmail.com>"]
-description = "Yet another 2D physics engine, but with Iron power."
-repository = "https://github.com/eviltak/physics2d-rs"
-readme = "README.md"
-keywords = [ "physics", "dynamics", "real-time", "physics-engine", "2d" ]
-license = "MIT"
+name = 'physics2d'
+version = '0.6.0'
+authors = ['Arav Singhal <singhal.arav@gmail.com>']
+description = 'Yet another 2D physics engine, but with Iron power.'
+repository = 'https://github.com/eviltak/physics2d-rs'
+readme = 'README.md'
+keywords = ['physics', 'dynamics', 'real-time', 'physics-engine', '2d']
+license = 'MIT'
 
 edition = '2018'
 
 [badges]
-travis-ci = { repository = "eviltak/physics2d-rs" }
+travis-ci = { repository = 'eviltak/physics2d-rs' }
 
 [dev-dependencies]
-sfml = "0.14.0"
+sfml = '0.14.0'
 
 [dependencies]
-fnv = "1.0.6"
+fnv = '1.0.6'
 
 [workspace]
