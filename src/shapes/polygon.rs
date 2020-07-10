@@ -1,6 +1,6 @@
-use math::{Vec2, Cross, INFINITY};
-use world::Transform;
-use math::Bounds;
+use crate::math::{Vec2, Cross, INFINITY};
+use crate::world::Transform;
+use crate::math::Bounds;
 
 #[derive(Clone)]
 pub struct Polygon {

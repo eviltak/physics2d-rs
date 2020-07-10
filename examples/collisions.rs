@@ -89,7 +89,7 @@ fn main() {
         pixels_per_unit: 10.0,
     };
     
-    let mut testbed = CollisionsTestbed::new(&config);
+    let testbed = CollisionsTestbed::new(&config);
     
     testbed::run(testbed, config);
 }

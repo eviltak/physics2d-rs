@@ -3,13 +3,13 @@ extern crate core;
 #[cfg(test)]
 mod tests;
 
-use math::{Bounds, Vec2};
-use util::pool;
-use world::{Bodies, ConstraintsMap, BodyPair, Body, BodyId};
-use collision::ContactConstraint;
+use crate::math::{Bounds, Vec2};
+use crate::util::pool;
+use crate::world::{Bodies, ConstraintsMap, BodyPair, Body, BodyId};
+use crate::collision::ContactConstraint;
 
 use std;
-use collision::broad_phase::{BroadPhase, ProxyId};
+use crate::collision::broad_phase::{BroadPhase, ProxyId};
 
 trait Nullable {
     const NULL: Self;
@@ -71,7 +71,7 @@ struct BoundsTree<T: Default> {
 
 impl<T: Default> BoundsTree<T> {
     pub fn new() -> BoundsTree<T> {
-        let mut pool = pool::Pool::default();
+        let pool = pool::Pool::default();
         BoundsTree {
             root_id: NodeId::NULL,
             pool,

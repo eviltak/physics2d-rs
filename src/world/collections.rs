@@ -1,12 +1,12 @@
 extern crate core;
 
-use world::{BodyId, Body, BodyPair};
-use collision::Contact;
-use constraint::Constraint;
+use crate::world::{BodyId, Body, BodyPair};
+
+use crate::constraint::Constraint;
 
 use fnv::FnvHashMap;
 
-use std::collections::hash_map::Values;
+
 use std::ops::{Index, IndexMut};
 
 #[derive(Default)]
@@ -90,7 +90,7 @@ impl IndexMut<BodyId> for Bodies {
     }
 }
 
-pub type ConstraintsMap<T: Constraint> = FnvHashMap<BodyPair, Vec<T>>;
+pub type ConstraintsMap<T> = FnvHashMap<BodyPair, Vec<T>>;
 
 // TODO: Rename
 pub trait ConstraintSolverMap {

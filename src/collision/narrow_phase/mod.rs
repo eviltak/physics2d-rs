@@ -2,10 +2,10 @@ mod circle_circle;
 mod polygon_polygon;
 mod circle_polygon;
 
-use math::{Vec2};
-use shapes::{Shape, Polygon};
-use world::{Body, Transform};
-use collision::Contact;
+use crate::math::{Vec2};
+use crate::shapes::{Shape, Polygon};
+use crate::world::{Body, Transform};
+use crate::collision::Contact;
 
 pub trait Collide<T = Self> {
     fn collide(&self, self_body: &Body, other: &T, other_body: &Body) -> Option<Vec<Contact>>;

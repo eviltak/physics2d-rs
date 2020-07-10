@@ -4,8 +4,8 @@ mod bounds_tree;
 pub use self::naive::NaiveBroadPhase;
 pub use self::bounds_tree::BoundsTreeBroadPhase;
 
-use world::{Bodies, ConstraintsMap, BodyPair, Body};
-use collision::ContactConstraint;
+use crate::world::{Bodies, ConstraintsMap, Body};
+use crate::collision::ContactConstraint;
 
 pub type ProxyId = usize;
 

@@ -1,7 +1,7 @@
-use collision::Contact;
-use constraint::Constraint;
-use world::Body;
-use math::{clamp, Cross};
+use crate::collision::Contact;
+use crate::constraint::Constraint;
+use crate::world::Body;
+use crate::math::{clamp, Cross};
 
 const PENETRATION_SLOP: f32 = 0.005;
 const BAUMGARTE: f32 = 0.1;
@@ -62,13 +62,13 @@ impl ContactConstraint {
 }
 
 impl Constraint for ContactConstraint {
-    fn initialize_velocity(&mut self, a: &Body, b: &Body, dt: f32) {
+    fn initialize_velocity(&mut self, a: &Body, b: &Body, _dt: f32) {
         let contact = &self.contact;
         let r_a = contact.position - a.transform.position;
         let r_b = contact.position - b.transform.position;
         
         let rel_vel = b.velocity - a.velocity + b.angular_vel.cross(&r_b) - a.angular_vel.cross(&r_a);
-        let rel_vel_normal = contact.normal.dot(&rel_vel);
+        let _rel_vel_normal = contact.normal.dot(&rel_vel);
         
         let r_a_normal = r_a.dot(&contact.normal);
         let r_a_normal_sqr = r_a_normal * r_a_normal;
@@ -94,7 +94,7 @@ impl Constraint for ContactConstraint {
         self.friction_coefficient = (a.material.friction * b.material.friction).sqrt();
     }
     
-    fn warm_start_velocity(&mut self, a: &mut Body, b: &mut Body, dt: f32) {
+    fn warm_start_velocity(&mut self, a: &mut Body, b: &mut Body, _dt: f32) {
         let contact = &self.contact;
         let r_a = contact.position - a.transform.position;
         let r_b = contact.position - b.transform.position;
@@ -105,9 +105,9 @@ impl Constraint for ContactConstraint {
         b.add_impulse_at_pos(impulse, r_b);
     }
     
-    fn warm_start_position(&mut self, a: &mut Body, b: &mut Body, dt: f32) {}
+    fn warm_start_position(&mut self, _a: &mut Body, _b: &mut Body, _dt: f32) {}
     
-    fn solve_velocity(&mut self, a: &mut Body, b: &mut Body, dt: f32) {
+    fn solve_velocity(&mut self, a: &mut Body, b: &mut Body, _dt: f32) {
         let contact = &self.contact;
         let r_a = contact.position - a.transform.position;
         let r_b = contact.position - b.transform.position;
@@ -149,7 +149,7 @@ impl Constraint for ContactConstraint {
         b.add_impulse_at_pos(contact.normal * j, r_b);
     }
     
-    fn solve_position(&mut self, a: &mut Body, b: &mut Body, dt: f32) {
+    fn solve_position(&mut self, a: &mut Body, b: &mut Body, _dt: f32) {
         let contact = &self.contact;
         let r_a = contact.position - a.transform.position;
         let r_b = contact.position - b.transform.position;

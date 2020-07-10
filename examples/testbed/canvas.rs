@@ -1,13 +1,13 @@
 extern crate physics2d;
 
-use testbed::sfml;
-use testbed::sfml::graphics::{RenderTarget, Transformable};
+use crate::testbed::sfml;
+use crate::testbed::sfml::graphics::{RenderTarget, Transformable};
 
 use std::{env, path};
 
 use physics2d::*;
-use testbed::config::Config;
-use testbed::sfml_vec2;
+use crate::testbed::config::Config;
+use crate::testbed::sfml_vec2;
 
 use std::ops::Deref;
 
@@ -28,7 +28,7 @@ fn get_font_dir() -> path::PathBuf {
 }
 
 pub struct Canvas {
-    draw_queue: Vec<Box<sfml::graphics::Drawable>>,
+    draw_queue: Vec<Box<dyn sfml::graphics::Drawable>>,
     text_queue: Vec<(String, u32)>,
     
     view: sfml::graphics::View,
@@ -60,7 +60,7 @@ impl Canvas {
         shape.set_outline_thickness(1.0);
     }
     
-    fn draw_circle(&mut self, sfml_pos: sfml::system::Vector2f,
+    fn draw_circle(&mut self, _sfml_pos: sfml::system::Vector2f,
                    transform: &Transform,
                    circle: &shapes::Circle) {
         const POINT_COUNT: u32 = 30;
@@ -86,7 +86,7 @@ impl Canvas {
         self.draw_queue.push(Box::new(vertex_array));
     }
     
-    fn draw_polygon(&mut self, sfml_pos: sfml::system::Vector2f,
+    fn draw_polygon(&mut self, _sfml_pos: sfml::system::Vector2f,
                     transform: &Transform,
                     polygon: &shapes::Polygon) {
     

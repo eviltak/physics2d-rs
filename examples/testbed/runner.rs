@@ -1,6 +1,6 @@
-use testbed::sfml::window::{VideoMode, Style, Event, ContextSettings};
-use testbed::sfml::graphics::{RenderWindow, Color, RenderTarget};
-use testbed::sfml::system::{Clock};
+use crate::testbed::sfml::window::{VideoMode, Style, Event, ContextSettings};
+use crate::testbed::sfml::graphics::{RenderWindow, Color, RenderTarget};
+use crate::testbed::sfml::system::{Clock};
 
 use super::Testbed;
 use super::canvas::Canvas;

@@ -1,8 +1,8 @@
 use super::{Collide};
-use math::{Vec2, clamp01};
-use shapes::{Circle, Polygon};
-use world::{Body, Transform};
-use collision::{Contact};
+use crate::math::{Vec2, clamp01};
+use crate::shapes::{Circle, Polygon};
+use crate::world::{Body, Transform};
+use crate::collision::{Contact};
 
 impl Circle {
     /// Returns the face for which the penetration of the circle is least, the penetration and the corresponding

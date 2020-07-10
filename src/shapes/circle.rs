@@ -1,6 +1,6 @@
-use math::{PI, Vec2};
-use math::Bounds;
-use world::Transform;
+use crate::math::{PI, Vec2};
+use crate::math::Bounds;
+use crate::world::Transform;
 
 #[derive(Clone)]
 pub struct Circle {

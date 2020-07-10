@@ -1,5 +1,5 @@
 use super::{Body, BodyId};
-use world::Bodies;
+use crate::world::Bodies;
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash)]
 pub struct BodyPair(pub BodyId, pub BodyId);

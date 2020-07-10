@@ -1,4 +1,4 @@
-use math::Vec2;
+use crate::math::Vec2;
 
 /// A 2D bounding volume in space.
 ///

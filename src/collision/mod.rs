@@ -5,7 +5,7 @@ mod solver;
 
 pub use self::narrow_phase::{Collide, collide};
 pub use self::solver::{ContactConstraint};
-use math::{Vec2, Cross};
+use crate::math::{Vec2, Cross};
 
 #[derive(Copy, Clone)]
 pub struct Contact {

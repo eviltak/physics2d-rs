@@ -8,6 +8,8 @@ readme = "README.md"
 keywords = [ "physics", "dynamics", "real-time", "physics-engine", "2d" ]
 license = "MIT"
 
+edition = '2018'
+
 [badges]
 travis-ci = { repository = "eviltak/physics2d-rs" }
 

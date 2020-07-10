@@ -1,4 +1,4 @@
-use world::Body;
+use crate::world::Body;
 
 pub trait Constraint {
     /// Initialize position-dependent variables to be used in the constraint velocity solver.

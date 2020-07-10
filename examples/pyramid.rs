@@ -53,7 +53,7 @@ impl PyramidTestbed {
         for i in 0..N {
             let mut y = x;
             
-            for j in i..N {
+            for _j in i..N {
                 let mut body = Body::new(square.clone().into_shape(), 10.0, Material::new(0.3, 0.3));
                 body.transform.position = y;
                 world.add_body(body);
@@ -125,7 +125,7 @@ fn main() {
         pixels_per_unit: 10.0,
     };
     
-    let mut testbed = PyramidTestbed::new(&config);
+    let testbed = PyramidTestbed::new(&config);
     
     testbed::run(testbed, config);
 }

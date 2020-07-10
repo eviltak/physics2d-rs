@@ -13,8 +13,8 @@ mod constraint;
 mod world;
 mod joint;
 
-pub use world::debug;
+pub use crate::world::debug;
 
-pub use math::{Vec2, Mat2, Cross, Bounds};
-pub use world::{World, Body, BodyId, Material, Transform};
-pub use joint::{Joint, SpringJoint};
+pub use crate::math::{Vec2, Mat2, Cross, Bounds};
+pub use crate::world::{World, Body, BodyId, Material, Transform};
+pub use crate::joint::{Joint, SpringJoint};

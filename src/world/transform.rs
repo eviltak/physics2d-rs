@@ -1,4 +1,4 @@
-use ::math::{Vec2, Mat2};
+use crate::math::{Vec2, Mat2};
 
 pub struct Transform {
     pub position: Vec2,

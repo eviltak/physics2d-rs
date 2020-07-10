@@ -2,13 +2,13 @@ mod pair;
 
 pub use self::pair::BodyPair;
 
-use math::{Vec2, Cross};
-use ::shapes::{Shape, Matter};
-use ::world::Transform;
-use math::Bounds;
+use crate::math::{Vec2, Cross};
+use crate::shapes::{Shape, Matter};
+use crate::world::Transform;
+use crate::math::Bounds;
 
-use std::cell::RefCell;
-use collision::broad_phase;
+
+use crate::collision::broad_phase;
 
 /// The identifier used for looking up a `Body` in a `World`.
 ///

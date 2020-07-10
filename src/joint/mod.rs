@@ -1,8 +1,8 @@
 mod spring;
 
 pub use self::spring::SpringJoint;
-use constraint::Constraint;
-use world::Body;
+use crate::constraint::Constraint;
+use crate::world::Body;
 
 #[derive(Clone)]
 pub enum Joint {

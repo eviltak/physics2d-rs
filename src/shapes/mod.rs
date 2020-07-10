@@ -3,8 +3,8 @@ mod polygon;
 
 pub use self::circle::Circle;
 pub use self::polygon::Polygon;
-use math::Bounds;
-use world::Transform;
+use crate::math::Bounds;
+use crate::world::Transform;
 
 #[derive(Clone)]
 pub enum Shape {

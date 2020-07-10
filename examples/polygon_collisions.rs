@@ -25,7 +25,7 @@ impl PolygonCollisionsTestbed {
         let poly_b = shapes::Polygon::new(vert_b);
         
         let mut a = Body::new(poly_a.into_shape(), 10.0, Material::default());
-        let mut b = Body::new(poly_b.into_shape(), 10.0, Material::default());
+        let b = Body::new(poly_b.into_shape(), 10.0, Material::default());
         
         a.transform.position = Vec2::UP * 16.0 + Vec2::RIGHT * 1.0;
         a.transform.set_rotation(math::PI / 5.0);
@@ -44,7 +44,7 @@ impl PolygonCollisionsTestbed {
 }
 
 impl testbed::Testbed for PolygonCollisionsTestbed {
-    fn sfml_loop(&mut self, input: &testbed::Input, dt: f32) {
+    fn sfml_loop(&mut self, _input: &testbed::Input, dt: f32) {
         if !self.should_stop {
             let body = self.world.get_body_mut(self.body_b);
             let f = Vec2::UP * 7.0 * body.mass;
@@ -56,7 +56,7 @@ impl testbed::Testbed for PolygonCollisionsTestbed {
         self.should_stop = self.world.contacts().len() > 0;
     }
     
-    fn sfml_draw(&mut self, canvas: &mut testbed::Canvas, dt: f32) {
+    fn sfml_draw(&mut self, canvas: &mut testbed::Canvas, _dt: f32) {
         for body in self.world.bodies_iter() {
             canvas.draw_body(body);
         }
@@ -76,7 +76,7 @@ fn main() {
         pixels_per_unit: 10.0,
     };
     
-    let mut testbed = PolygonCollisionsTestbed::new();
+    let testbed = PolygonCollisionsTestbed::new();
     
     testbed::run(testbed, config);
 }

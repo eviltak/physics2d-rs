@@ -1,12 +1,12 @@
 use physics2d::*;
 
-use testbed::sfml;
-use testbed::sfml::window::Event;
-use testbed::sfml::graphics::RenderTarget;
+use crate::testbed::sfml;
+use crate::testbed::sfml::window::Event;
+use crate::testbed::sfml::graphics::RenderTarget;
 
-use testbed::physics2d_vec2;
+use crate::testbed::physics2d_vec2;
 
-pub use testbed::sfml::window::Key as Key;
+pub use crate::testbed::sfml::window::Key as Key;
 
 pub struct Input {
     pub has_focus: bool,
@@ -43,7 +43,7 @@ impl Input {
         match event {
             Event::GainedFocus => self.has_focus = true,
             Event::LostFocus => self.has_focus = false,
-            Event::KeyPressed { code, alt, ctrl, shift, system } => {
+            Event::KeyPressed { code, alt: _, ctrl: _, shift: _, system: _ } => {
                 self.pressed_keys.push(code);
             }
             _ => {}

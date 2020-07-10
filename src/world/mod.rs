@@ -9,9 +9,9 @@ pub(crate) use self::body::BodyPair;
 pub(crate) use self::collections::{Bodies, ConstraintsMap};
 
 use self::collections::{ConstraintSolverMap};
-use collision::{ContactConstraint, collide};
-use collision::broad_phase::{BroadPhase, NaiveBroadPhase, BoundsTreeBroadPhase};
-use joint::Joint;
+use crate::collision::{ContactConstraint, collide};
+use crate::collision::broad_phase::{BroadPhase, BoundsTreeBroadPhase};
+use crate::joint::Joint;
 
 pub struct World {
     bodies: Bodies,

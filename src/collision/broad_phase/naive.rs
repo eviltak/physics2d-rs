@@ -1,5 +1,5 @@
-use world::{Bodies, ConstraintsMap, BodyPair, Body};
-use collision::ContactConstraint;
+use crate::world::{Bodies, ConstraintsMap, BodyPair, Body};
+use crate::collision::ContactConstraint;
 use super::{BroadPhase, ProxyId};
 
 pub struct NaiveBroadPhase;

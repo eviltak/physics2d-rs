@@ -1,7 +1,7 @@
-use constraint::Constraint;
-use world::Body;
-use math::{Vec2, PI, Cross};
-use joint::Joint;
+use crate::constraint::Constraint;
+use crate::world::Body;
+use crate::math::{Vec2, PI, Cross};
+use crate::joint::Joint;
 
 const SPRING_DISPLACEMENT_SLOP: f32 = 0.05;
 
@@ -108,14 +108,14 @@ impl Constraint for SpringJoint {
         self.mass = if inv_reduced_mass != 0.0 { 1.0 / inv_reduced_mass } else { 0.0 };
     }
     
-    fn warm_start_velocity(&mut self, a: &mut Body, b: &mut Body, dt: f32) {
+    fn warm_start_velocity(&mut self, a: &mut Body, b: &mut Body, _dt: f32) {
         let impulse = self.impulse * self.normal;
     
         a.add_impulse_at_pos(-impulse, self.r_a);
         b.add_impulse_at_pos(impulse, self.r_b);
     }
     
-    fn warm_start_position(&mut self, a: &mut Body, b: &mut Body, dt: f32) {}
+    fn warm_start_position(&mut self, _a: &mut Body, _b: &mut Body, _dt: f32) {}
     
     fn solve_velocity(&mut self, a: &mut Body, b: & mut Body, dt: f32) {
         let rel_vel = b.velocity - a.velocity +
@@ -134,5 +134,5 @@ impl Constraint for SpringJoint {
         b.add_impulse_at_pos(impulse * self.normal, self.r_b);
     }
     
-    fn solve_position(&mut self, a: &mut Body, b: &mut Body, dt: f32) {}
+    fn solve_position(&mut self, _a: &mut Body, _b: &mut Body, _dt: f32) {}
 }

@@ -22,7 +22,7 @@ pub struct Pool<T: Default> {
 
 impl<T: Default> Pool<T> {
     pub fn new(initial_capacity: PoolId) -> Pool<T> {
-        let mut node_pool = Vec::with_capacity(initial_capacity);
+        let node_pool = Vec::with_capacity(initial_capacity);
         
         Pool {
             object_pool: node_pool,
@@ -96,7 +96,7 @@ mod tests {
     #[test]
     fn free() {
         let mut pool = Pool::default();
-        let (a, b, c) = (pool.allocate(), pool.allocate(), pool.allocate());
+        let (_a, b, _c) = (pool.allocate(), pool.allocate(), pool.allocate());
         
         {
             *pool.get_mut(b) = 111u32;

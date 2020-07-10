@@ -39,7 +39,7 @@ impl SpringsTestbed {
         
         let circle = shapes::Circle::new(1.5);
     
-        let mut circle_body = Body::new(circle.into_shape(), 10.0, Material::new(0.8, 0.8));
+        let circle_body = Body::new(circle.into_shape(), 10.0, Material::new(0.8, 0.8));
         
         let mut world = World::default();
         
@@ -132,7 +132,7 @@ fn main() {
         pixels_per_unit: 10.0,
     };
     
-    let mut testbed = SpringsTestbed::new(&config);
+    let testbed = SpringsTestbed::new(&config);
     
     testbed::run(testbed, config);
 }
